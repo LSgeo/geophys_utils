@@ -87,7 +87,7 @@ def get_spatial_ref_from_wkt(wkt_or_crs_name):
         )
         return spatial_ref
 
-    match = re.match("EPSG:(\d+)$", wkt_or_crs_name, re.IGNORECASE)
+    match = re.match(r"EPSG:(\d+)$", wkt_or_crs_name, re.IGNORECASE)
     if match:
         epsg_code = int(match.group(1))
         result = spatial_ref.ImportFromEPSG(epsg_code)
@@ -101,12 +101,12 @@ def get_spatial_ref_from_wkt(wkt_or_crs_name):
 
     # Try common formulations for UTM zones
     # TODO: Fix this so it works in the Northern hemisphere
-    modified_crs_name = re.sub("\s+", "", wkt_or_crs_name.strip().upper())
+    modified_crs_name = re.sub(r"\s+", "", wkt_or_crs_name.strip().upper())
     utm_match = (
-        re.match("(\w+)/MGAZONE(\d+)$", modified_crs_name)
-        or re.match("(\w+)/(\d+)S$", modified_crs_name)
-        or re.match("(EPSG:283)(\d{2})$", modified_crs_name)
-        or re.match("(MGA)(\d{2}$)", modified_crs_name)
+        re.match(r"(\w+)/MGAZONE(\d+)$", modified_crs_name)
+        or re.match(r"(\w+)/(\d+)S$", modified_crs_name)
+        or re.match(r"(EPSG:283)(\d{2})$", modified_crs_name)
+        or re.match(r"(MGA)(\d{2}$)", modified_crs_name)
     )
     if utm_match:
         modified_crs_name = utm_match.group(1)
@@ -254,7 +254,7 @@ def transform_coords(coordinates, from_wkt, to_wkt):
 
 def get_reprojected_bounds(bounds, from_wkt, to_wkt):
     """Function to take a bounding box specified in one CRS and return its smallest containing bounding box in a new CRS.
-    
+
     @parameter bounds: bounding box specified as tuple(xmin, ymin, xmax, ymax) in CRS from_wkt
     @parameter from_wkt: WKT for CRS from which to transform bounds
     @parameter to_wkt: WKT for CRS to which to transform bounds.

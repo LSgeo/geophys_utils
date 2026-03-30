@@ -106,7 +106,7 @@ def decode_aseg_gdf_format(aseg_gdf_format):
     if not aseg_gdf_format:
         raise BaseException("No ASEG-GDF format string to decode")
 
-    match = re.match("(\d+)*(\w)(\d+)\.*(\d+)*", aseg_gdf_format)
+    match = re.match(r"(\d+)*(\w)(\d+)\.*(\d+)*", aseg_gdf_format)
 
     if not match:
         raise BaseException("Invalid ASEG-GDF format string {}".format(aseg_gdf_format))
@@ -142,9 +142,9 @@ def aseg_gdf_format2dtype(aseg_gdf_format):
     # Determine type and size for required significant figures
     # Integer type - N.B: Only signed types available
     if aseg_dtype_code == "I":
-        assert (
-            not decimal_places
-        ), "Integer format cannot be defined with fractional digits"
+        assert not decimal_places, (
+            "Integer format cannot be defined with fractional digits"
+        )
         for test_dtype, sig_figs in SIG_FIGS.items():
             if test_dtype.startswith("int") and sig_figs >= width_specifier:
                 dtype = test_dtype
@@ -165,9 +165,9 @@ def aseg_gdf_format2dtype(aseg_gdf_format):
         )
 
     elif aseg_dtype_code == "A":
-        assert (
-            not decimal_places
-        ), "String format cannot be defined with fractional digits"
+        assert not decimal_places, (
+            "String format cannot be defined with fractional digits"
+        )
         dtype = "<U{}".format(width_specifier)  # Numpy fixed-length string type
 
     else:
@@ -324,7 +324,7 @@ def fix_field_precision(
     data_array, current_dtype, decimal_places, no_data_mask=[], fill_value=None
 ):
     """Function to return revised ASEG-GDF format string and other info from data array or netCDF array variable after correcting datatype for excessive precision specification, or None if there is no precision change.
-    
+
     Arrays are copied to smaller representations and then the difference with the original is checked to
     ensure that any difference is less than precision of the specified number of fractional digits.
     Note that fill_value is also considered but potentially modified only if data precision is changed
@@ -481,22 +481,22 @@ def truncate(fill_value, data_array, no_data_mask, width_specifier, decimal_plac
             integer_digits -= 1  # Allow for decimal point
 
         fill_value_str = fill_value
-        assert (
-            "e" not in fill_value_str.lower()
-        ), "Unable to truncate value in exponential notation"
+        assert "e" not in fill_value_str.lower(), (
+            "Unable to truncate value in exponential notation"
+        )
         pattern = re.compile(
-            "(-?)\d*?(\d{0,"
+            r"(-?)\d*?(\d{0,"
             + "{}".format(integer_digits)
-            + "}\.\d{0,"
+            + r"}\.\d{0,"
             + "{}".format(decimal_places)
             + "})"
         )
         search = re.search(pattern, fill_value_str)
         truncated_fill_value = float(search.group(1) + search.group(2))
         # Check for any ambiguity introduced by truncation
-        assert not np.any(
-            data_array[~no_data_mask] == truncated_fill_value
-        ), "Truncated fill value of {} is ambiguous".format(truncated_fill_value)
+        assert not np.any(data_array[~no_data_mask] == truncated_fill_value), (
+            "Truncated fill value of {} is ambiguous".format(truncated_fill_value)
+        )
         if fill_value != truncated_fill_value:
             logger.debug(
                 "fill_value truncated from {} to {}".format(

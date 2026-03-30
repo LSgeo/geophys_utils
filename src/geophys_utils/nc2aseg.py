@@ -204,7 +204,7 @@ class RowValueCache(object):
                     "null"
                 )
                 self.cache[field_name][
-                    ((self.cache[field_name] == netcdf_fill_value))
+                    (self.cache[field_name] == netcdf_fill_value)
                 ] = ascii_null_value
 
         # logger.debug('self.cache: {}'.format(pformat(self.cache)))
@@ -238,6 +238,7 @@ class RowValueCache(object):
 
 class NC2ASEGGDF2(object):
     """NC2ASEGGDF2."""
+
     def __init__(
         self,
         netcdf_dataset,
@@ -277,7 +278,6 @@ class NC2ASEGGDF2(object):
             """Helper function to build self.field_definitions as an OrderedDict of field definitions keyed by ASEG-GDF2 field name."""
             self.field_definitions = OrderedDict()
             for variable_name, variable in self.netcdf_dataset.variables.items():
-
                 # Check for any name exclusion matches
                 if any(
                     [
@@ -306,10 +306,10 @@ class NC2ASEGGDF2(object):
                                 variable_dimension_name + "_index"
                             ]
 
-                        assert index_variable.dimensions == (
-                            "point",
-                        ), "Invalid dimensions for variable {}: {}".format(
-                            index_variable.name, index_variable.dimensions
+                        assert index_variable.dimensions == ("point",), (
+                            "Invalid dimensions for variable {}: {}".format(
+                                index_variable.name, index_variable.dimensions
+                            )
                         )
 
                         variables = [index_variable, variable]
@@ -410,7 +410,7 @@ class NC2ASEGGDF2(object):
 
                 if TRUNCATE_VARIABLE_NAMES:
                     # Sanitise field name, truncate to 8 characters and ensure uniqueness
-                    field_name = re.sub("(\W|_)+", "", variable_name)[:8].upper()
+                    field_name = re.sub(r"(\W|_)+", "", variable_name)[:8].upper()
                     field_name_count = 0
                     while field_name in [
                         variable_definition.get("field_name")
@@ -433,7 +433,6 @@ class NC2ASEGGDF2(object):
                 if ADJUST_INTEGER_FIELD_WIDTH and "int" in str(
                     dtype
                 ):  # Field is some kind of integer - adjust format for data
-
                     # Array data_vals is temporary array for holding computing good aseggdf2 null value
                     data_vals = self.get_data_values(field_name)
 
@@ -484,9 +483,9 @@ class NC2ASEGGDF2(object):
             False
         )  # Turn auto-masking off to allow substitution of new null values
 
-        assert (
-            "point" in self.netcdf_dataset.dimensions.keys()
-        ), '"point" not found in dataset dimensions'
+        assert "point" in self.netcdf_dataset.dimensions.keys(), (
+            '"point" not found in dataset dimensions'
+        )
         self.info_output("Opened netCDF dataset {}".format(self.netcdf_path))
 
         self.total_points = self.ncpu.point_count
@@ -525,9 +524,9 @@ class NC2ASEGGDF2(object):
         # logger.debug('Field {} represents variable {}({})'.format(field_name, variables[-1].name, ','.join(variables[0].dimensions)))
         if len(variables) == 1:  # Single variable => no lookup
             if len(variables[0].dimensions):  # Array
-                assert (
-                    variables[0].dimensions[0] == "point"
-                ), 'First array dimension must be "point"'
+                assert variables[0].dimensions[0] == "point", (
+                    'First array dimension must be "point"'
+                )
                 data = variables[0][point_slice]
             else:  # Scalar
                 # Broadcast scalar to required array shape
@@ -542,7 +541,6 @@ class NC2ASEGGDF2(object):
                     )
                 )
         elif len(variables) == 2:  # Index & Lookup variables
-
             mask_value_index_var = getattr(variables[0], "_FillValue")
             # mask_value_lookup_var = getattr(variables[1], "_FillValue")
 
@@ -742,7 +740,7 @@ class NC2ASEGGDF2(object):
 
         def proj_defns_generator():
             """Helper function to write PROJ lines.
-            
+
             From standard:
             DEFN 1 ST=RECD,RT=PROJ; RT: A4
             DEFN 2 ST=RECD,RT=PROJ; COORDSYS: A40: NAME=projection name, POSC projection name
@@ -1015,10 +1013,10 @@ class NC2ASEGGDF2(object):
                 if encoding:
                     encoded_bytestring = chunk_buffer_string.encode(encoding)
                     line_size = sys.getsizeof(encoded_bytestring)
-                    assert (
-                        line_size < LINE_BUFFER_SIZE * CACHE_CHUNK_ROWS
-                    ), "Line size of {} exceeds buffer size of {}".format(
-                        line_size, LINE_BUFFER_SIZE * CACHE_CHUNK_ROWS
+                    assert line_size < LINE_BUFFER_SIZE * CACHE_CHUNK_ROWS, (
+                        "Line size of {} exceeds buffer size of {}".format(
+                            line_size, LINE_BUFFER_SIZE * CACHE_CHUNK_ROWS
+                        )
                     )
                     logger.debug(
                         "Writing ASEG-GDF line buffer of size {:n} bytes".format(
@@ -1285,11 +1283,11 @@ def main():
     log_level = logging.DEBUG if args.debug else logging.INFO
     logger.setLevel(level=log_level)
 
-    assert (
-        1 <= len(args.positional_args) <= 2
-    ), "Invalid number of positional arguments.\n\
+    assert 1 <= len(args.positional_args) <= 2, (
+        "Invalid number of positional arguments.\n\
 Usage: python {} <options> <nc_in_path> [<dat_out_path>] [<zip_out_path>]".format(
-        os.path.basename(sys.argv[0])
+            os.path.basename(sys.argv[0])
+        )
     )
 
     nc_in_path = args.positional_args[0]

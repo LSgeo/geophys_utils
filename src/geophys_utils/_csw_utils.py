@@ -152,7 +152,7 @@ class CSWUtils(object):
                         [
                             fes.PropertyIsLike(
                                 propertyname=propertyname,
-                                literal=re.sub("(\s)", "_", word_variant),
+                                literal=re.sub(r"(\s)", "_", word_variant),
                                 matchCase=False,
                             )
                             for word_variant in set(
@@ -629,14 +629,14 @@ class CSWUtils(object):
 
     def get_netcdf_urls(self, dataset_dict_generator):
         """Generator to yield flattened dicts containing information for any netCDF distributions (file or OPeNDAP URL, file by preference).
-        
+
         @param dataset_dict_generator: Generator yeilding dict objects containing information about each record including distributions.
         """
         for record_dict in dataset_dict_generator:
             distribution_dict = None
             for file_distribution in record_dict["distributions"]:
                 if "file" in file_distribution.get("protocol", "").lower():
-                    match = re.match("(^file://)*(.*\.nc)$", file_distribution["url"])
+                    match = re.match(r"(^file://)*(.*\.nc)$", file_distribution["url"])
                     try:
                         file_distribution["url"] = match.group(
                             2
@@ -659,7 +659,7 @@ class CSWUtils(object):
                 for opendap_distribution in record_dict["distributions"]:
                     if "opendap" in opendap_distribution["protocol"].lower():
                         match = re.match(
-                            "(.*\.nc)(\.html)*$", opendap_distribution["url"]
+                            r"(.*\.nc)(\.html)*$", opendap_distribution["url"]
                         )
                         try:
                             opendap_distribution["url"] = match.group(

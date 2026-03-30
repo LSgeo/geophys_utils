@@ -95,7 +95,8 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
         """
 
         def get_field_definitions():
-            """Function to read raw field definitions from .dfn file
+            """Function to read raw field definitions from .dfn file.
+            
             Will set self.dimensions as an Ordereddict of dimension sizes keyed by dimension name.
             """
 
