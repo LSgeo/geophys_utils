@@ -15,13 +15,14 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-'''
+"""
 NetCDFUtils class implementing useful functionality against netCDF files
 
 Created on 2Mar.,2017
 
 @author: Alex Ip
-'''
+"""
+
 import abc
 import argparse
 import itertools
@@ -42,36 +43,41 @@ from geophys_utils._crs_utils import get_spatial_ref_from_wkt
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)  # Initial logging level for this module
 
-METADATA_CRS = 'EPSG:4283'  # Standard CRS for metadata (GDA94)
+METADATA_CRS = "EPSG:4283"  # Standard CRS for metadata (GDA94)
 
 
 class NetCDFUtils(object):
-    '''
+    """
     NetCDFUtils class implementing useful functionality against netCDF files
-    '''
-    # Point, line  and grid subclasses will need this, even though this class is non-spatial
-    X_DIM_VARIABLE_NAMES = ['longitude', 'lon', 'x', 'Easting']
-    Y_DIM_VARIABLE_NAMES = ['latitude', 'lat', 'y', 'Northing']
-    CRS_VARIABLE_NAMES = ['crs', 'transverse_mercator',
-                          'albers_conical_equal_area']  # TODO: See if we can make this exhaustive
+    """
 
-    DEFAULT_COPY_OPTIONS = {'complevel': 4,
-                            # 'zlib': True, # depcrecated replaced with compression='zlib'
-                            'compression': 'zlib',
-                            'fletcher32': True,
-                            'shuffle': True,
-                            'endian': 'little',
-                            # 'chunksizes': [1024, 1024]
-                            }
+    # Point, line  and grid subclasses will need this, even though this class is non-spatial
+    X_DIM_VARIABLE_NAMES = ["longitude", "lon", "x", "Easting"]
+    Y_DIM_VARIABLE_NAMES = ["latitude", "lat", "y", "Northing"]
+    CRS_VARIABLE_NAMES = [
+        "crs",
+        "transverse_mercator",
+        "albers_conical_equal_area",
+    ]  # TODO: See if we can make this exhaustive
+
+    DEFAULT_COPY_OPTIONS = {
+        "complevel": 4,
+        # 'zlib': True, # depcrecated replaced with compression='zlib'
+        "compression": "zlib",
+        "fletcher32": True,
+        "shuffle": True,
+        "endian": "little",
+        # 'chunksizes': [1024, 1024]
+    }
 
     def __init__(self, netcdf_dataset, debug=False):
-        '''
+        """
         Constructor for NetCDFUtils
-        '''
+        """
         self._debug = None  # Initialise private variable
         self.debug = debug  # Set debug property
 
-        logger.debug('Running NetCDFUtils constructor')
+        logger.debug("Running NetCDFUtils constructor")
 
         if type(netcdf_dataset) == str:  # String provided as path to netCDF file
             self.nc_path = netcdf_dataset
@@ -80,9 +86,9 @@ class NetCDFUtils(object):
             self._netcdf_dataset = netcdf_dataset
             self.nc_path = netcdf_dataset.filepath()
         else:
-            raise TypeError('Invalid netcdf_dataset type')
+            raise TypeError("Invalid netcdf_dataset type")
 
-        self.opendap = (re.match('^http.*', self.nc_path) is not None)
+        self.opendap = re.match("^http.*", self.nc_path) is not None
         if self.opendap:
             self.max_bytes = 500000000  # 500MB limit for NCI OPeNDAP
         else:
@@ -109,18 +115,19 @@ class NetCDFUtils(object):
         # Set auto masking to True for consistent behaviour
         self.netcdf_dataset.set_auto_mask(True)  # TODO: set this at a function level
 
-    def copy(self,
-             nc_out_path,
-             datatype_map_dict={},
-             variable_options_dict={},
-             dim_range_dict={},
-             dim_mask_dict={},
-             nc_format=None,
-             limit_dim_size=False,
-             var_list=[],
-             empty_var_list=[],
-             ):
-        '''
+    def copy(
+        self,
+        nc_out_path,
+        datatype_map_dict={},
+        variable_options_dict={},
+        dim_range_dict={},
+        dim_mask_dict={},
+        nc_format=None,
+        limit_dim_size=False,
+        var_list=[],
+        empty_var_list=[],
+    ):
+        """
         Function to copy a netCDF dataset to another one with potential changes to size, format,
             variable creation options and datatypes.
 
@@ -137,20 +144,22 @@ class NetCDFUtils(object):
             @param limit_dim_size: Boolean flag indicating whether unlimited dimensions should be fixed
             @param var_list: List of strings denoting variable names for variables which should be copied
             @param empty_var_list: List of strings denoting variable names for variables which should be created but not copied
-        '''
-        logger.debug('variable_options_dict: {}'.format(variable_options_dict))
+        """
+        logger.debug("variable_options_dict: {}".format(variable_options_dict))
 
         self.netcdf_dataset.set_auto_mask(False)
 
         if var_list:
             # Created OrderedDict of filtered variables.
-            filtered_variables = OrderedDict([
-                [variable_name, variable]
-                for variable_name, variable in self.netcdf_dataset.variables.items()
-                # Never exclude coordinate variable names
-                if variable_name in var_list
-            ])
-            logger.debug('filtered_variables = {}'.format(filtered_variables.keys()))
+            filtered_variables = OrderedDict(
+                [
+                    [variable_name, variable]
+                    for variable_name, variable in self.netcdf_dataset.variables.items()
+                    # Never exclude coordinate variable names
+                    if variable_name in var_list
+                ]
+            )
+            logger.debug("filtered_variables = {}".format(filtered_variables.keys()))
         else:
             filtered_variables = self.netcdf_dataset.variables
 
@@ -161,9 +170,11 @@ class NetCDFUtils(object):
             variable_options_dict[variable_name] = variable_dict
 
         nc_format = nc_format or self.netcdf_dataset.file_format
-        logger.debug('Output format is %s' % nc_format)
+        logger.debug("Output format is %s" % nc_format)
 
-        nc_output_dataset = netCDF4.Dataset(nc_out_path, mode="w", clobber=True, format=nc_format)
+        nc_output_dataset = netCDF4.Dataset(
+            nc_out_path, mode="w", clobber=True, format=nc_format
+        )
         nc_output_dataset.set_auto_mask(False)
 
         try:
@@ -177,133 +188,200 @@ class NetCDFUtils(object):
                     dimension_name = variable.dimensions[dimension_index]
                     source_dimension = self.netcdf_dataset.dimensions[dimension_name]
 
-                    if dest_dim_size.get(dimension_name):  # We have already configured this dimension
+                    if dest_dim_size.get(
+                        dimension_name
+                    ):  # We have already configured this dimension
                         continue
 
                     dim_mask = dim_mask_dict.get(dimension_name)
                     if dim_mask is None:
-                        dim_mask = np.ones(shape=(variable.shape[dimension_index],), dtype=bool)
+                        dim_mask = np.ones(
+                            shape=(variable.shape[dimension_index],), dtype=bool
+                        )
                     else:
                         assert dim_mask.shape == (
-                        source_dimension.size,), 'Dimension mask must be a 1D boolean mask of size {}'.format(
-                            source_dimension.size)
+                            source_dimension.size,
+                        ), "Dimension mask must be a 1D boolean mask of size {}".format(
+                            source_dimension.size
+                        )
 
                     dim_range = dim_range_dict.get(dimension_name)
                     if dim_range:
-                        dim_mask[:dim_range[0]] = False
-                        dim_mask[dim_range[1]:] = False
+                        dim_mask[: dim_range[0]] = False
+                        dim_mask[dim_range[1] :] = False
 
                     dest_dim_size[dimension_name] = np.count_nonzero(
-                        dim_mask)  # Update sizes to take masks into account
+                        dim_mask
+                    )  # Update sizes to take masks into account
 
                     # dim_mask_dict[dimension_name] = dim_mask # Update mask to include range
 
-            logger.debug('dest_dim_size = {}'.format(dest_dim_size))
+            logger.debug("dest_dim_size = {}".format(dest_dim_size))
 
             # Copy dimensions
             for dimension_name, dimension in self.netcdf_dataset.dimensions.items():
                 if dimension_name in dims_used:  # Discard unused dimensions
-                    logger.debug('Copying dimension %s of length %d' % (dimension_name, dest_dim_size[dimension_name]))
-                    nc_output_dataset.createDimension(dimension_name,
-                                                      dest_dim_size[dimension_name]
-                                                      if not dimension.isunlimited() or limit_dim_size
-                                                      else None)
+                    logger.debug(
+                        "Copying dimension %s of length %d"
+                        % (dimension_name, dest_dim_size[dimension_name])
+                    )
+                    nc_output_dataset.createDimension(
+                        dimension_name,
+                        (
+                            dest_dim_size[dimension_name]
+                            if not dimension.isunlimited() or limit_dim_size
+                            else None
+                        ),
+                    )
                 else:
-                    logger.debug('Skipping unused dimension %s' % dimension_name)
+                    logger.debug("Skipping unused dimension %s" % dimension_name)
 
             # Copy variables
             for variable_name, input_variable in filtered_variables.items():
-                dtype = datatype_map_dict.get(str(input_variable.datatype)) or input_variable.datatype
+                dtype = (
+                    datatype_map_dict.get(str(input_variable.datatype))
+                    or input_variable.datatype
+                )
 
                 # Special case for "crs" or "transverse_mercator" - want byte datatype
                 if input_variable == self.crs_variable:
-                    dtype = 'i1'
+                    dtype = "i1"
 
                 # Start off by copying options from input variable (if specified)
                 var_options = input_variable.filters() or {}
 
                 # Removing depcrecated keys
-                [var_options.pop(key, None) for key in ("zlib", "szip", "zstd", "bzip2", "blosc")]
+                [
+                    var_options.pop(key, None)
+                    for key in ("zlib", "szip", "zstd", "bzip2", "blosc")
+                ]
 
                 # Chunking is defined outside the filters() result
                 chunking = input_variable.chunking()
-                if chunking and chunking != 'contiguous':
+                if chunking and chunking != "contiguous":
                     # Input variable is chunked - use same chunking by default unless overridden
                     input_variable_chunking = [
-                        min(chunking[dimension_index], dest_dim_size[input_variable.dimensions[dimension_index]])
-                        for dimension_index in range(len(chunking))]
-                elif (len(input_variable.dimensions) == 2 and
-                      variable_options_dict.get(variable_name) and
-                      variable_options_dict.get(variable_name).get('chunksizes')
+                        min(
+                            chunking[dimension_index],
+                            dest_dim_size[input_variable.dimensions[dimension_index]],
+                        )
+                        for dimension_index in range(len(chunking))
+                    ]
+                elif (
+                    len(input_variable.dimensions) == 2
+                    and variable_options_dict.get(variable_name)
+                    and variable_options_dict.get(variable_name).get("chunksizes")
                 ):  # TODO: Improve this
                     # If input variable is unchunked 2D and output chunking is specified - assume row chunking for input
-                    input_variable_chunking = [1, dest_dim_size[input_variable.dimensions[1]]]
+                    input_variable_chunking = [
+                        1,
+                        dest_dim_size[input_variable.dimensions[1]],
+                    ]
                 else:
                     # Input variable is not chunked
                     input_variable_chunking = None
 
                 # Default to same chunking on input and output
                 if input_variable_chunking:
-                    var_options['chunksizes'] = input_variable_chunking
+                    var_options["chunksizes"] = input_variable_chunking
 
-                if hasattr(input_variable, '_FillValue'):
-                    var_options['fill_value'] = input_variable._FillValue
+                if hasattr(input_variable, "_FillValue"):
+                    var_options["fill_value"] = input_variable._FillValue
 
                 # Apply any supplied options over top of defaults
                 var_options.update(variable_options_dict.get(variable_name) or {})
 
                 # Ensure chunk sizes aren't bigger than variable sizes
-                if var_options.get('chunksizes'):
+                if var_options.get("chunksizes"):
                     for dimension_index in range(len(input_variable.dimensions)):
-                        var_options['chunksizes'][dimension_index] = min(
-                            var_options['chunksizes'][dimension_index] or dest_dim_size[
-                                input_variable.dimensions[dimension_index]],
-                            dest_dim_size[input_variable.dimensions[dimension_index]])
+                        var_options["chunksizes"][dimension_index] = min(
+                            var_options["chunksizes"][dimension_index]
+                            or dest_dim_size[
+                                input_variable.dimensions[dimension_index]
+                            ],
+                            dest_dim_size[input_variable.dimensions[dimension_index]],
+                        )
 
                 if isinstance(dtype, netCDF4._netCDF4.VLType):
                     # Disallowed filters for variable-length(vlen) datatypes
                     # https://github.com/Unidata/netcdf4-python/issues/1205
-                    [var_options.pop(key, None) for key in ("compression", "complevel", "shuffle", "fletcher32", "endian")]
-                    
-                options_string = ' with options: %s' % ', '.join(
-                    ['%s=%s' % item for item in var_options.items()]) if var_options else ''
-                logger.debug("Copying variable %s from datatype %s to datatype %s%s" % (variable_name,
-                                                                                        input_variable.datatype,
-                                                                                        dtype,
-                                                                                        options_string
-                                                                                        )
-                             )
+                    [
+                        var_options.pop(key, None)
+                        for key in (
+                            "compression",
+                            "complevel",
+                            "shuffle",
+                            "fletcher32",
+                            "endian",
+                        )
+                    ]
+
+                options_string = (
+                    " with options: %s"
+                    % ", ".join(["%s=%s" % item for item in var_options.items()])
+                    if var_options
+                    else ""
+                )
+                logger.debug(
+                    "Copying variable %s from datatype %s to datatype %s%s"
+                    % (variable_name, input_variable.datatype, dtype, options_string)
+                )
                 # Create output variable using var_options to specify output options
-                output_variable = nc_output_dataset.createVariable(variable_name,
-                                                                   dtype,
-                                                                   input_variable.dimensions,
-                                                                   **var_options
-                                                                   )
+                output_variable = nc_output_dataset.createVariable(
+                    variable_name, dtype, input_variable.dimensions, **var_options
+                )
 
                 # Copy variable attributes
-                logger.debug('\tCopying %s attributes: %s' % (variable_name, ', '.join(input_variable.ncattrs())))
+                logger.debug(
+                    "\tCopying %s attributes: %s"
+                    % (variable_name, ", ".join(input_variable.ncattrs()))
+                )
                 output_variable.setncatts(
-                    {k: input_variable.getncattr(k) for k in input_variable.ncattrs() if not k.startswith('_')})
+                    {
+                        k: input_variable.getncattr(k)
+                        for k in input_variable.ncattrs()
+                        if not k.startswith("_")
+                    }
+                )
 
                 if variable_name not in empty_var_list:
                     # Copy data
                     if input_variable.shape:  # array
-                        input_variable_slices = tuple([
-                            slice(*dim_range_dict[input_variable.dimensions[dimension_index]])
-                            if dim_range_dict.get(input_variable.dimensions[dimension_index])
-                            else slice(0, input_variable.shape[dimension_index])
-                            for dimension_index in range(len(input_variable.dimensions))
-                        ])
+                        input_variable_slices = tuple(
+                            [
+                                (
+                                    slice(
+                                        *dim_range_dict[
+                                            input_variable.dimensions[dimension_index]
+                                        ]
+                                    )
+                                    if dim_range_dict.get(
+                                        input_variable.dimensions[dimension_index]
+                                    )
+                                    else slice(0, input_variable.shape[dimension_index])
+                                )
+                                for dimension_index in range(
+                                    len(input_variable.dimensions)
+                                )
+                            ]
+                        )
 
                         # logger.debug('input_variable_slices={}'.format(input_variable_slices))
 
-                        logger.debug('\tCopying {} array data of shape {}'.format(
-                            variable_name,
-                            tuple([input_variable_slices[dimension_index].stop - input_variable_slices[
-                                dimension_index].start
-                                   for dimension_index in range(len(input_variable.dimensions))]
-                                  )
-                        ))
+                        logger.debug(
+                            "\tCopying {} array data of shape {}".format(
+                                variable_name,
+                                tuple(
+                                    [
+                                        input_variable_slices[dimension_index].stop
+                                        - input_variable_slices[dimension_index].start
+                                        for dimension_index in range(
+                                            len(input_variable.dimensions)
+                                        )
+                                    ]
+                                ),
+                            )
+                        )
 
                         # Build list of full dimension masks for this variable
                         # We are using None instead of all-true masks because of the issue described in
@@ -311,186 +389,356 @@ class NetCDFUtils(object):
                         # This results in extra dimensions, but the piece assignment operation doesn't care
                         # See the behaviour described in https://stackoverflow.com/questions/1408311/numpy-array-slice-using-none
                         variable_masks = tuple(
-                            [dim_mask_dict.get(dimension_name)  # Use specified mask if it exists, None otherwise
-                             for dimension_name in input_variable.dimensions
-                             ])
+                            [
+                                dim_mask_dict.get(
+                                    dimension_name
+                                )  # Use specified mask if it exists, None otherwise
+                                for dimension_name in input_variable.dimensions
+                            ]
+                        )
 
                         if not input_variable_chunking:
                             # No chunking - Try to copy in one hit. This may bork due to OPeNDAP or memory limitations
                             # TODO: Make this safe for massive arrays, possibly using the array_pieces code
-                            logger.debug('Copying un-chunked array')
+                            logger.debug("Copying un-chunked array")
                             if any(variable_masks):
-                                output_variable[...] = input_variable[input_variable_slices][variable_masks]
+                                output_variable[...] = input_variable[
+                                    input_variable_slices
+                                ][variable_masks]
                             else:
-                                output_variable[...] = input_variable[input_variable_slices]
+                                output_variable[...] = input_variable[
+                                    input_variable_slices
+                                ]
 
                         else:  # Chunked - perform copy in pieces
-                            logger.debug('input_variable.shape = {}'.format(input_variable.shape))
+                            logger.debug(
+                                "input_variable.shape = {}".format(input_variable.shape)
+                            )
 
                             array_item_size = np.dtype(input_variable.dtype).itemsize
                             # TODO: Deal with strings in a better way
                             # Assume string arrays aren't going to be huge - check largest size of all elements
-                            if not array_item_size and input_variable.dtype == str:  # and len(input_variable.dimensions) == 1
-                                array_item_size = max([sys.getsizeof(element) for element in input_variable[:]])
-                            logger.debug('array_item_size (in bytes) = {}'.format(array_item_size))
+                            if (
+                                not array_item_size and input_variable.dtype == str
+                            ):  # and len(input_variable.dimensions) == 1
+                                array_item_size = max(
+                                    [
+                                        sys.getsizeof(element)
+                                        for element in input_variable[:]
+                                    ]
+                                )
+                            logger.debug(
+                                "array_item_size (in bytes) = {}".format(
+                                    array_item_size
+                                )
+                            )
 
                             # Use largest chunk sizes between input and output as the smallest possible piece
                             smallest_piece_sizes = [
-                                max(var_options['chunksizes'][dimension_index],
-                                    input_variable_chunking[dimension_index]
-                                    )
-                                for dimension_index in range(len(input_variable.dimensions))
+                                max(
+                                    var_options["chunksizes"][dimension_index],
+                                    input_variable_chunking[dimension_index],
+                                )
+                                for dimension_index in range(
+                                    len(input_variable.dimensions)
+                                )
                             ]
-                            logger.debug('smallest_piece_sizes = {}'.format(smallest_piece_sizes))
+                            logger.debug(
+                                "smallest_piece_sizes = {}".format(smallest_piece_sizes)
+                            )
 
                             # Compute piece_sizes using the largest multiple of the smallest pieces under the maximum number of bytes
                             piece_sizes = list(smallest_piece_sizes)
-                            piece_counts = tuple([
-                                int(math.ceil(float(
-                                    self.netcdf_dataset.dimensions[input_variable.dimensions[dimension_index]].size) /
-                                              piece_sizes[dimension_index]))
-                                for dimension_index in range(len(input_variable.dimensions))
-                            ])
-                            largest_piece_count_index = piece_counts.index(max(piece_counts))
-                            smallest_piece_bytes = array_item_size * reduce(lambda x, y: x * y, smallest_piece_sizes)
+                            piece_counts = tuple(
+                                [
+                                    int(
+                                        math.ceil(
+                                            float(
+                                                self.netcdf_dataset.dimensions[
+                                                    input_variable.dimensions[
+                                                        dimension_index
+                                                    ]
+                                                ].size
+                                            )
+                                            / piece_sizes[dimension_index]
+                                        )
+                                    )
+                                    for dimension_index in range(
+                                        len(input_variable.dimensions)
+                                    )
+                                ]
+                            )
+                            largest_piece_count_index = piece_counts.index(
+                                max(piece_counts)
+                            )
+                            smallest_piece_bytes = array_item_size * reduce(
+                                lambda x, y: x * y, smallest_piece_sizes
+                            )
                             piece_sizes[largest_piece_count_index] = min(
                                 input_variable.shape[largest_piece_count_index],
-                                int(smallest_piece_sizes[largest_piece_count_index] * (
-                                            self.max_bytes // smallest_piece_bytes))
-                                )
+                                int(
+                                    smallest_piece_sizes[largest_piece_count_index]
+                                    * (self.max_bytes // smallest_piece_bytes)
+                                ),
+                            )
 
-                            piece_bytes = np.dtype(input_variable.dtype).itemsize * reduce(lambda x, y: x * y,
-                                                                                           piece_sizes)
-                            logger.debug('piece_sizes = {}, bytes = {}'.format(piece_sizes, piece_bytes))
+                            piece_bytes = np.dtype(
+                                input_variable.dtype
+                            ).itemsize * reduce(lambda x, y: x * y, piece_sizes)
+                            logger.debug(
+                                "piece_sizes = {}, bytes = {}".format(
+                                    piece_sizes, piece_bytes
+                                )
+                            )
 
                             piece_index_ranges = [
-                                (input_variable_slices[dimension_index].start // piece_sizes[dimension_index],
-                                 int(math.ceil(
-                                     float(input_variable_slices[dimension_index].stop) / piece_sizes[dimension_index]))
-                                 )
-                                for dimension_index in range(len(input_variable.dimensions))
+                                (
+                                    input_variable_slices[dimension_index].start
+                                    // piece_sizes[dimension_index],
+                                    int(
+                                        math.ceil(
+                                            float(
+                                                input_variable_slices[
+                                                    dimension_index
+                                                ].stop
+                                            )
+                                            / piece_sizes[dimension_index]
+                                        )
+                                    ),
+                                )
+                                for dimension_index in range(
+                                    len(input_variable.dimensions)
+                                )
                             ]
 
                             # Recompute piece_counts for revised piece_sizes
-                            piece_counts = tuple([
-                                int(math.ceil(float(
-                                    self.netcdf_dataset.dimensions[input_variable.dimensions[dimension_index]].size) /
-                                              piece_sizes[dimension_index]))
-                                for dimension_index in range(len(input_variable.dimensions))
-                            ])
+                            piece_counts = tuple(
+                                [
+                                    int(
+                                        math.ceil(
+                                            float(
+                                                self.netcdf_dataset.dimensions[
+                                                    input_variable.dimensions[
+                                                        dimension_index
+                                                    ]
+                                                ].size
+                                            )
+                                            / piece_sizes[dimension_index]
+                                        )
+                                    )
+                                    for dimension_index in range(
+                                        len(input_variable.dimensions)
+                                    )
+                                ]
+                            )
 
-                            logger.debug('\tCopying {} pieces of dimensions {}'.format(
-                                ' x '.join([str(piece_count) for piece_count in piece_counts]),
-                                ' x '.join([str(piece_size) for piece_size in piece_sizes])
+                            logger.debug(
+                                "\tCopying {} pieces of dimensions {}".format(
+                                    " x ".join(
+                                        [
+                                            str(piece_count)
+                                            for piece_count in piece_counts
+                                        ]
+                                    ),
+                                    " x ".join(
+                                        [str(piece_size) for piece_size in piece_sizes]
+                                    ),
                                 )
-                                         )
+                            )
 
                             # Iterate over every piece
                             for piece_indices in itertools.product(
-                                    *[range(piece_index_ranges[dimension_index][0],
-                                            piece_index_ranges[dimension_index][1]
-                                            )
-                                      for dimension_index in range(len(input_variable.dimensions))
-                                      ]
-                            ):
-                                offset_piece_indices = tuple([(indices[0] - indices[1] + 1)
-                                                              for indices in zip(piece_indices,
-                                                                                 [piece_index_range[0] for
-                                                                                  piece_index_range in
-                                                                                  piece_index_ranges])])
-                                logger.debug('\t\tCopying piece {}/{}'.format(offset_piece_indices, piece_counts))
-
-                                piece_read_slices = tuple([
-                                    slice(
-                                        max(input_variable_slices[dimension_index].start,
-                                            piece_indices[dimension_index] * piece_sizes[dimension_index]
-                                            ),
-                                        min(input_variable_slices[dimension_index].stop,
-                                            (piece_indices[dimension_index] + 1) * piece_sizes[dimension_index]
-                                            )
+                                *[
+                                    range(
+                                        piece_index_ranges[dimension_index][0],
+                                        piece_index_ranges[dimension_index][1],
                                     )
-                                    for dimension_index in range(len(input_variable.dimensions))
-                                ])
+                                    for dimension_index in range(
+                                        len(input_variable.dimensions)
+                                    )
+                                ]
+                            ):
+                                offset_piece_indices = tuple(
+                                    [
+                                        (indices[0] - indices[1] + 1)
+                                        for indices in zip(
+                                            piece_indices,
+                                            [
+                                                piece_index_range[0]
+                                                for piece_index_range in piece_index_ranges
+                                            ],
+                                        )
+                                    ]
+                                )
+                                logger.debug(
+                                    "\t\tCopying piece {}/{}".format(
+                                        offset_piece_indices, piece_counts
+                                    )
+                                )
+
+                                piece_read_slices = tuple(
+                                    [
+                                        slice(
+                                            max(
+                                                input_variable_slices[
+                                                    dimension_index
+                                                ].start,
+                                                piece_indices[dimension_index]
+                                                * piece_sizes[dimension_index],
+                                            ),
+                                            min(
+                                                input_variable_slices[
+                                                    dimension_index
+                                                ].stop,
+                                                (piece_indices[dimension_index] + 1)
+                                                * piece_sizes[dimension_index],
+                                            ),
+                                        )
+                                        for dimension_index in range(
+                                            len(input_variable.dimensions)
+                                        )
+                                    ]
+                                )
 
                                 # logger.debug('piece_read_slices = {}'.format(piece_read_slices))
 
-                                piece_write_slices = tuple([
-                                    (
-                                        slice(
-                                            np.count_nonzero(
-                                                variable_masks[dimension_index][input_variable_slices[dimension_index]][
-                                                :piece_read_slices[dimension_index].start]),
-                                            (np.count_nonzero(
-                                                variable_masks[dimension_index][input_variable_slices[dimension_index]][
-                                                :piece_read_slices[dimension_index].start]) +
-                                             np.count_nonzero(variable_masks[dimension_index][
-                                                                  input_variable_slices[dimension_index]][
-                                                                  piece_read_slices[dimension_index]]))
+                                piece_write_slices = tuple(
+                                    [
+                                        (
+                                            slice(
+                                                np.count_nonzero(
+                                                    variable_masks[dimension_index][
+                                                        input_variable_slices[
+                                                            dimension_index
+                                                        ]
+                                                    ][
+                                                        : piece_read_slices[
+                                                            dimension_index
+                                                        ].start
+                                                    ]
+                                                ),
+                                                (
+                                                    np.count_nonzero(
+                                                        variable_masks[dimension_index][
+                                                            input_variable_slices[
+                                                                dimension_index
+                                                            ]
+                                                        ][
+                                                            : piece_read_slices[
+                                                                dimension_index
+                                                            ].start
+                                                        ]
+                                                    )
+                                                    + np.count_nonzero(
+                                                        variable_masks[dimension_index][
+                                                            input_variable_slices[
+                                                                dimension_index
+                                                            ]
+                                                        ][
+                                                            piece_read_slices[
+                                                                dimension_index
+                                                            ]
+                                                        ]
+                                                    )
+                                                ),
+                                            )
+                                            if variable_masks[dimension_index]
+                                            is not None
+                                            else slice(
+                                                piece_read_slices[dimension_index].start
+                                                - input_variable_slices[
+                                                    dimension_index
+                                                ].start,
+                                                piece_read_slices[dimension_index].stop
+                                                - input_variable_slices[
+                                                    dimension_index
+                                                ].start,
+                                            )  # No mask in this dimension
                                         )
-                                        if variable_masks[dimension_index] is not None else
-                                        slice(piece_read_slices[dimension_index].start - input_variable_slices[
-                                            dimension_index].start,
-                                              piece_read_slices[dimension_index].stop - input_variable_slices[
-                                                  dimension_index].start
-                                              )  # No mask in this dimension
-                                    )
-                                    for dimension_index in range(len(input_variable.dimensions))
-                                ])
+                                        for dimension_index in range(
+                                            len(input_variable.dimensions)
+                                        )
+                                    ]
+                                )
 
                                 # logger.debug('piece_write_slices = {}'.format(piece_write_slices))
 
                                 # Get mask subsets for piece
-                                piece_dim_masks = tuple([
-                                    (variable_masks[dimension_index][piece_read_slices[dimension_index]]
-                                     if variable_masks[dimension_index] is not None else None)
-                                    for dimension_index in range(len(input_variable.dimensions))
-                                ])
+                                piece_dim_masks = tuple(
+                                    [
+                                        (
+                                            variable_masks[dimension_index][
+                                                piece_read_slices[dimension_index]
+                                            ]
+                                            if variable_masks[dimension_index]
+                                            is not None
+                                            else None
+                                        )
+                                        for dimension_index in range(
+                                            len(input_variable.dimensions)
+                                        )
+                                    ]
+                                )
 
                                 # logger.debug('piece_dim_masks = {}'.format(pformat(piece_dim_masks)))
 
                                 # N.B: Nones in piece_dim_mask for unmasked dimensions will result in newaxis dimensions, but shape doesn't matter
-                                output_variable[piece_write_slices] = input_variable[piece_read_slices][piece_dim_masks]
+                                output_variable[piece_write_slices] = input_variable[
+                                    piece_read_slices
+                                ][piece_dim_masks]
                                 # logger.debug('output_variable[piece_write_slices] = {}'.format(output_variable[piece_write_slices]))
 
                     else:  # scalar variable - simple copy
-                        logger.debug('\tCopying %s scalar data' % variable_name)
+                        logger.debug("\tCopying %s scalar data" % variable_name)
                         output_variable = input_variable
                 else:
-                    logger.debug('\tNot copying data for variable %s' % variable_name)
+                    logger.debug("\tNot copying data for variable %s" % variable_name)
 
             # Copy global attributes
-            logger.debug("Copying global attributes: %s" % ', '.join(self.netcdf_dataset.__dict__.keys()))
+            logger.debug(
+                "Copying global attributes: %s"
+                % ", ".join(self.netcdf_dataset.__dict__.keys())
+            )
             for item, value in self.netcdf_dataset.__dict__.items():
                 if type(value) == str:
-                    nc_output_dataset.__setattr__(item, value.encode('utf-8'))
+                    nc_output_dataset.__setattr__(item, value.encode("utf-8"))
                 else:
                     nc_output_dataset.__setattr__(item, value)
 
-            logger.debug('Finished copying netCDF dataset %s to %s.' % (self.nc_path, nc_out_path))
+            logger.debug(
+                "Finished copying netCDF dataset %s to %s."
+                % (self.nc_path, nc_out_path)
+            )
 
         finally:
             self.netcdf_dataset.set_auto_mask(True)
             nc_output_dataset.close()
 
     def get_crs_attributes(self, crs):
-        '''\
+        """\
         Function to return name and attributes of crs or transverse_mercator variable
-        '''
+        """
         # Determine wkt and spatial_ref from crs as required
         if type(crs) == osgeo.osr.SpatialReference:
             spatial_ref = crs
         elif type(crs) == str:
             spatial_ref = get_spatial_ref_from_wkt(crs)
 
-        wkt = spatial_ref.ExportToWkt()  # Export WKT from spatial_ref for consistency even if supplied
-        crs_attributes = {'spatial_ref': wkt}
+        wkt = (
+            spatial_ref.ExportToWkt()
+        )  # Export WKT from spatial_ref for consistency even if supplied
+        crs_attributes = {"spatial_ref": wkt}
 
-        crs_attributes['inverse_flattening'] = spatial_ref.GetInvFlattening()
-        crs_attributes['semi_major_axis'] = spatial_ref.GetSemiMajor()
-        crs_attributes['longitude_of_prime_meridian'] = spatial_ref.GetAttrValue('PRIMEM', 1)
+        crs_attributes["inverse_flattening"] = spatial_ref.GetInvFlattening()
+        crs_attributes["semi_major_axis"] = spatial_ref.GetSemiMajor()
+        crs_attributes["longitude_of_prime_meridian"] = spatial_ref.GetAttrValue(
+            "PRIMEM", 1
+        )
 
         # TODO: Make this more general to follow GDAL grid dataset conventions
-        if spatial_ref.IsSame(get_spatial_ref_from_wkt('EPSG:3577')):  # Albers equal area projection
+        if spatial_ref.IsSame(
+            get_spatial_ref_from_wkt("EPSG:3577")
+        ):  # Albers equal area projection
             # =======================================================================
             # char albers_conical_equal_area ;
             #         albers_conical_equal_area:grid_mapping_name = "albers_conical_equal_area" ;
@@ -506,24 +754,36 @@ class NetCDFUtils(object):
             #         albers_conical_equal_area:spatial_ref = "PROJCS[\"GDA94 / Australian Albers\",GEOGCS[\"GDA94\",DATUM[\"Geocentric_Datum_of_Australia_1994\",SPHEROID[\"GRS 1980\",6378137,298.257222101,AUTHORITY[\"EPSG\",\"7019\"]],TOWGS84[0,0,0,0,0,0,0],AUTHORITY[\"EPSG\",\"6283\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4283\"]],PROJECTION[\"Albers_Conic_Equal_Area\"],PARAMETER[\"standard_parallel_1\",-18],PARAMETER[\"standard_parallel_2\",-36],PARAMETER[\"latitude_of_center\",0],PARAMETER[\"longitude_of_center\",132],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],AUTHORITY[\"EPSG\",\"3577\"]]" ;
             #         albers_conical_equal_area:GeoTransform = "-2647837.5 87.5 0 -228462.5 0 -87.5 " ;
             # =======================================================================
-            crs_variable_name = 'albers_conical_equal_area'
-            crs_attributes['grid_mapping_name'] = "albers_conical_equal_area"
+            crs_variable_name = "albers_conical_equal_area"
+            crs_attributes["grid_mapping_name"] = "albers_conical_equal_area"
 
-            crs_attributes['latitude_of_projection_origin'] = spatial_ref.GetProjParm('latitude_of_origin')
-            crs_attributes['scale_factor_at_central_meridian'] = spatial_ref.GetProjParm('scale_factor')
-            crs_attributes['longitude_of_central_meridian'] = spatial_ref.GetProjParm('central_meridian')
-            crs_attributes['false_northing'] = spatial_ref.GetProjParm('false_northing')
-            crs_attributes['false_easting'] = spatial_ref.GetProjParm('false_easting')
+            crs_attributes["latitude_of_projection_origin"] = spatial_ref.GetProjParm(
+                "latitude_of_origin"
+            )
+            crs_attributes["scale_factor_at_central_meridian"] = (
+                spatial_ref.GetProjParm("scale_factor")
+            )
+            crs_attributes["longitude_of_central_meridian"] = spatial_ref.GetProjParm(
+                "central_meridian"
+            )
+            crs_attributes["false_northing"] = spatial_ref.GetProjParm("false_northing")
+            crs_attributes["false_easting"] = spatial_ref.GetProjParm("false_easting")
 
         elif spatial_ref.GetUTMZone():  # CRS is UTM
-            crs_variable_name = 'transverse_mercator'
-            crs_attributes['grid_mapping_name'] = 'transverse_mercator'
+            crs_variable_name = "transverse_mercator"
+            crs_attributes["grid_mapping_name"] = "transverse_mercator"
 
-            crs_attributes['latitude_of_projection_origin'] = spatial_ref.GetProjParm('latitude_of_origin')
-            crs_attributes['scale_factor_at_central_meridian'] = spatial_ref.GetProjParm('scale_factor')
-            crs_attributes['longitude_of_central_meridian'] = spatial_ref.GetProjParm('central_meridian')
-            crs_attributes['false_northing'] = spatial_ref.GetProjParm('false_northing')
-            crs_attributes['false_easting'] = spatial_ref.GetProjParm('false_easting')
+            crs_attributes["latitude_of_projection_origin"] = spatial_ref.GetProjParm(
+                "latitude_of_origin"
+            )
+            crs_attributes["scale_factor_at_central_meridian"] = (
+                spatial_ref.GetProjParm("scale_factor")
+            )
+            crs_attributes["longitude_of_central_meridian"] = spatial_ref.GetProjParm(
+                "central_meridian"
+            )
+            crs_attributes["false_northing"] = spatial_ref.GetProjParm("false_northing")
+            crs_attributes["false_easting"] = spatial_ref.GetProjParm("false_easting")
 
         else:
             # ===================================================================
@@ -536,35 +796,37 @@ class NetCDFUtils(object):
             # crs:grid_mapping_name = "latitude_longitude" ;
             # crs:longitude_of_prime_meridian = 0. ;
             # ===================================================================
-            crs_variable_name = 'crs'
-            crs_attributes['grid_mapping_name'] = 'latitude_longitude'
+            crs_variable_name = "crs"
+            crs_attributes["grid_mapping_name"] = "latitude_longitude"
 
-        logger.debug('{} attributes: {}'.format(crs_variable_name, pformat(crs_attributes)))
+        logger.debug(
+            "{} attributes: {}".format(crs_variable_name, pformat(crs_attributes))
+        )
         return crs_variable_name, crs_attributes
 
     @abc.abstractmethod
     def set_global_attributes(self, compute_shape=False):
-        '''\
+        """\
         Abstract base function to set ACDD global geometric metadata attributes in netCDF file
         N.B: This will fail if dataset is not writable
-        '''
+        """
         pass
 
     @abc.abstractmethod
     def set_variable_actual_range_attribute(self):
-        '''\
+        """\
         Function to set ACDD actual_range attribute in all data variables
         N.B: This will fail if dataset is not writable
-        '''
+        """
         pass
 
     @abc.abstractmethod
     def get_convex_hull(self, to_wkt=None):
-        '''\
+        """\
         Abstract base function to return n x 2 array of coordinates for convex hull of all points
         Needs to be implemented in subclass (e.g. NetCDFPointUtils, NetCDFLineUtils, or NetCDFGridUtils)
         @param to_wkt: CRS WKT for shape
-        '''
+        """
         pass
 
     @abc.abstractmethod
@@ -579,30 +841,31 @@ class NetCDFUtils(object):
         pass
 
     def close(self):
-        '''
+        """
         Function to close netCDF dataset if opened
-        '''
+        """
         if self._netcdf_dataset:
             try:
                 self._netcdf_dataset.close()
             except Exception as e:
-                logger.warning('Unable to close {}: {}'.format(self.netcdf_path, e))
+                logger.warning("Unable to close {}: {}".format(self.netcdf_path, e))
 
             self._netcdf_dataset = None
 
     @property
     def netcdf_dataset(self):
-        '''
+        """
         Property getter function to open netCDF dataset only when required
-        '''
+        """
         if not self._netcdf_dataset:
-            logger.debug('Opening netCDF dataset {}'.format(self.nc_path))
+            logger.debug("Opening netCDF dataset {}".format(self.nc_path))
             if self.opendap:
                 try:
                     self._netcdf_dataset = netCDF4.Dataset(self.nc_path, mode="r")
                 except OSError:
-                    self._netcdf_dataset = netCDF4.Dataset(self.nc_path + '#fillmismatch',
-                                                           mode="r")  # Work-around for _FillValue mismatch: https://github.com/Unidata/netcdf-c/issues/1299
+                    self._netcdf_dataset = netCDF4.Dataset(
+                        self.nc_path + "#fillmismatch", mode="r"
+                    )  # Work-around for _FillValue mismatch: https://github.com/Unidata/netcdf-c/issues/1299
             else:
                 self._netcdf_dataset = netCDF4.Dataset(self.nc_path, mode="r")
 
@@ -610,20 +873,22 @@ class NetCDFUtils(object):
 
     @property
     def data_variable_list(self):
-        '''
+        """
         Property getter function to return data_variable_list as required
-        '''
+        """
         return self._data_variable_list
 
     @property
     def crs_variable(self):
-        '''
+        """
         Property getter function to return crs_variable as required
-        '''
+        """
         if self._crs_variable is None:
-            logger.debug('Getting crs_variable property value')
+            logger.debug("Getting crs_variable property value")
             for crs_variable_name in NetCDFUtils.CRS_VARIABLE_NAMES:
-                self._crs_variable = self.netcdf_dataset.variables.get(crs_variable_name)
+                self._crs_variable = self.netcdf_dataset.variables.get(
+                    crs_variable_name
+                )
 
                 if self._crs_variable is not None:
                     break
@@ -634,11 +899,11 @@ class NetCDFUtils(object):
 
     @property
     def wkt(self):
-        '''
+        """
         Property getter function to return wkt as required
-        '''
+        """
         if not self._wkt:
-            logger.debug('Getting wkt property value')
+            logger.debug("Getting wkt property value")
             self._wkt = self.crs_variable.spatial_ref
         return self._wkt
 
@@ -664,14 +929,16 @@ class NetCDFUtils(object):
                 log_level = logging.INFO
 
             logger.setLevel(log_level)
-            logger.debug('Logger {} set to level {}'.format(logger.name, log_level))
+            logger.debug("Logger {} set to level {}".format(logger.name, log_level))
 
             logging.getLogger(self.__module__).setLevel(log_level)
-            logger.debug('Logger {} set to level {}'.format(self.__module__, log_level))
+            logger.debug("Logger {} set to level {}".format(self.__module__, log_level))
 
             for base_class in self.__class__.__bases__:
                 logging.getLogger(base_class.__module__).setLevel(log_level)
-                logger.debug('Logger {} set to level {}'.format(base_class.__module__, log_level))
+                logger.debug(
+                    "Logger {} set to level {}".format(base_class.__module__, log_level)
+                )
 
     # ===========================================================================
     # @property
@@ -692,68 +959,94 @@ class NetCDFUtils(object):
 
 
 def main():
-    '''
+    """
     Main function for calling NetCDFUtils.copy function
-    '''
+    """
     # Define command line arguments
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("-f", "--format",
-                        help="NetCDF file format (one of 'NETCDF4', 'NETCDF4_CLASSIC', 'NETCDF3_CLASSIC', 'NETCDF3_64BIT_OFFSET' or 'NETCDF3_64BIT_DATA')",
-                        type=str, default='NETCDF4')
-    parser.add_argument("--chunkspec", help="comma-separated list of <dimension_name>/<chunk_size> specifications",
-                        type=str)
-    parser.add_argument("--complevel", help="Compression level for chunked variables as an integer 0-9. Default is 4",
-                        type=int, default=4)
-    parser.add_argument('-d', '--debug', action='store_const', const=True, default=False,
-                        help='output debug information. Default is no debug info')
+    parser.add_argument(
+        "-f",
+        "--format",
+        help="NetCDF file format (one of 'NETCDF4', 'NETCDF4_CLASSIC', 'NETCDF3_CLASSIC', 'NETCDF3_64BIT_OFFSET' or 'NETCDF3_64BIT_DATA')",
+        type=str,
+        default="NETCDF4",
+    )
+    parser.add_argument(
+        "--chunkspec",
+        help="comma-separated list of <dimension_name>/<chunk_size> specifications",
+        type=str,
+    )
+    parser.add_argument(
+        "--complevel",
+        help="Compression level for chunked variables as an integer 0-9. Default is 4",
+        type=int,
+        default=4,
+    )
+    parser.add_argument(
+        "-d",
+        "--debug",
+        action="store_const",
+        const=True,
+        default=False,
+        help="output debug information. Default is no debug info",
+    )
     parser.add_argument("input_path")
     parser.add_argument("output_path")
 
     args = parser.parse_args()
 
     if args.chunkspec:
-        chunk_spec = {dim_name: int(chunk_size)
-                      for dim_name, chunk_size in
-                      [chunk_spec_string.strip().split('/') for chunk_spec_string in args.chunkspec.split(',')]}
+        chunk_spec = {
+            dim_name: int(chunk_size)
+            for dim_name, chunk_size in [
+                chunk_spec_string.strip().split("/")
+                for chunk_spec_string in args.chunkspec.split(",")
+            ]
+        }
     else:
         chunk_spec = None
 
-    ncu = NetCDFUtils(args.input_path,
-                      debug=args.debug
-                      )
+    ncu = NetCDFUtils(args.input_path, debug=args.debug)
     ncu.max_bytes = 50000
-    print('max_bytes = {}'.format(ncu.max_bytes))
+    print("max_bytes = {}".format(ncu.max_bytes))
 
-    ncu.copy(args.output_path,
-             # datatype_map_dict={},
-             # Compress all chunked variables
-             variable_options_dict={variable_name: {'chunksizes': [chunk_spec.get(dimension)
-                                                                   for dimension in variable.dimensions
-                                                                   ],
-                                                    # 'zlib': bool(args.complevel), # depcrecated replaced with compression='zlib'
-                                                    'compression': 'zlib' if args.complevel else 'None',
-                                                    'complevel': args.complevel
-                                                    }
-                                    for variable_name, variable in ncu.netcdf_dataset.variables.items()
-                                    if (set(variable.dimensions) & set(chunk_spec.keys()))
-                                    } if chunk_spec else {},
-             # dim_range_dict={'lat': (5,205),'lon': (5,305)},
-             # dim_mask_dict={},
-             nc_format=args.format,
-             # limit_dim_size=False
-             )
+    ncu.copy(
+        args.output_path,
+        # datatype_map_dict={},
+        # Compress all chunked variables
+        variable_options_dict=(
+            {
+                variable_name: {
+                    "chunksizes": [
+                        chunk_spec.get(dimension) for dimension in variable.dimensions
+                    ],
+                    # 'zlib': bool(args.complevel), # depcrecated replaced with compression='zlib'
+                    "compression": "zlib" if args.complevel else "None",
+                    "complevel": args.complevel,
+                }
+                for variable_name, variable in ncu.netcdf_dataset.variables.items()
+                if (set(variable.dimensions) & set(chunk_spec.keys()))
+            }
+            if chunk_spec
+            else {}
+        ),
+        # dim_range_dict={'lat': (5,205),'lon': (5,305)},
+        # dim_mask_dict={},
+        nc_format=args.format,
+        # limit_dim_size=False
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     console_handler = logging.StreamHandler(sys.stdout)
     # console_handler.setLevel(logging.INFO)
     console_handler.setLevel(logging.DEBUG)
-    console_formatter = logging.Formatter('%(name)s: %(message)s')
+    console_formatter = logging.Formatter("%(name)s: %(message)s")
     console_handler.setFormatter(console_formatter)
 
     if not logger.handlers:
         logger.addHandler(console_handler)
-        logger.debug('Logging handlers set up for {}'.format(logger.name))
+        logger.debug("Logging handlers set up for {}".format(logger.name))
 
     main()

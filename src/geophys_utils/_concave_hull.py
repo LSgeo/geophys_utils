@@ -17,10 +17,10 @@ logger.level = logging.INFO
 
 def bbox(a, b):
     return {
-        'll_x': min(a[0], b[0]),
-        'll_y': min(a[1], b[1]),
-        'ur_x': max(a[0], b[0]),
-        'ur_y': max(a[1], b[1])
+        "ll_x": min(a[0], b[0]),
+        "ll_y": min(a[1], b[1]),
+        "ur_x": max(a[0], b[0]),
+        "ur_y": max(a[1], b[1]),
     }
 
 
@@ -29,23 +29,23 @@ def doBoundingBoxesIntersect(b1, b2):
     Check if bounding boxes do intersect. If one bounding box touches
     the other, they do intersect.
     """
-    if b1['ll_x'] > b2['ur_x']:
+    if b1["ll_x"] > b2["ur_x"]:
         return False
 
-    if b1['ur_x'] < b2['ll_x']:
+    if b1["ur_x"] < b2["ll_x"]:
         return False
 
-    if b1['ll_y'] > b2['ur_y']:
+    if b1["ll_y"] > b2["ur_y"]:
         return False
 
-    if b1['ur_y'] < b2['ll_y']:
+    if b1["ur_y"] < b2["ll_y"]:
         return False
 
     return True
 
 
 def isPointOnLine(a, b, c):
-    """ Check if a point is on a line. """
+    """Check if a point is on a line."""
     # move to origin
     bTmp = (b[0] - a[0], b[1] - a[1])
     cTmp = (c[0] - a[0], c[1] - a[1])
@@ -69,14 +69,15 @@ def lineSegmentTouchesOrCrossesLine(a, b, c, d):
     Check if line segment (a-b) touches or crosses
     line segment (c-d).
     """
-    return isPointOnLine(a, b, c) or \
-           isPointOnLine(a, b, d) or \
-           (isPointRightOfLine(a, b, c) ^
-            isPointRightOfLine(a, b, d))
+    return (
+        isPointOnLine(a, b, c)
+        or isPointOnLine(a, b, d)
+        or (isPointRightOfLine(a, b, c) ^ isPointRightOfLine(a, b, d))
+    )
 
 
 def doLinesIntersect(a, b, c, d):
-    """ Check if line segments (a-b) and (c-d) intersect. """
+    """Check if line segments (a-b) and (c-d) intersect."""
     if not lineSegmentTouchesOrCrossesLine(a, b, c, d):
         return False
 
@@ -84,14 +85,14 @@ def doLinesIntersect(a, b, c, d):
 
 
 class PointSet:
-    """ Book-keeping for an array of points. """
+    """Book-keeping for an array of points."""
 
     def __init__(self, points):
-        """ Create a kD-tree from the points. 
+        """Create a kD-tree from the points.
         @param points: n x 2 array of point coordinates
         """
         npoints, ndim = points.shape
-        assert ndim == 2, 'Coordinates must be 2D, not {}D'.format(ndim)
+        assert ndim == 2, "Coordinates must be 2D, not {}D".format(ndim)
 
         self.points = points
 
@@ -99,7 +100,9 @@ class PointSet:
         self.registry = np.full((npoints,), fill_value=False, dtype=bool)
 
         # Only use first occurrence of unique values
-        _unique_values, unique_value_indices = np.unique(points, return_index=True, axis=0)
+        _unique_values, unique_value_indices = np.unique(
+            points, return_index=True, axis=0
+        )
         self.registry[unique_value_indices] = True
 
         # Ignore any coordinates containing NaN
@@ -115,7 +118,7 @@ class PointSet:
         return self.points[index]
 
     def start(self):
-        """ The index of the starting point (the point with the lowest y-value). """
+        """The index of the starting point (the point with the lowest y-value)."""
         for i in np.argsort(self[:, 1]):
             if self.registry[i]:
                 return i
@@ -146,11 +149,13 @@ class PointSet:
 
 
 def TurningAngle(NearestPoint, currentPoint, previousAngle):
-    angle = np.arctan2(NearestPoint[1] - currentPoint[1],
-                       NearestPoint[0] - currentPoint[0]) - previousAngle
+    angle = (
+        np.arctan2(NearestPoint[1] - currentPoint[1], NearestPoint[0] - currentPoint[0])
+        - previousAngle
+    )
     angle = np.rad2deg(angle)
-    if angle <= 0.:
-        angle += 360.
+    if angle <= 0.0:
+        angle += 360.0
     return angle
 
 
@@ -159,10 +164,11 @@ def GetNearestNeighbors(dataset, point, k):
 
 
 def sort_by_angle_indices(kNearestPoints, currentPoint, prevPoint):
-    """ Sorts the k nearest points given by angle. """
+    """Sorts the k nearest points given by angle."""
     angles = np.zeros(kNearestPoints.shape[0])
-    previousAngle = np.arctan2(prevPoint[1] - currentPoint[1],
-                               prevPoint[0] - currentPoint[0])
+    previousAngle = np.arctan2(
+        prevPoint[1] - currentPoint[1], prevPoint[0] - currentPoint[0]
+    )
 
     i = 0
     for NearestPoint in kNearestPoints:
@@ -174,8 +180,9 @@ def sort_by_angle_indices(kNearestPoints, currentPoint, prevPoint):
 
 
 def SortByAngle(kNearestPoints, currentPoint, prevPoint):
-    return kNearestPoints[sort_by_angle_indices(kNearestPoints, currentPoint,
-                                                prevPoint), :]
+    return kNearestPoints[
+        sort_by_angle_indices(kNearestPoints, currentPoint, prevPoint), :
+    ]
 
 
 def first_valid_candidate(point_set, cPoints, hull, first, step):
@@ -191,8 +198,7 @@ def first_valid_candidate(point_set, cPoints, hull, first, step):
             d = point_set[hull[step - j - 1]]
             b2 = bbox(c, d)
 
-            if doBoundingBoxesIntersect(b1, b2) and \
-                    doLinesIntersect(a, b, c, d):
+            if doBoundingBoxesIntersect(b1, b2) and doLinesIntersect(a, b, c, d):
                 return True
 
         return False
@@ -210,11 +216,13 @@ def first_valid_candidate(point_set, cPoints, hull, first, step):
 
 
 def concave_hull_indices(dataset, k):
-    '''\
-    '''
-    logger.debug('k in concave_hull_indices: {}'.format(k))
-    assert k >= 3, 'k has to be greater or equal to 3.'
-    assert k <= len(dataset), 'k has to be less than or equal to {}.'.format(len(dataset))
+    """\
+    """
+    logger.debug("k in concave_hull_indices: {}".format(k))
+    assert k >= 3, "k has to be greater or equal to 3."
+    assert k <= len(dataset), "k has to be less than or equal to {}.".format(
+        len(dataset)
+    )
 
     point_set = PointSet(dataset)
     # todo: make sure that enough points for a given k can be found
@@ -236,8 +244,9 @@ def concave_hull_indices(dataset, k):
             point_set.restore(first)
 
         k_nearest = point_set.nearest_neighbors(point_set[current], k)
-        cPoints = sort_by_angle_indices(point_set[k_nearest, :],
-                                        point_set[current], prev)
+        cPoints = sort_by_angle_indices(
+            point_set[k_nearest, :], point_set[current], prev
+        )
         cPoints = np.array(k_nearest)[cPoints]
         prev = point_set[current]
 
@@ -255,10 +264,15 @@ def concave_hull_indices(dataset, k):
     p = Path(point_set.points[hull, :])
 
     # Check whether all valid points are contained
-    pContained = p.contains_points(dataset[np.all(~np.isnan(dataset), axis=1)],
-                                   radius=0.0000000001)  # Check filtered points with no NaNs
-    logger.debug('{}/{} valid points contained'.format(np.count_nonzero(pContained),
-                                                       np.count_nonzero(np.all(~np.isnan(dataset), axis=1))))
+    pContained = p.contains_points(
+        dataset[np.all(~np.isnan(dataset), axis=1)], radius=0.0000000001
+    )  # Check filtered points with no NaNs
+    logger.debug(
+        "{}/{} valid points contained".format(
+            np.count_nonzero(pContained),
+            np.count_nonzero(np.all(~np.isnan(dataset), axis=1)),
+        )
+    )
     if not pContained.all():
         return None
 
@@ -266,13 +280,15 @@ def concave_hull_indices(dataset, k):
 
 
 def concaveHull(dataset):
-    '''\
+    """\
     Generate n x 2 array of coordinates for vertices of concave hull
-    '''
-    logger.debug('dataset length in concaveHull(): {}'.format(len(dataset)))
+    """
+    logger.debug("dataset length in concaveHull(): {}".format(len(dataset)))
 
-    points = np.unique(dataset[~np.any(np.isnan(dataset), axis=1)], axis=0)  # Purge duplicates and NaNs
-    logger.debug('{} valid points used for concave hull generation'.format(len(points)))
+    points = np.unique(
+        dataset[~np.any(np.isnan(dataset), axis=1)], axis=0
+    )  # Purge duplicates and NaNs
+    logger.debug("{} valid points used for concave hull generation".format(len(points)))
 
     lowest_good_k = len(points)  # Assume that convex hull is always OK
     best_point_indices = None
@@ -284,16 +300,16 @@ def concaveHull(dataset):
         point_indices = concave_hull_indices(points, k)
         if point_indices is None:
             highest_bad_k = k
-            logger.debug('Concave hull generation failed for k={}'.format(k))
+            logger.debug("Concave hull generation failed for k={}".format(k))
         else:
             best_point_indices = point_indices
             lowest_good_k = k
-            logger.debug('Concave hull generation succeeded for k={}'.format(k))
+            logger.debug("Concave hull generation succeeded for k={}".format(k))
 
     if not best_point_indices:  # Try using all points if no valid shape found
         k = len(points)
         best_point_indices = concave_hull_indices(points, k)
 
-    assert best_point_indices, 'Unable to determine concave hull'
-    logger.debug('Best concave hull generated with k={}'.format(lowest_good_k))
+    assert best_point_indices, "Unable to determine concave hull"
+    logger.debug("Best concave hull generated with k={}".format(lowest_good_k))
     return points[best_point_indices, :]

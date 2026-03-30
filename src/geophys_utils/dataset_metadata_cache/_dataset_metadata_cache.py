@@ -1,8 +1,8 @@
-'''
+"""
 Created on 19 Jul. 2018
 
 @author: Alex Ip
-'''
+"""
 
 import abc
 import logging
@@ -14,48 +14,52 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)  # Initial logging level for this module
 
 settings = yaml.safe_load(
-    open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'dataset_metadata_cache_settings.yml')))
+    open(
+        os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            "dataset_metadata_cache_settings.yml",
+        )
+    )
+)
 
 
 class Distribution(object):
-    '''
+    """
     Distribution class definition
-    '''
+    """
 
-    def __init__(self,
-                 url,
-                 protocol
-                 ):
-        '''
+    def __init__(self, url, protocol):
+        """
         Distribution class Constructor
-        '''
+        """
         self.url = url
         self.protocol = protocol
 
 
 class Dataset(object):
-    '''
+    """
     Dataset class definition
-    '''
+    """
 
-    def __init__(self,
-                 dataset_title,
-                 ga_survey_id,
-                 longitude_min,
-                 longitude_max,
-                 latitude_min,
-                 latitude_max,
-                 convex_hull_polygon,
-                 keyword_list,
-                 distribution_list,
-                 point_count,
-                 metadata_uuid=None,
-                 start_date=None,
-                 end_date=None
-                 ):
-        '''
+    def __init__(
+        self,
+        dataset_title,
+        ga_survey_id,
+        longitude_min,
+        longitude_max,
+        latitude_min,
+        latitude_max,
+        convex_hull_polygon,
+        keyword_list,
+        distribution_list,
+        point_count,
+        metadata_uuid=None,
+        start_date=None,
+        end_date=None,
+    ):
+        """
         Dataset class Constructor
-        '''
+        """
         self.dataset_title = dataset_title
         self.ga_survey_id = ga_survey_id
         self.longitude_min = longitude_min
@@ -72,81 +76,72 @@ class Dataset(object):
 
 
 class DatasetMetadataCache(object):
-    '''
+    """
     DatasetMetadataCache class definition
-    '''
+    """
+
     # Tuple containing field names for results of search_dataset_distributions function
-    dataset_distribution_search_fields = ('ga_survey_id',
-                                          'dataset_title',
-                                          'distribution_url',
-                                          'convex_hull_polygon',
-                                          'longitude_min',
-                                          'longitude_max',
-                                          'latitude_min',
-                                          'latitude_max',
-                                          'point_count',
-                                          'start_date',
-                                          'end_date',
-                                          'metadata_uuid'
-                                          )
+    dataset_distribution_search_fields = (
+        "ga_survey_id",
+        "dataset_title",
+        "distribution_url",
+        "convex_hull_polygon",
+        "longitude_min",
+        "longitude_max",
+        "latitude_min",
+        "latitude_max",
+        "point_count",
+        "start_date",
+        "end_date",
+        "metadata_uuid",
+    )
 
     _db_engine = None
 
     @abc.abstractmethod
     def __init__(self, debug):
-        '''
+        """
         DatasetMetadataCache class Constructor
         @parameter debug: Boolean flag indicating whether debug output is required
-        '''
+        """
         # Initialise and set debug property
         self._debug = None
         self.debug = debug
 
     @abc.abstractmethod
     def add_dataset(self, dataset):
-        '''
+        """
         Function to insert or update dataset record
-        '''
+        """
         return
 
     @abc.abstractmethod
-    def add_survey(self,
-                   ga_survey_id,
-                   survey_name=None
-                   ):
-        '''
+    def add_survey(self, ga_survey_id, survey_name=None):
+        """
         Function to insert survey if necessary
-        '''
+        """
         return
 
     @abc.abstractmethod
-    def add_keywords(self,
-                     dataset_id,
-                     keyword_list):
-        '''
+    def add_keywords(self, dataset_id, keyword_list):
+        """
         Function to insert new keywords
-        '''
+        """
         return
 
     @abc.abstractmethod
-    def add_distributions(self,
-                          dataset_id,
-                          distribution_list):
-        '''
+    def add_distributions(self, dataset_id, distribution_list):
+        """
         Function to insert new distributions
-        '''
+        """
         return
 
     @abc.abstractmethod
-    def search_dataset_distributions(self,
-                                     keyword_list,
-                                     protocol,
-                                     ll_ur_coords=None
-                                     ):
-        '''
+    def search_dataset_distributions(self, keyword_list, protocol, ll_ur_coords=None):
+        """
         Function to return list of dicts containing metadata for all datasets with specified keywords and bounding box
         Note that keywords are searched exclusively, i.e. using "and", not "or"
-        '''
+        """
         return
 
     @property
@@ -169,5 +164,7 @@ class DatasetMetadataCache(object):
                 logger.setLevel(logging.INFO)
                 logging.getLogger(self.__module__).setLevel(logging.INFO)
 
-        logger.debug('Logger {} set to level {}'.format(logger.name, logger.level))
-        logging.getLogger(self.__module__).debug('Logger {} set to level {}'.format(self.__module__, logger.level))
+        logger.debug("Logger {} set to level {}".format(logger.name, logger.level))
+        logging.getLogger(self.__module__).debug(
+            "Logger {} set to level {}".format(self.__module__, logger.level)
+        )

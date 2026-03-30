@@ -2,13 +2,13 @@
 
 # ===============================================================================
 #    Copyright 2017 Geoscience Australia
-# 
+#
 #    Licensed under the Apache License, Version 2.0 (the "License");
 #    you may not use this file except in compliance with the License.
 #    You may obtain a copy of the License at
-# 
+#
 #        http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 #    Unless required by applicable law or agreed to in writing, software
 #    distributed under the License is distributed on an "AS IS" BASIS,
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,7 @@ makes some of the code harder to follow.
 import logging
 import numpy
 
-logger = logging.getLogger('root.' + __name__)
+logger = logging.getLogger("root." + __name__)
 
 DEFAULT_ORIGIN = (0, 0)
 DEFAULT_SHAPE = (8, 8)
@@ -58,10 +58,10 @@ def bilinear(shape, fUL, fUR, fLR, fLL, dtype=numpy.float64):
         Array of data values interpolated between corners.
     """
 
-    s, t = [a.astype(dtype) for a in numpy.ogrid[0:shape[0], 0:shape[1]]]
+    s, t = [a.astype(dtype) for a in numpy.ogrid[0 : shape[0], 0 : shape[1]]]
 
-    s /= (shape[0] - 1.0)
-    t /= (shape[1] - 1.0)
+    s /= shape[0] - 1.0
+    t /= shape[1] - 1.0
 
     return s * (t * fLR + (1.0 - t) * fLL) + (1.0 - s) * (t * fUR + (1.0 - t) * fUL)
 
@@ -79,8 +79,7 @@ def indices(origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE):
     :return:
         Corner indices: (xmin, xmax, ymin, ymax).
     """
-    return (origin[0], origin[0] + shape[0] - 1,
-            origin[1], origin[1] + shape[1] - 1)
+    return (origin[0], origin[0] + shape[0] - 1, origin[1], origin[1] + shape[1] - 1)
 
 
 def subdivide(origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE):
@@ -105,14 +104,16 @@ def subdivide(origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE):
     jc = origin[1] + shape[1] / 2
 
     return {
-        'UL': [(i0, j0), (i0, jc), (ic, j0), (ic, jc)],
-        'LL': [(ic, j0), (ic, jc), (ie, j0), (ie, jc)],
-        'UR': [(i0, jc), (i0, je), (ic, jc), (ic, je)],
-        'LR': [(ic, jc), (ic, je), (ie, jc), (ie, je)],
+        "UL": [(i0, j0), (i0, jc), (ic, j0), (ic, jc)],
+        "LL": [(ic, j0), (ic, jc), (ie, j0), (ie, jc)],
+        "UR": [(i0, jc), (i0, je), (ic, jc), (ic, je)],
+        "LR": [(ic, jc), (ic, je), (ie, jc), (ie, je)],
     }
 
 
-def interpolate_block(origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE, eval_func=None, grid=None):
+def interpolate_block(
+    origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE, eval_func=None, grid=None
+):
     """
     Interpolate a grid block.
 
@@ -147,10 +148,12 @@ def interpolate_block(origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE, eval_func=None
     if grid is None:
         return bilinear(shape, fUL, fUR, fLR, fLL)
 
-    grid[i0:i1 + 1, j0:j1 + 1] = bilinear(shape, fUL, fUR, fLR, fLL)
+    grid[i0 : i1 + 1, j0 : j1 + 1] = bilinear(shape, fUL, fUR, fLR, fLL)
 
 
-def interpolate_grid(depth=0, origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE, eval_func=None, grid=None):
+def interpolate_grid(
+    depth=0, origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE, eval_func=None, grid=None
+):
     """
     Interpolate a data grid.
 
@@ -191,6 +194,6 @@ def interpolate_grid(depth=0, origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE, eval_f
         interpolate_block(origin, shape, eval_func, grid)
     else:
         blocks = subdivide(origin, shape)
-        for (kUL, _kUR, _kLL, kLR) in blocks.itervalues():
+        for kUL, _kUR, _kLL, kLR in blocks.itervalues():
             block_shape = (kLR[0] - kUL[0] + 1, kLR[1] - kUL[1] + 1)
             interpolate_grid(depth - 1, kUL, block_shape, eval_func, grid)

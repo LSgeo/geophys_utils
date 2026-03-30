@@ -2,58 +2,58 @@
 
 # ===============================================================================
 #    Copyright 2017 Geoscience Australia
-# 
+#
 #    Licensed under the Apache License, Version 2.0 (the "License");
 #    you may not use this file except in compliance with the License.
 #    You may obtain a copy of the License at
-# 
+#
 #        http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 #    Unless required by applicable law or agreed to in writing, software
 #    distributed under the License is distributed on an "AS IS" BASIS,
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-'''
+"""
 Algorithms from Geocentric Datum of Australia Technical Manual
-                                                              
-http://www.anzlic.org.au/icsm/gdatum/chapter4.html            
-                                                              
-This page last updated 11 May 1999                            
-                                                              
-Computations on the Ellipsoid                                 
-                                                              
-There are a number of formulae that are available             
-to calculate accurate geodetic positions,                     
-azimuths and distances on the ellipsoid.                      
-                                                              
-Vincenty's formulae (Vincenty, 1975) may be used              
-for lines ranging from a few cm to nearly 20,000 km,          
-with millimetre accuracy.                                     
-The formulae have been extensively tested                     
-for the Australian region, by comparison with results         
-from other formulae (Rainsford, 1955 & Sodano, 1965).         
-                                                              
-* Inverse problem: azimuth and distance from known            
-                    latitudes and longitudes                  
-* Direct problem: Latitude and longitude from known           
-                    position, azimuth and distance.           
-* Sample data                                                 
-* Excel spreadsheet                                           
-                                                              
-Vincenty's Inverse formulae                                   
-Given: latitude and longitude of two points                   
-                    (phi1, lembda1 and phi2, lembda2),        
-Calculate: the ellipsoidal distance (s) and                   
+
+http://www.anzlic.org.au/icsm/gdatum/chapter4.html
+
+This page last updated 11 May 1999
+
+Computations on the Ellipsoid
+
+There are a number of formulae that are available
+to calculate accurate geodetic positions,
+azimuths and distances on the ellipsoid.
+
+Vincenty's formulae (Vincenty, 1975) may be used
+for lines ranging from a few cm to nearly 20,000 km,
+with millimetre accuracy.
+The formulae have been extensively tested
+for the Australian region, by comparison with results
+from other formulae (Rainsford, 1955 & Sodano, 1965).
+
+* Inverse problem: azimuth and distance from known
+                    latitudes and longitudes
+* Direct problem: Latitude and longitude from known
+                    position, azimuth and distance.
+* Sample data
+* Excel spreadsheet
+
+Vincenty's Inverse formulae
+Given: latitude and longitude of two points
+                    (phi1, lembda1 and phi2, lembda2),
+Calculate: the ellipsoidal distance (s) and
 forward and reverse azimuths between the points (alpha12, alpha21).
-'''
+"""
 
 import math
 
 import numpy
 
-__version__ = '1.0.1'
+__version__ = "1.0.1"
 
 
 class GreatCircle(object):
@@ -98,8 +98,12 @@ class GreatCircle(object):
         self.azimuth12 = a12
         self.azimuth21 = a21
         # great circle arc-length distance (in radians).
-        self.gcarclen = 2. * math.asin(math.sqrt((math.sin((lat1 - lat2) / 2)) ** 2 + \
-                                                 math.cos(lat1) * math.cos(lat2) * (math.sin((lon1 - lon2) / 2)) ** 2))
+        self.gcarclen = 2.0 * math.asin(
+            math.sqrt(
+                (math.sin((lat1 - lat2) / 2)) ** 2
+                + math.cos(lat1) * math.cos(lat2) * (math.sin((lon1 - lon2) / 2)) ** 2
+            )
+        )
         # check to see if points are antipodal (if so, route is undefined).
         if self.gcarclen == math.pi:
             self.antipodal = True
@@ -122,14 +126,18 @@ class GreatCircle(object):
         """
         # must ask for at least 2 points.
         if npoints <= 1:
-            raise ValueError('npoints must be greater than 1')
+            raise ValueError("npoints must be greater than 1")
         elif npoints == 2:
-            return [math.degrees(self.lon1), math.degrees(self.lon2)], [math.degrees(self.lat1),
-                                                                        math.degrees(self.lat2)]
+            return [math.degrees(self.lon1), math.degrees(self.lon2)], [
+                math.degrees(self.lat1),
+                math.degrees(self.lat2),
+            ]
         # can't do it if endpoints are antipodal, since
         # route is undefined.
         if self.antipodal:
-            raise ValueError('cannot compute intermediate points on a great circle whose endpoints are antipodal')
+            raise ValueError(
+                "cannot compute intermediate points on a great circle whose endpoints are antipodal"
+            )
         d = self.gcarclen
         delta = 1.0 / (npoints - 1)
         f = delta * numpy.arange(npoints)  # f=0 is point 1, f=1 is point 2.
@@ -139,13 +147,17 @@ class GreatCircle(object):
         lon1 = self.lon1
         lon2 = self.lon2
         # perfect sphere, use great circle formula
-        if self.f == 0.:
+        if self.f == 0.0:
             A = numpy.sin((1 - f) * d) / math.sin(d)
             B = numpy.sin(f * d) / math.sin(d)
-            x = A * math.cos(lat1) * math.cos(lon1) + B * math.cos(lat2) * math.cos(lon2)
-            y = A * math.cos(lat1) * math.sin(lon1) + B * math.cos(lat2) * math.sin(lon2)
+            x = A * math.cos(lat1) * math.cos(lon1) + B * math.cos(lat2) * math.cos(
+                lon2
+            )
+            y = A * math.cos(lat1) * math.sin(lon1) + B * math.cos(lat2) * math.sin(
+                lon2
+            )
             z = A * math.sin(lat1) + B * math.sin(lat2)
-            lats = numpy.arctan2(z, numpy.sqrt(x ** 2 + y ** 2))
+            lats = numpy.arctan2(z, numpy.sqrt(x**2 + y**2))
             lons = numpy.arctan2(y, x)
             lons = map(math.degrees, lons.tolist())
             lats = map(math.degrees, lats.tolist())
@@ -157,11 +169,15 @@ class GreatCircle(object):
             lons = [math.degrees(lonpt)]
             lats = [math.degrees(latpt)]
             for _n in range(npoints - 2):
-                latptnew, lonptnew, _alpha21 = vinc_pt(self.f, self.a, latpt, lonpt, azimuth, incdist)
-                d, azimuth, _a21 = vinc_dist(self.f, self.a, latptnew, lonptnew, lat2, lon2)
+                latptnew, lonptnew, _alpha21 = vinc_pt(
+                    self.f, self.a, latpt, lonpt, azimuth, incdist
+                )
+                d, azimuth, _a21 = vinc_dist(
+                    self.f, self.a, latptnew, lonptnew, lat2, lon2
+                )
                 lats.append(math.degrees(latptnew))
                 lons.append(math.degrees(lonptnew))
-                latpt = latptnew;
+                latpt = latptnew
                 lonpt = lonptnew
             lons.append(math.degrees(self.lon2))
             lats.append(math.degrees(self.lat2))
@@ -210,12 +226,13 @@ class GreatCircle(object):
 # |                                                                     |
 # ----------------------------------------------------------------------
 
+
 def vinc_dist(f, a, phi1, lembda1, phi2, lembda2):
     """
     Returns the distance between two geographic points on the ellipsoid
     and the forward and reverse azimuths between these points.
     lats, longs and azimuths are in radians, distance in metres
-    
+
     Arguments:
         f: flattening
         a: equatorial radius (metres)
@@ -223,7 +240,7 @@ def vinc_dist(f, a, phi1, lembda1, phi2, lembda2):
         lembda1: longitude of first point
         phi2: latitude of second point
         lembda2: longitude of second point
-        
+
     Returns ( s, alpha12,  alpha21 ) as a tuple
     """
 
@@ -247,29 +264,48 @@ def vinc_dist(f, a, phi1, lembda1, phi2, lembda2):
     # Iterate the following equations,
     #  until there is no significant change in lembda
 
-    while (last_lembda < -3000000.0 or lembda != 0 and abs((last_lembda - lembda) / lembda) > 1.0e-9):
-        sqr_sin_sigma = pow(math.cos(U2) * math.sin(lembda), 2) + \
-                        pow((math.cos(U1) * math.sin(U2) - \
-                             math.sin(U1) * math.cos(U2) * math.cos(lembda)), 2)
+    while (
+        last_lembda < -3000000.0
+        or lembda != 0
+        and abs((last_lembda - lembda) / lembda) > 1.0e-9
+    ):
+        sqr_sin_sigma = pow(math.cos(U2) * math.sin(lembda), 2) + pow(
+            (
+                math.cos(U1) * math.sin(U2)
+                - math.sin(U1) * math.cos(U2) * math.cos(lembda)
+            ),
+            2,
+        )
 
         Sin_sigma = math.sqrt(sqr_sin_sigma)
 
-        Cos_sigma = math.sin(U1) * math.sin(U2) + math.cos(U1) * math.cos(U2) * math.cos(lembda)
+        Cos_sigma = math.sin(U1) * math.sin(U2) + math.cos(U1) * math.cos(
+            U2
+        ) * math.cos(lembda)
 
         sigma = math.atan2(Sin_sigma, Cos_sigma)
 
         Sin_alpha = math.cos(U1) * math.cos(U2) * math.sin(lembda) / math.sin(sigma)
         alpha = math.asin(Sin_alpha)
 
-        Cos2sigma_m = math.cos(sigma) - (2 * math.sin(U1) * math.sin(U2) / pow(math.cos(alpha), 2))
+        Cos2sigma_m = math.cos(sigma) - (
+            2 * math.sin(U1) * math.sin(U2) / pow(math.cos(alpha), 2)
+        )
 
-        C = (f / 16) * pow(math.cos(alpha), 2) * (4 + f * (4 - 3 * pow(math.cos(alpha), 2)))
+        C = (
+            (f / 16)
+            * pow(math.cos(alpha), 2)
+            * (4 + f * (4 - 3 * pow(math.cos(alpha), 2)))
+        )
 
         last_lembda = lembda
 
-        lembda = omega + (1 - C) * f * math.sin(alpha) * (sigma + C * math.sin(sigma) * \
-                                                          (Cos2sigma_m + C * math.cos(sigma) * (
-                                                                  -1 + 2 * pow(Cos2sigma_m, 2))))
+        lembda = omega + (1 - C) * f * math.sin(alpha) * (
+            sigma
+            + C
+            * math.sin(sigma)
+            * (Cos2sigma_m + C * math.cos(sigma) * (-1 + 2 * pow(Cos2sigma_m, 2)))
+        )
 
     u2 = pow(math.cos(alpha), 2) * (a * a - b * b) / (b * b)
 
@@ -277,28 +313,43 @@ def vinc_dist(f, a, phi1, lembda1, phi2, lembda2):
 
     B = (u2 / 1024) * (256 + u2 * (-128 + u2 * (74 - 47 * u2)))
 
-    delta_sigma = B * Sin_sigma * (Cos2sigma_m + (B / 4) * \
-                                   (Cos_sigma * (-1 + 2 * pow(Cos2sigma_m, 2)) - \
-                                    (B / 6) * Cos2sigma_m * (-3 + 4 * sqr_sin_sigma) * \
-                                    (-3 + 4 * pow(Cos2sigma_m, 2))))
+    delta_sigma = (
+        B
+        * Sin_sigma
+        * (
+            Cos2sigma_m
+            + (B / 4)
+            * (
+                Cos_sigma * (-1 + 2 * pow(Cos2sigma_m, 2))
+                - (B / 6)
+                * Cos2sigma_m
+                * (-3 + 4 * sqr_sin_sigma)
+                * (-3 + 4 * pow(Cos2sigma_m, 2))
+            )
+        )
+    )
 
     s = b * A * (sigma - delta_sigma)
 
-    alpha12 = math.atan2((math.cos(U2) * math.sin(lembda)), \
-                         (math.cos(U1) * math.sin(U2) - math.sin(U1) * math.cos(U2) * math.cos(lembda)))
+    alpha12 = math.atan2(
+        (math.cos(U2) * math.sin(lembda)),
+        (math.cos(U1) * math.sin(U2) - math.sin(U1) * math.cos(U2) * math.cos(lembda)),
+    )
 
-    alpha21 = math.atan2((math.cos(U1) * math.sin(lembda)), \
-                         (-math.sin(U1) * math.cos(U2) + math.cos(U1) * math.sin(U2) * math.cos(lembda)))
+    alpha21 = math.atan2(
+        (math.cos(U1) * math.sin(lembda)),
+        (-math.sin(U1) * math.cos(U2) + math.cos(U1) * math.sin(U2) * math.cos(lembda)),
+    )
 
-    if (alpha12 < 0.0):
+    if alpha12 < 0.0:
         alpha12 = alpha12 + two_pi
-    if (alpha12 > two_pi):
+    if alpha12 > two_pi:
         alpha12 = alpha12 - two_pi
 
     alpha21 = alpha21 + two_pi / 2.0
-    if (alpha21 < 0.0):
+    if alpha21 < 0.0:
         alpha21 = alpha21 + two_pi
-    if (alpha21 > two_pi):
+    if alpha21 > two_pi:
         alpha21 = alpha21 - two_pi
 
     return s, alpha12, alpha21
@@ -317,6 +368,7 @@ def vinc_dist(f, a, phi1, lembda1, phi2, lembda2):
 #                                                                           |
 # ----------------------------------------------------------------------------
 
+
 def vinc_pt(f, a, phi1, lembda1, alpha12, s):
     """
     Returns the lat and long of projected point and reverse azimuth
@@ -328,9 +380,9 @@ def vinc_pt(f, a, phi1, lembda1, alpha12, s):
 
     two_pi = 2.0 * math.pi
 
-    if (alpha12 < 0.0):
+    if alpha12 < 0.0:
         alpha12 = alpha12 + two_pi
-    if (alpha12 > two_pi):
+    if alpha12 > two_pi:
         alpha12 = alpha12 - two_pi
 
     b = a * (1.0 - f)
@@ -342,59 +394,101 @@ def vinc_pt(f, a, phi1, lembda1, alpha12, s):
     cosalpha_sq = 1.0 - Sinalpha * Sinalpha
 
     u2 = cosalpha_sq * (a * a - b * b) / (b * b)
-    A = 1.0 + (u2 / 16384) * (4096 + u2 * (-768 + u2 * \
-                                           (320 - 175 * u2)))
+    A = 1.0 + (u2 / 16384) * (4096 + u2 * (-768 + u2 * (320 - 175 * u2)))
     B = (u2 / 1024) * (256 + u2 * (-128 + u2 * (74 - 47 * u2)))
 
     # Starting with the approximation
-    sigma = (s / (b * A))
+    sigma = s / (b * A)
 
     last_sigma = 2.0 * sigma + 2.0  # something impossible
 
     # Iterate the following three equations
     # until there is no significant change in sigma
     # two_sigma_m , delta_sigma
-    while (abs((last_sigma - sigma) / sigma) > 1.0e-9):
+    while abs((last_sigma - sigma) / sigma) > 1.0e-9:
         two_sigma_m = 2 * sigma1 + sigma
 
-        delta_sigma = B * math.sin(sigma) * (math.cos(two_sigma_m) \
-                                             + (B / 4) * (math.cos(sigma) * \
-                                                          (-1 + 2 * math.pow(math.cos(two_sigma_m), 2) - \
-                                                           (B / 6) * math.cos(two_sigma_m) * \
-                                                           (-3 + 4 * math.pow(math.sin(sigma), 2)) * \
-                                                           (-3 + 4 * math.pow(math.cos(two_sigma_m), 2)))))
+        delta_sigma = (
+            B
+            * math.sin(sigma)
+            * (
+                math.cos(two_sigma_m)
+                + (B / 4)
+                * (
+                    math.cos(sigma)
+                    * (
+                        -1
+                        + 2 * math.pow(math.cos(two_sigma_m), 2)
+                        - (B / 6)
+                        * math.cos(two_sigma_m)
+                        * (-3 + 4 * math.pow(math.sin(sigma), 2))
+                        * (-3 + 4 * math.pow(math.cos(two_sigma_m), 2))
+                    )
+                )
+            )
+        )
 
         last_sigma = sigma
         sigma = (s / (b * A)) + delta_sigma
 
-    phi2 = math.atan2((math.sin(U1) * math.cos(sigma) + math.cos(U1) * math.sin(sigma) * math.cos(alpha12)), \
-                      ((1 - f) * math.sqrt(math.pow(Sinalpha, 2) + \
-                                           pow(math.sin(U1) * math.sin(sigma) - math.cos(U1) * math.cos(
-                                               sigma) * math.cos(alpha12), 2))))
+    phi2 = math.atan2(
+        (
+            math.sin(U1) * math.cos(sigma)
+            + math.cos(U1) * math.sin(sigma) * math.cos(alpha12)
+        ),
+        (
+            (1 - f)
+            * math.sqrt(
+                math.pow(Sinalpha, 2)
+                + pow(
+                    math.sin(U1) * math.sin(sigma)
+                    - math.cos(U1) * math.cos(sigma) * math.cos(alpha12),
+                    2,
+                )
+            )
+        ),
+    )
 
-    lembda = math.atan2((math.sin(sigma) * math.sin(alpha12)), (math.cos(U1) * math.cos(sigma) - \
-                                                                math.sin(U1) * math.sin(sigma) * math.cos(alpha12)))
+    lembda = math.atan2(
+        (math.sin(sigma) * math.sin(alpha12)),
+        (
+            math.cos(U1) * math.cos(sigma)
+            - math.sin(U1) * math.sin(sigma) * math.cos(alpha12)
+        ),
+    )
 
     C = (f / 16) * cosalpha_sq * (4 + f * (4 - 3 * cosalpha_sq))
 
-    omega = lembda - (1 - C) * f * Sinalpha * \
-            (sigma + C * math.sin(sigma) * (math.cos(two_sigma_m) + \
-                                            C * math.cos(sigma) * (-1 + 2 * math.pow(math.cos(two_sigma_m), 2))))
+    omega = lembda - (1 - C) * f * Sinalpha * (
+        sigma
+        + C
+        * math.sin(sigma)
+        * (
+            math.cos(two_sigma_m)
+            + C * math.cos(sigma) * (-1 + 2 * math.pow(math.cos(two_sigma_m), 2))
+        )
+    )
 
     lembda2 = lembda1 + omega
 
-    alpha21 = math.atan2(Sinalpha, (-math.sin(U1) * math.sin(sigma) + \
-                                    math.cos(U1) * math.cos(sigma) * math.cos(alpha12)))
+    alpha21 = math.atan2(
+        Sinalpha,
+        (
+            -math.sin(U1) * math.sin(sigma)
+            + math.cos(U1) * math.cos(sigma) * math.cos(alpha12)
+        ),
+    )
 
     alpha21 = alpha21 + two_pi / 2.0
-    if (alpha21 < 0.0):
+    if alpha21 < 0.0:
         alpha21 = alpha21 + two_pi
-    if (alpha21 > two_pi):
+    if alpha21 > two_pi:
         alpha21 = alpha21 - two_pi
 
     return phi2, lembda2, alpha21
 
     # END of Vincenty's Direct formulae
+
 
 ##---------------------------------------------------------------------------
 # Notes:

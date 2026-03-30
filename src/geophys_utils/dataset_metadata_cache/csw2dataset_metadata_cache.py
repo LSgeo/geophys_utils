@@ -1,10 +1,11 @@
-'''
+"""
 Created on 9 Oct. 2018
 
 @author: Alex Ip
 
 Utility to read metadata from CSW query and/or netCDF file into dataset metadata cache
-'''
+"""
+
 import logging
 import re
 import sys
@@ -14,64 +15,72 @@ import netCDF4
 import numpy as np
 
 from geophys_utils import CSWUtils
-from geophys_utils.dataset_metadata_cache import get_dataset_metadata_cache, Dataset, Distribution
+from geophys_utils.dataset_metadata_cache import (
+    get_dataset_metadata_cache,
+    Dataset,
+    Distribution,
+)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)  # Initial logging level for this module
 
 DEBUG = True
 
-DATABASE_ENGINE = 'SQLite'
+DATABASE_ENGINE = "SQLite"
 # DATABASE_ENGINE = 'Postgres'
 
-DEFAULT_CSW_URL = 'https://ecat.ga.gov.au/geonetwork/srv/eng/csw'
+DEFAULT_CSW_URL = "https://ecat.ga.gov.au/geonetwork/srv/eng/csw"
 
 # Set this to derive file path from OPeNDAP endpoint URL - THIS IS A HACK!!!!
 # OPENDAP_PATH_MAPS = None
-FILE_PATH_MAPS = {'http://dapds00.nci.org.au/thredds/dodsC/uc0/rr2_dev/': '/g/data2/uc0/rr2_dev/',
-                  'http://dapds00.nci.org.au/thredds/dodsC/rr2/': '/g/data1/rr2/'
-                  }
+FILE_PATH_MAPS = {
+    "http://dapds00.nci.org.au/thredds/dodsC/uc0/rr2_dev/": "/g/data2/uc0/rr2_dev/",
+    "http://dapds00.nci.org.au/thredds/dodsC/rr2/": "/g/data1/rr2/",
+}
 
 
 class CSW2DatasetMetadataCache(object):
-    '''
+    """
     classdocs
-    '''
+    """
 
     def __init__(self, debug=True):
-        '''
+        """
         Constructor
-        '''
-        self.dataset_metadata_cache = get_dataset_metadata_cache(db_engine=DATABASE_ENGINE, debug=debug)
+        """
+        self.dataset_metadata_cache = get_dataset_metadata_cache(
+            db_engine=DATABASE_ENGINE, debug=debug
+        )
 
-    def populate_db(self,
-                    keyword_list=None,
-                    anytext=None,
-                    titleword_list=None,
-                    bounding_box=None,
-                    start_datetime=None,
-                    stop_datetime=None,
-                    record_type_list=None,
-                    csw_url=None
-                    ):
-        '''
+    def populate_db(
+        self,
+        keyword_list=None,
+        anytext=None,
+        titleword_list=None,
+        bounding_box=None,
+        start_datetime=None,
+        stop_datetime=None,
+        record_type_list=None,
+        csw_url=None,
+    ):
+        """
         Function to populate DB with metadata from CSW query and/or netCDF files via OPeNDAP
-        '''
+        """
 
         def datetimestring2date(datetime_string):
-            '''
+            """
             Function to return Python date object from a datetime string
-            '''
+            """
             result = None
 
             # logger.debug('datetime_string: {}'.format(datetime_string))
 
             if datetime_string:
-                for datetime_format in ['%Y-%m-%d',
-                                        '%Y-%m-%d %H:%M:%S'
-                                        ]:
+                for datetime_format in ["%Y-%m-%d", "%Y-%m-%d %H:%M:%S"]:
                     try:
-                        result = datetime.strptime(datetime_string, datetime_format).date()
+                        result = datetime.strptime(
+                            datetime_string, datetime_format
+                        ).date()
                         break
                     except ValueError:
                         pass
@@ -79,28 +88,31 @@ class CSW2DatasetMetadataCache(object):
             return result
 
         csw_url = csw_url or DEFAULT_CSW_URL
-        csw_utils = CSWUtils(csw_url_list=[csw_url],
-                             timeout=None,
-                             debug=DEBUG,
-                             settings_path=None
-                             )
+        csw_utils = CSWUtils(
+            csw_url_list=[csw_url], timeout=None, debug=DEBUG, settings_path=None
+        )
 
-        record_generator = csw_utils.query_csw(keyword_list=keyword_list,
-                                               anytext_list=anytext,
-                                               titleword_list=titleword_list,
-                                               bounding_box=bounding_box,
-                                               start_datetime=start_datetime,
-                                               stop_datetime=stop_datetime,
-                                               record_type_list=record_type_list,
-                                               max_total_records=None,
-                                               get_layers=None
-                                               )
+        record_generator = csw_utils.query_csw(
+            keyword_list=keyword_list,
+            anytext_list=anytext,
+            titleword_list=titleword_list,
+            bounding_box=bounding_box,
+            start_datetime=start_datetime,
+            stop_datetime=stop_datetime,
+            record_type_list=record_type_list,
+            max_total_records=None,
+            get_layers=None,
+        )
 
         distribution_count = 0
-        for distribution_dict in csw_utils.get_distributions(['opendap'], record_generator):
+        for distribution_dict in csw_utils.get_distributions(
+            ["opendap"], record_generator
+        ):
             distribution_count += 1
 
-            opendap_url = re.sub('\.html$', '', distribution_dict['url'])  # Strip trailing ".html"
+            opendap_url = re.sub(
+                "\.html$", "", distribution_dict["url"]
+            )  # Strip trailing ".html"
 
             # Derive NCI file path from OPeNDAP URL
             nc_path = opendap_url
@@ -108,8 +120,8 @@ class CSW2DatasetMetadataCache(object):
                 for file_path_map in FILE_PATH_MAPS.items():
                     nc_path = nc_path.replace(*file_path_map)
 
-            logger.info('Reading attributes from {}'.format(opendap_url))
-            nc_dataset = netCDF4.Dataset(opendap_url, 'r')
+            logger.info("Reading attributes from {}".format(opendap_url))
+            nc_dataset = netCDF4.Dataset(opendap_url, "r")
 
             nc_attribute = dict(nc_dataset.__dict__)
 
@@ -117,7 +129,7 @@ class CSW2DatasetMetadataCache(object):
                 for file_path_map in FILE_PATH_MAPS.items():
                     nc_path = nc_path.replace(*file_path_map)
 
-            nc_attribute['nc_path'] = nc_path
+            nc_attribute["nc_path"] = nc_path
 
             # ===============================================================================
             # // global attributes:
@@ -149,62 +161,65 @@ class CSW2DatasetMetadataCache(object):
             #                 :_Format = "netCDF-4" ;
             # }
             # ===============================================================================
-            distribution_list = [Distribution(url=opendap_url,
-                                              protocol='opendap'
-                                              ),
-                                 Distribution(url='file://' + nc_attribute['nc_path'],
-                                              protocol='file'
-                                              )
-
-                                 ]
+            distribution_list = [
+                Distribution(url=opendap_url, protocol="opendap"),
+                Distribution(url="file://" + nc_attribute["nc_path"], protocol="file"),
+            ]
             try:
-                point_count = nc_dataset.dimensions['point'].size
+                point_count = nc_dataset.dimensions["point"].size
             except:
                 point_count = None
 
             try:
                 # TODO: Read stuff from CSW result as well as netCDF dataset
-                dataset = Dataset(dataset_title=nc_attribute['title'],
-                                  ga_survey_id=nc_attribute.get('survey_id'),
-                                  longitude_min=np.asscalar(nc_attribute['geospatial_lon_min']),
-                                  longitude_max=np.asscalar(nc_attribute['geospatial_lon_max']),
-                                  latitude_min=np.asscalar(nc_attribute['geospatial_lat_min']),
-                                  latitude_max=np.asscalar(nc_attribute['geospatial_lat_max']),
-                                  convex_hull_polygon=nc_attribute.get('geospatial_bounds'),
-                                  keyword_list=[keyword.strip() for keyword in nc_attribute['keywords'].split(',')],
-                                  distribution_list=distribution_list,
-                                  point_count=point_count,
-                                  metadata_uuid=nc_attribute.get('uuid'),  # Could be None
-                                  start_date=datetimestring2date(nc_attribute.get('time_coverage_start')),
-                                  end_date=datetimestring2date(nc_attribute.get('time_coverage_end'))
-                                  )
+                dataset = Dataset(
+                    dataset_title=nc_attribute["title"],
+                    ga_survey_id=nc_attribute.get("survey_id"),
+                    longitude_min=np.asscalar(nc_attribute["geospatial_lon_min"]),
+                    longitude_max=np.asscalar(nc_attribute["geospatial_lon_max"]),
+                    latitude_min=np.asscalar(nc_attribute["geospatial_lat_min"]),
+                    latitude_max=np.asscalar(nc_attribute["geospatial_lat_max"]),
+                    convex_hull_polygon=nc_attribute.get("geospatial_bounds"),
+                    keyword_list=[
+                        keyword.strip()
+                        for keyword in nc_attribute["keywords"].split(",")
+                    ],
+                    distribution_list=distribution_list,
+                    point_count=point_count,
+                    metadata_uuid=nc_attribute.get("uuid"),  # Could be None
+                    start_date=datetimestring2date(
+                        nc_attribute.get("time_coverage_start")
+                    ),
+                    end_date=datetimestring2date(nc_attribute.get("time_coverage_end")),
+                )
 
                 # logger.debug('dataset: {}'.format(dataset.__dict__))
                 self.dataset_metadata_cache.add_dataset(dataset)
             except Exception as e:
-                logger.warning('Unable to process dataset {}: {}'.format(nc_path, e))
+                logger.warning("Unable to process dataset {}: {}".format(nc_path, e))
 
 
 def main():
-    assert len(sys.argv) >= 2 and len(sys.argv) <= 3, 'Usage: {} <keyword_list>'.format(sys.argv[0])
+    assert len(sys.argv) >= 2 and len(sys.argv) <= 3, "Usage: {} <keyword_list>".format(
+        sys.argv[0]
+    )
     keyword_list = sys.argv[1]  # Should be comma-separated keyword list
     # TODO: Allow for more command line options for CSW search (copy stuff from _csw_utils.py?)
 
     csw2dmc = CSW2DatasetMetadataCache(debug=DEBUG)
-    csw2dmc.populate_db(keyword_list=keyword_list
-                        )
+    csw2dmc.populate_db(keyword_list=keyword_list)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Setup logging handlers if required
     if not logger.handlers:
         # Set handler for root logger to standard output
         console_handler = logging.StreamHandler(sys.stdout)
         # console_handler.setLevel(logging.INFO)
         console_handler.setLevel(logging.DEBUG)
-        console_formatter = logging.Formatter('%(message)s')
+        console_formatter = logging.Formatter("%(message)s")
         console_handler.setFormatter(console_formatter)
         logger.addHandler(console_handler)
-        logger.debug('Logging handlers set up for logger {}'.format(logger.name))
+        logger.debug("Logging handlers set up for logger {}".format(logger.name))
 
     main()
