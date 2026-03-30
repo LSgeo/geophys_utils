@@ -29,7 +29,8 @@ import numpy as np
 import shapely.geometry as geometry
 from scipy import ndimage
 from scipy.spatial import Delaunay
-from shapely.ops import cascaded_union, polygonize
+# from shapely.ops import cascaded_union, polygonize
+from shapely.ops import unary_union, polygonize
 
 from ._array_pieces import array_pieces
 
@@ -288,7 +289,7 @@ def points2alpha_shape(points, alpha, dilation=0, tolerance=0):
 
     m = geometry.MultiLineString(edge_points)
     triangles = list(polygonize(m))
-    concave_hull = cascaded_union(triangles)
+    concave_hull = unary_union(triangles)
 
     # Offset outward by specified dilation and simplify with specified
     # tolerance

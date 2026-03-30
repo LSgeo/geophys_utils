@@ -25,7 +25,7 @@ import logging
 import math
 import re
 import sys
-from distutils.util import strtobool
+# from distutils.util import strtobool
 from math import ceil
 from pprint import pformat
 
@@ -53,6 +53,16 @@ SHAPE_SIMPLIFY_TOLERANCE = 0.05  # Length of shortest line in shape (in degrees)
 SHAPE_MAX_POLYGONS = 5
 SHAPE_MAX_VERTICES = 1000
 SHAPE_ORDINATE_DECIMAL_PLACES = 6  # Number of decimal places for shape vertex ordinates
+
+
+def strtobool(val):
+    val = val.lower()
+    if val in ('y', 'yes', 't', 'true', 'on', '1'):
+        return 1
+    elif val in ('n', 'no', 'f', 'false', 'off', '0'):
+        return 0
+    else:
+        raise ValueError(f"invalid truth value {val!r}")
 
 
 class NetCDFGridUtils(NetCDFUtils):
