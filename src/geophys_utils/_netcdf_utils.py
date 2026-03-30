@@ -15,8 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""
-NetCDFUtils class implementing useful functionality against netCDF files
+"""NetCDFUtils class implementing useful functionality against netCDF files
 
 Created on 2Mar.,2017
 
@@ -47,8 +46,7 @@ METADATA_CRS = "EPSG:4283"  # Standard CRS for metadata (GDA94)
 
 
 class NetCDFUtils(object):
-    """
-    NetCDFUtils class implementing useful functionality against netCDF files
+    """NetCDFUtils class implementing useful functionality against netCDF files
     """
 
     # Point, line  and grid subclasses will need this, even though this class is non-spatial
@@ -71,8 +69,7 @@ class NetCDFUtils(object):
     }
 
     def __init__(self, netcdf_dataset, debug=False):
-        """
-        Constructor for NetCDFUtils
+        """Constructor for NetCDFUtils
         """
         self._debug = None  # Initialise private variable
         self.debug = debug  # Set debug property
@@ -127,23 +124,22 @@ class NetCDFUtils(object):
         var_list=[],
         empty_var_list=[],
     ):
-        """
-        Function to copy a netCDF dataset to another one with potential changes to size, format,
-            variable creation options and datatypes.
+        """Function to copy a netCDF dataset to another one with potential changes to size, format,
+        variable creation options and datatypes.
 
-            @param nc_out_path: path to netCDF output file
-            @param datatype_map_dict: dict containing any maps from source datatype to new datatype.
-                e.g. datatype_map_dict={'uint64': 'uint32'}  would convert all uint64 variables to uint32.
-            @param variable_options_dict: dict containing any overrides for per-variable variable creation
-                options. e.g. variable_options_dict={'sst': {'complevel': 2, 'zlib': True}} would apply
-                compression to variable 'sst'
-            @param dim_range_dict: dict of (start, end+1) tuples keyed by dimension name
-            @param dim_mask_dict: dict of boolean arrays keyed by dimension name
-            @param nc_format: output netCDF format - 'NETCDF3_CLASSIC', 'NETCDF3_64BIT_OFFSET',
-                'NETCDF3_64BIT_DATA', 'NETCDF4_CLASSIC', or 'NETCDF4'. Defaults to same as input format.
-            @param limit_dim_size: Boolean flag indicating whether unlimited dimensions should be fixed
-            @param var_list: List of strings denoting variable names for variables which should be copied
-            @param empty_var_list: List of strings denoting variable names for variables which should be created but not copied
+        @param nc_out_path: path to netCDF output file
+        @param datatype_map_dict: dict containing any maps from source datatype to new datatype.
+            e.g. datatype_map_dict={'uint64': 'uint32'}  would convert all uint64 variables to uint32.
+        @param variable_options_dict: dict containing any overrides for per-variable variable creation
+            options. e.g. variable_options_dict={'sst': {'complevel': 2, 'zlib': True}} would apply
+            compression to variable 'sst'
+        @param dim_range_dict: dict of (start, end+1) tuples keyed by dimension name
+        @param dim_mask_dict: dict of boolean arrays keyed by dimension name
+        @param nc_format: output netCDF format - 'NETCDF3_CLASSIC', 'NETCDF3_64BIT_OFFSET',
+            'NETCDF3_64BIT_DATA', 'NETCDF4_CLASSIC', or 'NETCDF4'. Defaults to same as input format.
+        @param limit_dim_size: Boolean flag indicating whether unlimited dimensions should be fixed
+        @param var_list: List of strings denoting variable names for variables which should be copied
+        @param empty_var_list: List of strings denoting variable names for variables which should be created but not copied
         """
         logger.debug("variable_options_dict: {}".format(variable_options_dict))
 
@@ -841,8 +837,7 @@ class NetCDFUtils(object):
         pass
 
     def close(self):
-        """
-        Function to close netCDF dataset if opened
+        """Function to close netCDF dataset if opened
         """
         if self._netcdf_dataset:
             try:
@@ -854,8 +849,7 @@ class NetCDFUtils(object):
 
     @property
     def netcdf_dataset(self):
-        """
-        Property getter function to open netCDF dataset only when required
+        """Property getter function to open netCDF dataset only when required
         """
         if not self._netcdf_dataset:
             logger.debug("Opening netCDF dataset {}".format(self.nc_path))
@@ -873,15 +867,13 @@ class NetCDFUtils(object):
 
     @property
     def data_variable_list(self):
-        """
-        Property getter function to return data_variable_list as required
+        """Property getter function to return data_variable_list as required
         """
         return self._data_variable_list
 
     @property
     def crs_variable(self):
-        """
-        Property getter function to return crs_variable as required
+        """Property getter function to return crs_variable as required
         """
         if self._crs_variable is None:
             logger.debug("Getting crs_variable property value")
@@ -899,8 +891,7 @@ class NetCDFUtils(object):
 
     @property
     def wkt(self):
-        """
-        Property getter function to return wkt as required
+        """Property getter function to return wkt as required
         """
         if not self._wkt:
             logger.debug("Getting wkt property value")
@@ -959,8 +950,7 @@ class NetCDFUtils(object):
 
 
 def main():
-    """
-    Main function for calling NetCDFUtils.copy function
+    """Main function for calling NetCDFUtils.copy function
     """
     # Define command line arguments
     parser = argparse.ArgumentParser()

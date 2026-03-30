@@ -1,5 +1,4 @@
-"""
-Created on 20 Oct. 2017
+"""Created on 20 Oct. 2017
 
 @author: Alex Ip
 """
@@ -15,8 +14,7 @@ def array2file(
     file_format="GTiff",
     dtype=gdal.GDT_Float32,
 ):
-    """
-    Function to output array to any(?) GDAL supported raster format and return GDAL dataset
+    """Function to output array to any(?) GDAL supported raster format and return GDAL dataset
     Formats defined in http://www.gdal.org/formats_list.html
     """
     data_array_shape = data_arrays[0].shape

@@ -1,5 +1,4 @@
-"""
-Created on 12 Dec 2019
+"""Created on 12 Dec 2019
 
 @author: Alex Ip
 """
@@ -16,8 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_netcdf_util(netcdf_dataset, open_mode="r", debug=False):
-    """
-    Function to take a netCDF4 Dataset object, a path to a netCDF file, or an OPeNDAP endpoint
+    """Function to take a netCDF4 Dataset object, a path to a netCDF file, or an OPeNDAP endpoint
     and return a NetCDFUtils subclass object (i.e. NetCDFPointUtils, NetCDFLineUtils, or NetCDFGridUtils)
     """
     if type(netcdf_dataset) == str:  # String provided as path to netCDF file

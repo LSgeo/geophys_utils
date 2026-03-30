@@ -1,5 +1,4 @@
-"""
-Created on 25 Jan. 2018
+"""Created on 25 Jan. 2018
 
 @author: Alex Ip
 
@@ -35,8 +34,7 @@ if not logger.handlers:
 
 
 class GeophysPointFetcher(object):
-    """
-    GeophysPointFetcher class definition
+    """GeophysPointFetcher class definition
     """
 
     DEFAULT_METADATA_CSV_PATH = os.path.join(
@@ -45,8 +43,7 @@ class GeophysPointFetcher(object):
     OPENDAP_PATH_MAP = ("/g/data2/uc0", "http://dapds00.nci.org.au/thredds/dodsC/uc0")
 
     def __init__(self, metadata_csv_path=None):
-        """
-        Constructor
+        """Constructor
         """
         metadata_csv_path = (
             metadata_csv_path or GeophysPointFetcher.DEFAULT_METADATA_CSV_PATH
@@ -76,8 +73,7 @@ class GeophysPointFetcher(object):
     def dataset_metadata_generator(
         self, bounding_box, keywords=[], metadata_filter_function=None
     ):
-        """
-        Generator returning all metadata dicts near given coordinate
+        """Generator returning all metadata dicts near given coordinate
         """
         keyword_set = set(keywords)
 
@@ -119,8 +115,7 @@ class GeophysPointFetcher(object):
         variable_names=None,
         flight_lines_only=True,
     ):
-        """
-        Generator yielding point data for each dataset
+        """Generator yielding point data for each dataset
         """
         t0 = datetime.now()
         for metadata_dict in self.dataset_metadata_generator(
@@ -225,8 +220,7 @@ class GeophysPointFetcher(object):
 
 
 def JW_metadata_filter(metadata_dict):
-    """
-    Example function to filter datasets based on metadata values in metadata_dict
+    """Example function to filter datasets based on metadata values in metadata_dict
     This version applies John Wilford's filter conditions
     Returns True for match, False otherwise
     """
@@ -261,13 +255,11 @@ def JW_metadata_filter(metadata_dict):
 
 
 def main():
-    """
-    main routine for quick and dirty testing
+    """Main routine for quick and dirty testing
     """
 
     def get_args():
-        """
-        Handles all the arguments that are passed into the script
+        """Handles all the arguments that are passed into the script
 
         :return: Returns a parsed version of the arguments.
         """
@@ -314,8 +306,7 @@ def main():
         return parser.parse_args()
 
     def parse_bounding_box_string(bounding_box_string):
-        """
-        Helper function to parse bounding box coordinates from string of form "<min_xord>,<min_yord>,<max_xord>,<max_yord>"
+        """Helper function to parse bounding box coordinates from string of form "<min_xord>,<min_yord>,<max_xord>,<max_yord>"
         """
         try:
             bounding_box = [

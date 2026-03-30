@@ -1,5 +1,4 @@
-"""
-dynamic_point_gridding_utils.py
+"""dynamic_point_gridding_utils.py
 Implements utilities used for dynamic point dataset search and gridding
 
 Created on 3 May 2019
@@ -25,8 +24,7 @@ def get_netcdf_datasets(
     end_date_string=None,
     csw_url=None,
 ):
-    """
-    Find all datasets of interest and return a list of NetCDF file paths or OPeNDAP web service endpoints
+    """Find all datasets of interest and return a list of NetCDF file paths or OPeNDAP web service endpoints
     """
     csw_url = csw_url or "https://ecat.ga.gov.au/geonetwork/srv/eng/csw"
     # create a csw_utils object and populate the parameters with search parameters
@@ -74,8 +72,7 @@ def get_netcdf_datasets(
 def dataset_value_generator(
     variable_name_list, dataset_list, bounding_box, min_points=None, max_points=None
 ):
-    """
-    Generator yielding coordinates and values of the specified variable for all points from the supplied dataset list
+    """Generator yielding coordinates and values of the specified variable for all points from the supplied dataset list
     which fall within bounds
     """
     line_dataset_count = 0
@@ -146,10 +143,8 @@ def grid_points(
     resampling_method="linear",
     point_step=1,
 ):
+    """Return geotransform CRS WKT, and interpolated grid from supplied coordinates and points
     """
-    Return geotransform CRS WKT, and interpolated grid from supplied coordinates and points
-    """
-
     # Determine spatial grid bounds rounded out to nearest GRID_RESOLUTION multiple
     pixel_centre_bounds = (
         round(math.floor(grid_bounds[0] / grid_resolution) * grid_resolution, 6),
@@ -226,8 +221,7 @@ def grid_points(
 
 
 def hillshade(array, azimuth, angle_altitude, vertical_exaggeration=1):
-    """
-    Hillshade function adapted from:
+    """Hillshade function adapted from:
     http://geoexamples.blogspot.com/2014/03/shaded-relief-images-using-gdal-python.html
     """
     x, y = np.gradient(array * vertical_exaggeration)

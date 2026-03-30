@@ -15,8 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""
-Constructor for test module
+"""Constructor for test module
 Unit tests for geophys_utils modules against NetCDF files
 
 Created on 7Oct.,2016

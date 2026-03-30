@@ -15,8 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""
-Created on 15Aug.,2016
+"""Created on 15Aug.,2016
 
 @author: Alex
 """
@@ -31,8 +30,7 @@ from geophys_utils._array_pieces import array_pieces
 
 
 class DataStats(object):
-    """
-    DataStats class definition. Obtains statistics for gridded data
+    """DataStats class definition. Obtains statistics for gridded data
     """
 
     key_list = [
@@ -47,8 +45,7 @@ class DataStats(object):
     ]  # , 'median', 'std_dev', 'percentile_1', 'percentile_99']
 
     def __init__(self, netcdf_path=None, netcdf_dataset=None, max_bytes=500000000):
-        """
-        DataStats Constructor
+        """DataStats Constructor
         Parameter:
             netcdf_path - string representing path to NetCDF file or URL for an OPeNDAP endpoint
             max_bytes - maximum number of bytes to pull into memory

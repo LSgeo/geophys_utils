@@ -1,5 +1,4 @@
-"""
-Created on 13 Jun. 2018
+"""Created on 13 Jun. 2018
 
 ########
 THIS IS NO LONGER USED. SEE NC2ASEG in geophys_utils folder
@@ -45,8 +44,7 @@ class RowCache(object):
     """ """
 
     def __init__(self, netCDF2ASEG_GDF_converter):
-        """
-        Constructor
+        """Constructor
         """
         # self.netCDF2ASEG_GDF_converter = netCDF2ASEG_GDF_converter
         self.settings = netCDF2ASEG_GDF_converter.settings
@@ -56,8 +54,7 @@ class RowCache(object):
         self.clear_cache()
 
     def clear_cache(self):
-        """
-        Clear cache
+        """Clear cache
         """
         self.index_range = 0
         self.cache = {}
@@ -98,8 +95,7 @@ class RowCache(object):
         def expand_point_lookup_variable(
             indexing_variable_name, lookup_variable_name=None
         ):
-            """
-            Helper function to expand point-wise indexing variables and return an array of the required size
+            """Helper function to expand point-wise indexing variables and return an array of the required size
             """
             indexing_variable = self.nc_dataset.variables[indexing_variable_name]
 
@@ -127,8 +123,7 @@ class RowCache(object):
             ]
 
         def expand_line_lookup_variable(lookup_variable_name):
-            """
-            Helper function to expand line-wise lookup variables and return an array of the required size
+            """Helper function to expand line-wise lookup variables and return an array of the required size
             """
             lookup_variable = self.nc_dataset.variables[lookup_variable_name]
             assert lookup_variable.dimensions == (
@@ -226,8 +221,7 @@ class RowCache(object):
                 # logger.debug('self.cache: {}'.format(pformat(self.cache)))
 
     def chunk_buffer_generator(self, clear_cache=True):
-        """
-        Generator yielding chunks for all data in cache
+        """Generator yielding chunks for all data in cache
         """
         if not self.index_range:
             logger.debug("Cache is empty - nothing to yield")
@@ -265,8 +259,7 @@ class RowCache(object):
 
 
 class NetCDF2ASEGGDFConverter(object):
-    """
-    NetCDF2ASEGGDFConverter class definition to convert netCDF file to ASEG-GDF format
+    """NetCDF2ASEGGDFConverter class definition to convert netCDF file to ASEG-GDF format
     """
 
     def __init__(
@@ -276,8 +269,7 @@ class NetCDF2ASEGGDFConverter(object):
         crs_string=None,
         settings_path=None,
     ):
-        """
-        Constructor for class NetCDF2ASEGGDFConverter
+        """Constructor for class NetCDF2ASEGGDFConverter
         """
         assert os.path.isfile(netcdf_in_path) or (
             netcdf_in_path.startswith("http") and netcdf_in_path.lower().endswith(".nc")
@@ -333,8 +325,7 @@ class NetCDF2ASEGGDFConverter(object):
     def write_record2dfn_file(
         self, dfn_file, rt, name, aseg_gdf_format, definition=None, defn=None, st="RECD"
     ):
-        """
-        Helper function to write line to .dfn file.
+        """Helper function to write line to .dfn file.
         self.defn is used to track the DEFN number, which can be reset using the optional defn parameter
         @param dfn_file: output file for DEFN line
         @param rt: value for "RT=<rt>" portion of DEFN line, e.g. '' or 'PROJ'
@@ -370,13 +361,11 @@ class NetCDF2ASEGGDFConverter(object):
         return line
 
     def convert2aseg_gdf(self, dat_out_path=None, dfn_out_path=None, point_mask=None):
-        """
-        Function to convert netCDF file to ASEG-GDF
+        """Function to convert netCDF file to ASEG-GDF
         """
 
         def get_field_definitions():
-            """
-            Helper function to get field definitions from netCDF file
+            """Helper function to get field definitions from netCDF file
             """
             # Build field definitions
             self.field_definitions = []
@@ -503,13 +492,11 @@ class NetCDF2ASEGGDFConverter(object):
                 )
 
         def write_dfn_file():
-            """
-            Helper function to output .dfn file
+            """Helper function to output .dfn file
             """
 
             def write_defns(dfn_file):
-                """
-                Helper function to write multiple DEFN lines
+                """Helper function to write multiple DEFN lines
                 """
                 self.defn = 0  # reset DEFN number
                 for field_definition in self.field_definitions:
@@ -574,8 +561,7 @@ class NetCDF2ASEGGDFConverter(object):
                 return  # End of function write_defns
 
             def write_proj(dfn_file):
-                """
-                                Helper function to write PROJ lines
+                """Helper function to write PROJ lines
                 From standard:
                 DEFN 1 ST=RECD,RT=PROJ; RT: A4
                 DEFN 2 ST=RECD,RT=PROJ; COORDSYS: A40: NAME=projection name, POSC projection name
@@ -775,18 +761,15 @@ class NetCDF2ASEGGDFConverter(object):
             self.info_output("Finished writing .dfn file {}".format(self.dfn_out_path))
 
         def write_dat_file(cache_chunk_rows=None, point_mask=None):
-            """
-            Helper function to output .dat file
+            """Helper function to output .dat file
             """
 
             def chunk_buffer_generator(point_mask=None):
-                """
-                Generator to yield all line strings across all point variables for specified row range
+                """Generator to yield all line strings across all point variables for specified row range
                 """
 
                 def chunk_line_generator(start_index, end_index, point_mask=None):
-                    """
-                    Helper Generator to yield line strings for specified rows across all point variables
+                    """Helper Generator to yield line strings for specified rows across all point variables
                     """
                     python_format_list = []
                     for field_definition in self.field_definitions:
@@ -883,13 +866,11 @@ class NetCDF2ASEGGDFConverter(object):
 
 
 def main():
-    """
-    Main function
+    """Main function
     """
 
     def get_args():
-        """
-        Handles all the arguments that are passed into the script
+        """Handles all the arguments that are passed into the script
 
         :return: Returns a parsed version of the arguments.
         """

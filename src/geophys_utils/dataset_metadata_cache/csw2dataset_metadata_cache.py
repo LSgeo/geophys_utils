@@ -1,5 +1,4 @@
-"""
-Created on 9 Oct. 2018
+"""Created on 9 Oct. 2018
 
 @author: Alex Ip
 
@@ -40,13 +39,11 @@ FILE_PATH_MAPS = {
 
 
 class CSW2DatasetMetadataCache(object):
-    """
-    classdocs
+    """classdocs
     """
 
     def __init__(self, debug=True):
-        """
-        Constructor
+        """Constructor
         """
         self.dataset_metadata_cache = get_dataset_metadata_cache(
             db_engine=DATABASE_ENGINE, debug=debug
@@ -63,13 +60,11 @@ class CSW2DatasetMetadataCache(object):
         record_type_list=None,
         csw_url=None,
     ):
-        """
-        Function to populate DB with metadata from CSW query and/or netCDF files via OPeNDAP
+        """Function to populate DB with metadata from CSW query and/or netCDF files via OPeNDAP
         """
 
         def datetimestring2date(datetime_string):
-            """
-            Function to return Python date object from a datetime string
+            """Function to return Python date object from a datetime string
             """
             result = None
 

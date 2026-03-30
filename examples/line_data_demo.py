@@ -62,8 +62,7 @@ def get_netcdf_datasets(
     end_date_string=None,
     csw_url=None,
 ):
-    """
-    Find all datasets of interest and return a list of NetCDF file paths or OPeNDAP web service endpoints
+    """Find all datasets of interest and return a list of NetCDF file paths or OPeNDAP web service endpoints
     """
     csw_url = csw_url or DEFAULT_CSW_URL
     # create a csw_utils object and populate the parameters with search parameters
@@ -114,8 +113,7 @@ def dataset_point_generator(
     min_points=None,
     max_points=None,
 ):
-    """
-    Generator yielding coordinates and values of the specified variable for all points from the supplied dataset list
+    """Generator yielding coordinates and values of the specified variable for all points from the supplied dataset list
     which fall within bounds
     """
     line_dataset_count = 0
@@ -202,8 +200,7 @@ def dataset_point_generator(
 
 
 def get_points_from_dict(dataset_point_dict):
-    """
-    @param dataset_point_dict: {<dataset_path>: (<coordinates>, <values>),...}
+    """@param dataset_point_dict: {<dataset_path>: (<coordinates>, <values>),...}
     """
     all_coordinates = []
     all_values = []
@@ -275,10 +272,8 @@ def grid_points(
     resampling_method="linear",
     point_step=1,
 ):
+    """Return interpolated grid from supplied coordinates and points
     """
-    Return interpolated grid from supplied coordinates and points
-    """
-
     # Determine spatial grid bounds rounded out to nearest GRID_RESOLUTION multiple
     pixel_centre_bounds = (
         round(math.floor(grid_bounds[0] / grid_resolution) * grid_resolution, 6),

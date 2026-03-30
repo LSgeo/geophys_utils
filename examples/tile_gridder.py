@@ -1,5 +1,4 @@
-"""
-Created on 14 Jun 2019
+"""Created on 14 Jun 2019
 
 @author: Alex Ip
 """
@@ -27,8 +26,7 @@ DEBUG = True
 
 
 class TileGridder(object):
-    """
-    TileGridder
+    """TileGridder
     """
 
     DEFAULT_TILE_EXPANSION_PERCENT = 0.05
@@ -51,8 +49,7 @@ class TileGridder(object):
         filter_value_list=None,  # e.g. ['Station used in the production of GA grids.']
         tile_extra=None,  # Absolute extra per side. Defaults to 5% extra on each side
     ):
-        """
-        TileGridder Constructor
+        """TileGridder Constructor
         """
         self._dataset_list = None
         self._dataset_values = None
@@ -105,8 +102,7 @@ class TileGridder(object):
 
     @property
     def dataset_list(self):
-        """
-        list of individual datasets which intersect bounding box
+        """List of individual datasets which intersect bounding box
         """
         if self._dataset_list is None:
             self._dataset_list = self.get_netcdf_datasets(
@@ -121,8 +117,7 @@ class TileGridder(object):
 
     @property
     def dataset_values(self):
-        """
-        Read and filter points from individual datasets
+        """Read and filter points from individual datasets
         """
         if self._dataset_values is None:
             self._dataset_values = {
@@ -138,8 +133,7 @@ class TileGridder(object):
         return self._dataset_values
 
     def filter_points(self):
-        """
-        Set filter points from individual datasets
+        """Set filter points from individual datasets
         e.g. Only use points where gridflag == 'Station used in the production of GA grids.'
         """
         # Only filter if we have a filter variable and allowed values
@@ -173,8 +167,7 @@ class TileGridder(object):
                 del self.dataset_values[dataset]  # No usable points in dataset
 
     def reproject_bounds(self, bounds, from_crs_wkt, to_crs_wkt):
-        """
-        Function to return orthogonal bounds reprojected to new CRS
+        """Function to return orthogonal bounds reprojected to new CRS
         """
         if from_crs_wkt == to_crs_wkt:  # No change
             return bounds
@@ -207,8 +200,7 @@ class TileGridder(object):
         end_datetime=None,
         csw_url=None,
     ):
-        """
-        Find all datasets of interest and return a list of NetCDF file paths or OPeNDAP web service endpoints
+        """Find all datasets of interest and return a list of NetCDF file paths or OPeNDAP web service endpoints
         """
         csw_url = csw_url or TileGridder.DEFAULT_CSW_URL
         # create a csw_utils object and populate the parameters with search parameters
@@ -250,8 +242,7 @@ class TileGridder(object):
         min_points=None,
         max_points=None,
     ):
-        """
-        Generator yielding coordinates and values of the specified variable for all points from the supplied dataset list
+        """Generator yielding coordinates and values of the specified variable for all points from the supplied dataset list
         which fall within bounds
         """
         for dataset in dataset_list:
@@ -330,10 +321,8 @@ class TileGridder(object):
         resampling_method="linear",
         point_step=1,
     ):
+        """Return geotransform CRS WKT, and interpolated grid from supplied coordinates and points
         """
-        Return geotransform CRS WKT, and interpolated grid from supplied coordinates and points
-        """
-
         # Determine spatial grid bounds rounded out to nearest GRID_RESOLUTION multiple
         pixel_centre_bounds = (
             round(
@@ -437,8 +426,7 @@ class TileGridder(object):
         )
 
     def output_points(self, point_list_path):
-        """
-        Write CSV containing all points to point_list_path
+        """Write CSV containing all points to point_list_path
         """
         with open(point_list_path, "w") as output_file:
             output_file.write(
@@ -467,16 +455,14 @@ class TileGridder(object):
                     )
 
     def output_dataset_list(self, dataset_list_path):
-        """
-        Write a text file containing all dataset paths or URLs to dataset_list_path
+        """Write a text file containing all dataset paths or URLs to dataset_list_path
         """
         with open(dataset_list_path, "w") as output_file:
             for dataset in sorted(self.dataset_list):
                 output_file.write(dataset + "\n")
 
     def read_dataset_list(self, dataset_list_path):
-        """
-        Write a text file containing all dataset paths or URLs to dataset_list_path
+        """Write a text file containing all dataset paths or URLs to dataset_list_path
         """
         with open(dataset_list_path, "r") as input_file:
             self._dataset_list = list(
@@ -488,8 +474,7 @@ def main():
     """ """
 
     def quote_delimitedtext(text, delimiter, quote_char='"'):
-        """
-        Helper function to quote text containing delimiters or whitespace
+        """Helper function to quote text containing delimiters or whitespace
         """
         if delimiter in text or quote_char in text or re.search("\s", text):
             if delimiter == ",":  # Use double quote to escape quote character for CSV

@@ -1,5 +1,4 @@
-"""
-Created on 20 Jul. 2018
+"""Created on 20 Jul. 2018
 
 @author: Alex Ip
 
@@ -45,21 +44,18 @@ OPENDAP_PATH_MAPS = {
 
 
 class NetCDF2DatasetMetadataCache(object):
-    """
-    classdocs
+    """classdocs
     """
 
     def __init__(self, debug=True):
-        """
-        Constructor
+        """Constructor
         """
         self.dataset_metadata_cache = get_dataset_metadata_cache(
             db_engine=DATABASE_ENGINE, debug=debug
         )
 
     def find_files(self, root_dir, file_template, extension_filter=".nc"):
-        """
-        Function to simulate the result of a filtered Linux find command
+        """Function to simulate the result of a filtered Linux find command
         Uses glob with user-friendly file system wildcards instead of regular expressions for template matching
         @param root_dir: Top level directory to be searched
         @param file_template: glob-style filename template similar to -name argument of linux find command
@@ -84,13 +80,11 @@ class NetCDF2DatasetMetadataCache(object):
         return file_path_list
 
     def populate_db(self, nc_root_dir, nc_file_template=None):
-        """
-        Function to populate DB with metadata from netCDF files
+        """Function to populate DB with metadata from netCDF files
         """
 
         def datetimestring2date(datetime_string):
-            """
-            Function to return Python date object from a datetime string
+            """Function to return Python date object from a datetime string
             """
             result = None
 

@@ -15,8 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""
-CSV2NetCDFConverter concrete class for converting data to netCDF
+"""CSV2NetCDFConverter concrete class for converting data to netCDF
 
 Created on 28Mar.2018
 
@@ -31,13 +30,11 @@ from geophys_utils.netcdf_converter import ToNetCDFConverter, NetCDFVariable
 
 
 class CSV2NetCDFConverter(ToNetCDFConverter):
-    """
-    CSV2NetCDFConverter concrete class for converting CSV data to netCDF
+    """CSV2NetCDFConverter concrete class for converting CSV data to netCDF
     """
 
     def __init__(self, nc_out_path, csv_path, netcdf_format="NETCDF4_CLASSIC"):
-        """
-        Concrete constructor for subclass CSV2NetCDFConverter
+        """Concrete constructor for subclass CSV2NetCDFConverter
         Needs to initialise object with everything that is required for the other Concrete methods
         N.B: Make sure the base class constructor is called from the subclass constructor
         """
@@ -46,14 +43,12 @@ class CSV2NetCDFConverter(ToNetCDFConverter):
         self.csv_path = csv_path
 
     def get_global_attributes(self):
-        """
-        Concrete method to return dict of global attribute <key>:<value> pairs
+        """Concrete method to return dict of global attribute <key>:<value> pairs
         """
         return {"title": "test dataset"}
 
     def get_dimensions(self):
-        """
-        Concrete method to return OrderedDict of <dimension_name>:<dimension_size> pairs
+        """Concrete method to return OrderedDict of <dimension_name>:<dimension_size> pairs
         """
         dimensions = OrderedDict()
 
@@ -64,8 +59,7 @@ class CSV2NetCDFConverter(ToNetCDFConverter):
         return dimensions
 
     def variable_generator(self):
-        """
-        Concrete generator to yield NetCDFVariable objects
+        """Concrete generator to yield NetCDFVariable objects
         """
         # Example of latitude dimension variable creation
         yield self.build_dimension_variable(

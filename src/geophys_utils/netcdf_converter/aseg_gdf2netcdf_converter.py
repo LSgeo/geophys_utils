@@ -15,8 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""
-ASEGGDF2NetCDFConverter concrete class for converting ASEG-GDF data to netCDF
+"""ASEGGDF2NetCDFConverter concrete class for converting ASEG-GDF data to netCDF
 
 Created on 28Mar.2018
 
@@ -65,8 +64,7 @@ CACHE_CHUNK_ROWS = 16384
 
 
 class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
-    """
-    ASEGGDF2NetCDFConverter concrete class for converting ASEG-GDF data to netCDF
+    """ASEGGDF2NetCDFConverter concrete class for converting ASEG-GDF data to netCDF
     """
 
     def __init__(
@@ -83,8 +81,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
         space_delimited=False,
         verbose=False,
     ):
-        """
-        Concrete constructor for subclass ASEGGDF2NetCDFConverter
+        """Concrete constructor for subclass ASEGGDF2NetCDFConverter
         Needs to initialise object with everything that is required for the other Concrete methods
         N.B: Make sure the base class constructor is called from the subclass constructor
         @param nc_out_path: Path to output netCDF file on filesystem
@@ -98,8 +95,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
         """
 
         def get_field_definitions():
-            """
-            Function to read raw field definitions from .dfn file
+            """Function to read raw field definitions from .dfn file
             Will set self.dimensions as an Ordereddict of dimension sizes keyed by dimension name
             """
 
@@ -291,13 +287,11 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
             )
 
         def read_data_file():
-            """
-            Function to read data file into temporary netCDF cache
+            """Function to read data file into temporary netCDF cache
             """
 
             def create_nc_cache():
-                """
-                Function to create temporary cache file with one 2D variable
+                """Function to create temporary cache file with one 2D variable
                 Needs to have self.column_count defined to work
                 """
                 self.nc_cache_path = os.path.join(
@@ -387,8 +381,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
                 )
 
             def cache_chunk_list(chunk_list, start_row):
-                """
-                Helper function to write list of lists to cache variables
+                """Helper function to write list of lists to cache variables
                 """
                 end_row = start_row + len(chunk_list)
                 logger.debug(
@@ -410,8 +403,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
                 self.total_points += len(chunk_list)
 
             def read_fixed_length_fields(line):
-                """
-                Helper function to read fixed length fields into a list of lists
+                """Helper function to read fixed length fields into a list of lists
                 """
                 row_list = []
                 line_column_count = 0
@@ -479,8 +471,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
                 return row_list
 
             def read_delimited_fields(line, delimiter_regex="\s+"):
-                """
-                Helper function to read delimited fields into a list of lists
+                """Helper function to read delimited fields into a list of lists
                 N.B: This should not be required, but ASEG-supplied example file Example_Gravity_Springfield_1989.dat requires it
                 """
                 row_list = []
@@ -590,8 +581,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
             )  # All files will have a point dimension - declare this first
 
         def modify_field_definitions():
-            """
-            Function to update field definitions and dimensions based on values read from data file
+            """Function to update field definitions and dimensions based on values read from data file
             Assumes all dimension fields declared before 2D fields
             """
             column_start_index = 0
@@ -770,8 +760,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
             )
 
         def fix_all_field_precisions():
-            """
-            Helper function to reduce field datatype size if there is no loss in precision
+            """Helper function to reduce field datatype size if there is no loss in precision
             N.B: May modify fill_value variable attribute to same format as data if fill_value is not in data
             """
             for field_definition in self.field_definitions:
@@ -940,8 +929,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
             self.__del__()
 
     def __del__(self):
-        """
-        Destructor for class ASEGGDF2NetCDFConverter
+        """Destructor for class ASEGGDF2NetCDFConverter
         Closes and removes temporary cache file
         """
         try:
@@ -959,8 +947,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
         ToNetCDFConverter.__del__(self)
 
     def get_raw_data(self, variable_name):
-        """
-        Helper function to return array corresponding to short_name from self._nc_cache_dataset
+        """Helper function to return array corresponding to short_name from self._nc_cache_dataset
         """
         try:
             return self._nc_cache_dataset.variables[variable_name][:]
@@ -984,8 +971,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
                 return None
 
     def get_global_attributes(self):
-        """
-        Concrete method to return dict of global attribute <key>:<value> pairs
+        """Concrete method to return dict of global attribute <key>:<value> pairs
         """
         # TODO: implement search lists for different variable names
 
@@ -1076,19 +1062,16 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
         return metadata_dict
 
     def get_dimensions(self):
-        """
-        Concrete method to return OrderedDict of <dimension_name>:<dimension_size> pairs
+        """Concrete method to return OrderedDict of <dimension_name>:<dimension_size> pairs
         """
         return self.dimensions
 
     def variable_generator(self):
-        """
-        Concrete generator to yield NetCDFVariable objects
+        """Concrete generator to yield NetCDFVariable objects
         """
 
         def index_variable_generator():
-            """
-            Helper generator to yield indexing variables
+            """Helper generator to yield indexing variables
             N.B: Has side effect of creating one new dimension for each index field.
             This new dimension will NOT appear in self.dimensions
             """
@@ -1180,8 +1163,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
             )
 
         def lookup_variable_generator():
-            """
-            Helper generator to yield lookup variables for string fields
+            """Helper generator to yield lookup variables for string fields
             N.B: Has side effect of creating one new dimension for each lookup field.
             This new dimension will NOT appear in self.dimensions
             """
@@ -1246,8 +1228,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
             return
 
         def get_scalar_variable():
-            """
-            Helper function to return scalar variable for single-value field
+            """Helper function to return scalar variable for single-value field
             """
             assert (
                 lookup_array.shape[0] == 1
@@ -1442,8 +1423,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
         return
 
     def postprocess_netcdf(self):
-        """
-        Function to perform post-processing on netCDF file after dimensions and variables
+        """Function to perform post-processing on netCDF file after dimensions and variables
         have been created. Overrides base class.
 
         This will create crs, longitude and latitude variables for unprojected CRS,
@@ -1514,13 +1494,11 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
 
 
 def main():
-    """
-    Main function
+    """Main function
     """
 
     def get_args():
-        """
-        Handles all the arguments that are passed into the script
+        """Handles all the arguments that are passed into the script
 
         :return: Returns a parsed version of the arguments.
         """

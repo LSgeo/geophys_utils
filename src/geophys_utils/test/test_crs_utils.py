@@ -15,8 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""
-Unit tests for geophys_utils._crs_utils against a NetCDF file
+"""Unit tests for geophys_utils._crs_utils against a NetCDF file
 
 Created on 15/11/2016
 
@@ -146,7 +145,6 @@ class TestCRSUtils(unittest.TestCase):
 # Define test suites
 def test_suite():
     """Returns a test suite of all the tests in this module."""
-
     test_classes = [TestCRSUtils]
 
     suite_list = map(unittest.defaultTestLoader.loadTestsFromTestCase, test_classes)

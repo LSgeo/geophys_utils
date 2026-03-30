@@ -15,8 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""
-Unit tests for geophys_utils._netcdf_line_utils against a NetCDF line data file
+"""Unit tests for geophys_utils._netcdf_line_utils against a NetCDF line data file
 
 Created on 15/11/2016
 
@@ -50,7 +49,8 @@ TEST_GET_LINE_RESULTS = ((190520, 7, 10064), (190500, 7, 9988))
 
 class TestNetCDFLineUtilsConstructor(unittest.TestCase):
     """Unit tests for TestNetCDFLineUtils Constructor.
-    N.B: This should be run first"""
+    N.B: This should be run first
+    """
 
     def test_netcdf_line_utils_constructor(self):
         print("Testing NetCDFLineUtils constructor")
@@ -128,7 +128,6 @@ class TestNetCDFLineUtilsFunctions2(unittest.TestCase):
 # Define test suites
 def test_suite():
     """Returns a test suite of all the tests in this module."""
-
     test_classes = [
         TestNetCDFLineUtilsConstructor,
         TestNetCDFLineUtilsFunctions1,

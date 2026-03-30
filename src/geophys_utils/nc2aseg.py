@@ -15,8 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""
-Created on 8 Mar 2020
+"""Created on 8 Mar 2020
 
 @author: Alex Ip <Alex.Ip@ga.gov.au>
 """
@@ -167,8 +166,7 @@ class RowValueCache(object):
     """
 
     def __init__(self, nc2aseggdf):
-        """
-        Constructor
+        """Constructor
         """
         self.nc2aseggdf = nc2aseggdf
         self.total_points = nc2aseggdf.total_points
@@ -178,15 +176,13 @@ class RowValueCache(object):
         self.clear_cache()
 
     def clear_cache(self):
-        """
-        Clear cache
+        """Clear cache
         """
         self.index_range = 0
         self.cache = {}
 
     def read_points(self, start_index, end_index, point_mask=None):
-        """
-        Function to read points from start_index to end_index
+        """Function to read points from start_index to end_index
         """
         self.index_range = end_index - start_index
 
@@ -219,8 +215,7 @@ class RowValueCache(object):
         # logger.debug('self.cache: {}'.format(pformat(self.cache)))
 
     def chunk_row_data_generator(self, clear_cache=True):
-        """
-        Generator yielding chunks of all values from cache, expanding 2D variables to multiple columns
+        """Generator yielding chunks of all values from cache, expanding 2D variables to multiple columns
         """
         if not self.index_range:
             logger.debug("Cache is empty - nothing to yield")
@@ -599,8 +594,7 @@ class NC2ASEGGDF2(object):
     def create_dfn_line(
         self, rt, name, aseg_gdf_format, definition=None, defn=None, st="RECD"
     ):
-        """
-        Helper function to write line to .dfn file.
+        """Helper function to write line to .dfn file.
         self.defn is used to track the DEFN number, which can be reset using the optional defn parameter
         @param rt: value for "RT=<rt>" portion of DEFN line, e.g. '' or 'PROJ'
         @param name: Name of DEFN
@@ -635,8 +629,7 @@ class NC2ASEGGDF2(object):
         return line
 
     def create_dfn_file(self, dfn_out_path, zipstream_zipfile=None):
-        """
-        Helper function to output .dfn file
+        """Helper function to output .dfn file
         """
         if zipstream_zipfile:
             dfn_basename = os.path.basename(dfn_out_path)
@@ -655,20 +648,17 @@ class NC2ASEGGDF2(object):
             self.info_output("Finished writing .dfn file {}".format(self.dfn_out_path))
 
     def encoded_dfn_line_generator(self, encoding=CHARACTER_ENCODING):
-        """
-        Helper generator to yield encoded bytestrings of all lines in .dfn file
+        """Helper generator to yield encoded bytestrings of all lines in .dfn file
         """
         for line_string in self.dfn_line_generator():
             yield line_string.encode(encoding)
 
     def dfn_line_generator(self):
-        """
-        Helper generator to yield all lines in .dfn file
+        """Helper generator to yield all lines in .dfn file
         """
 
         def variable_defns_generator():
-            """
-            Helper function to write a DEFN line for each variable
+            """Helper function to write a DEFN line for each variable
             """
             self.defn = 0  # reset DEFN number
             # for variable_name, variable_attributes in self.field_definitions.items():
@@ -762,8 +752,7 @@ class NC2ASEGGDF2(object):
             yield self.create_dfn_line(rt="", name="END DEFN", aseg_gdf_format=None)
 
         def proj_defns_generator():
-            """
-                        Helper function to write PROJ lines
+            """Helper function to write PROJ lines
             From standard:
             DEFN 1 ST=RECD,RT=PROJ; RT: A4
             DEFN 2 ST=RECD,RT=PROJ; COORDSYS: A40: NAME=projection name, POSC projection name
@@ -952,8 +941,7 @@ class NC2ASEGGDF2(object):
         point_mask=None,
         zipstream_zipfile=None,
     ):
-        """
-        Helper function to output .dat file
+        """Helper function to output .dat file
         """
 
         def chunk_buffer_generator(
@@ -963,8 +951,7 @@ class NC2ASEGGDF2(object):
             point_mask=None,
             encoding=None,
         ):
-            """
-            Generator to yield all line strings across all point variables for specified row range
+            """Generator to yield all line strings across all point variables for specified row range
             """
 
             def chunk_line_generator(
@@ -974,8 +961,7 @@ class NC2ASEGGDF2(object):
                 end_index,
                 point_mask=None,
             ):
-                """
-                Helper Generator to yield line strings for specified rows across all point variables
+                """Helper Generator to yield line strings for specified rows across all point variables
                 """
                 logger.debug(
                     "Reading rows {:n} - {:n}".format(start_index + 1, end_index)
@@ -1115,13 +1101,11 @@ class NC2ASEGGDF2(object):
             self.info_output("Finished writing .dat file {}".format(dat_out_path))
 
     def create_des_file(self, des_out_path, zipstream_zipfile=None):
-        """
-        Helper function to output .des file
+        """Helper function to output .des file
         """
 
         def des_line_generator(encoding=None):
-            """
-            Helper Generator to yield line strings for .des file
+            """Helper Generator to yield line strings for .des file
             """
             # Ignore netCDF system attributes
             global_attributes_dict = {
@@ -1189,8 +1173,7 @@ class NC2ASEGGDF2(object):
     def convert2aseg_gdf(
         self, dat_out_path=None, zip_out_path=None, stride=1, point_mask=None
     ):
-        """
-        Function to convert netCDF file to ASEG-GDF
+        """Function to convert netCDF file to ASEG-GDF
         """
         start_time = datetime.now()
 
@@ -1260,13 +1243,11 @@ class NC2ASEGGDF2(object):
 
 
 def main():
-    """
-    Main function
+    """Main function
     """
 
     def get_args():
-        """
-        Handles all the arguments that are passed into the script
+        """Handles all the arguments that are passed into the script
 
         :return: Returns a parsed version of the arguments.
         """

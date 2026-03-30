@@ -15,8 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""
-Created on 05/10/2012
+"""Created on 05/10/2012
 
 @author: Alex Ip
 """
@@ -108,8 +107,7 @@ class DEMUtils(NetCDFGridUtils):
         return self.getFileSizekB(path) / 1024
 
     def get_pixel_size(self, index_tuple):
-        """
-        Returns X & Y sizes in metres of specified pixel as a tuple.
+        """Returns X & Y sizes in metres of specified pixel as a tuple.
         N.B: Pixel ordinates are zero-based from top left
         """
         x, y = index_tuple
@@ -215,13 +213,11 @@ class DEMUtils(NetCDFGridUtils):
         NetCDFGridUtils.__init__(self, dem_dataset)
 
     def create_dzdxy_arrays(self, elevation_array, offsets):
-        """
-        Function to return two arrays containing dzdx and dzdy values
+        """Function to return two arrays containing dzdx and dzdy values
         """
 
         def pixels_in_m():
-            """
-            Function returning True if pixels are in metres
+            """Function returning True if pixels are in metres
             """
             result = True
             for dimension_name in self.data_variable.dimensions:
@@ -289,8 +285,7 @@ class DEMUtils(NetCDFGridUtils):
         return aspect_array
 
     def create_slope_and_aspect(self, slope_path=None, aspect_path=None, overlap=4):
-        """
-        Create slope & aspect datasets from elevation
+        """Create slope & aspect datasets from elevation
         """
         # Copy dataset structure but not data
         slope_path = slope_path or os.path.splitext(self.nc_path)[0] + "_slope.nc"

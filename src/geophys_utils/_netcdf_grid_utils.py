@@ -15,8 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""
-Created on 14Sep.,2016
+"""Created on 14Sep.,2016
 
 @author: Alex Ip <Alex.Ip@ga.gov.au>
 """
@@ -77,8 +76,7 @@ def strtobool(val):
 
 
 class NetCDFGridUtils(NetCDFUtils):
-    """
-    NetCDFGridUtils class to do various fiddly things with gridded NetCDF geophysics files.
+    """NetCDFGridUtils class to do various fiddly things with gridded NetCDF geophysics files.
     """
 
     # Assume WGS84 lat/lon if no CRS is provided
@@ -87,13 +85,11 @@ class NetCDFGridUtils(NetCDFUtils):
     FLOAT_TOLERANCE = 0.000001
 
     def __init__(self, netcdf_dataset, debug=False):
-        """
-        NetCDFGridUtils Constructor - wraps a NetCDF dataset
+        """NetCDFGridUtils Constructor - wraps a NetCDF dataset
         """
 
         def set_nominal_pixel_sizes():
-            """
-            Function to set tuples with the nominal vertical and horizontal sizes of the centre pixel in metres and degrees
+            """Function to set tuples with the nominal vertical and horizontal sizes of the centre pixel in metres and degrees
             """
             centre_pixel_indices = [
                 len(self.dimension_arrays[dim_index]) // 2 for dim_index in range(2)
@@ -153,8 +149,7 @@ class NetCDFGridUtils(NetCDFUtils):
             ]
 
         def get_default_sample_metres():
-            """
-            Function to return average nominal pixel size in metres rounded up to nearest 10^x or 5*10^x
+            """Function to return average nominal pixel size in metres rounded up to nearest 10^x or 5*10^x
             This is to provide a sensible default resolution for the sampling points along a transect by keeping it around the nominal pixel size
             """
             log_10_avg_pixel_metres = math.log(
@@ -263,8 +258,7 @@ class NetCDFGridUtils(NetCDFUtils):
         self.bounds = self.native_bbox[0] + self.native_bbox[2]
 
     def get_indices_from_coords(self, coordinates, wkt=None):
-        """
-        Returns list of netCDF array indices corresponding to coordinates to support nearest neighbour queries
+        """Returns list of netCDF array indices corresponding to coordinates to support nearest neighbour queries
         @parameter coordinates: iterable collection of coordinate pairs or single coordinate pair
         @parameter wkt: Coordinate Reference System for coordinates. None == native NetCDF CRS
         """
@@ -326,8 +320,7 @@ class NetCDFGridUtils(NetCDFUtils):
         return indices
 
     def get_fractional_indices_from_coords(self, coordinates, wkt=None):
-        """
-        Returns list of fractional array indices corresponding to coordinates to support interpolation
+        """Returns list of fractional array indices corresponding to coordinates to support interpolation
         @parameter coordinates: iterable collection of coordinate pairs or single coordinate pair
         @parameter wkt: Coordinate Reference System for coordinates. None == native NetCDF CRS
         """
@@ -391,8 +384,7 @@ class NetCDFGridUtils(NetCDFUtils):
     def get_value_at_coords(
         self, coordinates, wkt=None, max_bytes=None, variable_name=None
     ):
-        """
-        Returns list of array values at specified coordinates
+        """Returns list of array values at specified coordinates
         @parameter coordinates: iterable collection of coordinate pairs or single coordinate pair
         @parameter wkt: WKT for coordinate Coordinate Reference System. None == native NetCDF CRS
         @parameter max_bytes: Maximum number of bytes to read in a single query. Defaults to NetCDFGridUtils.DEFAULT_MAX_BYTES
@@ -451,8 +443,7 @@ class NetCDFGridUtils(NetCDFUtils):
     def get_interpolated_value_at_coords(
         self, coordinates, wkt=None, max_bytes=None, variable_name=None
     ):
-        """
-        Returns list of interpolated array values at specified coordinates
+        """Returns list of interpolated array values at specified coordinates
         @parameter coordinates: iterable collection of coordinate pairs or single coordinate pair
         @parameter wkt: Coordinate Reference System for coordinates. None == native NetCDF CRS
         @parameter max_bytes: Maximum number of bytes to read in a single query. Defaults to NetCDFGridUtils.DEFAULT_MAX_BYTES
@@ -525,8 +516,7 @@ class NetCDFGridUtils(NetCDFUtils):
             )
 
     def sample_transect(self, transect_vertices, wkt=None, sample_metres=None):
-        """
-        Function to return a list of sample points sample_metres apart along lines between transect vertices
+        """Function to return a list of sample points sample_metres apart along lines between transect vertices
         @param transect_vertices: list or array of transect vertex coordinates
         @param wkt: coordinate reference system for transect_vertices
         @param sample_metres: distance between sample points in metres
@@ -884,8 +874,7 @@ class NetCDFGridUtils(NetCDFUtils):
         return transform_geometry_pixel_to_wkt(concave_hull, to_wkt)
 
     def get_dimension_ranges(self, bounds, bounds_wkt=None):
-        """
-        Function to dict of (start, end+1) tuples keyed by dimension name from a bounds geometry or ordinates
+        """Function to dict of (start, end+1) tuples keyed by dimension name from a bounds geometry or ordinates
         @parameter bounds: Either an iterable containing [<xmin>, <ymin>, <xmax>, <ymax>] or a shapely (multi)polygon
         @parameter bounds_wkt: WKT for bounds CRS. Defaults to dataset native CRS
         @return dim_range_dict: dict of (start, end+1) tuples keyed by dimension name
@@ -956,8 +945,7 @@ class NetCDFGridUtils(NetCDFUtils):
 
     @property
     def GeoTransform(self):
-        """
-        Property getter function to return geotransform as required
+        """Property getter function to return geotransform as required
         """
         if not self._GeoTransform:
             try:
@@ -989,25 +977,23 @@ class NetCDFGridUtils(NetCDFUtils):
         empty_var_list=[],
         invert_y=None,
     ):
-        """
-        Function to copy a netCDF dataset to another one with potential changes to size, format,
-            variable creation options and datatypes.
+        """Function to copy a netCDF dataset to another one with potential changes to size, format,
+        variable creation options and datatypes.
 
-            @param nc_out_path: path to netCDF output file
-            @param datatype_map_dict: dict containing any maps from source datatype to new datatype.
-                e.g. datatype_map_dict={'uint64': 'uint32'}  would convert all uint64 variables to uint32.
-            @param variable_options_dict: dict containing any overrides for per-variable variable creation
-                options. e.g. variable_options_dict={'sst': {'complevel': 2, 'zlib': True}} would apply
-                compression to variable 'sst'
-            @param dim_range_dict: dict of (start, end+1) tuples keyed by dimension name
-            @param dim_mask_dict: dict of boolean arrays keyed by dimension name
-            @param nc_format: output netCDF format - 'NETCDF3_CLASSIC', 'NETCDF3_64BIT_OFFSET',
-                'NETCDF3_64BIT_DATA', 'NETCDF4_CLASSIC', or 'NETCDF4'. Defaults to same as input format.
-            @param limit_dim_size: Boolean flag indicating whether unlimited dimensions should be fixed
-            @param empty_var_list: List of strings denoting variable names for variables which should be created but not copied
-            @param invert_y: Boolean parameter indicating whether copied Y axis should be Southwards positive (None means same as source)
+        @param nc_out_path: path to netCDF output file
+        @param datatype_map_dict: dict containing any maps from source datatype to new datatype.
+            e.g. datatype_map_dict={'uint64': 'uint32'}  would convert all uint64 variables to uint32.
+        @param variable_options_dict: dict containing any overrides for per-variable variable creation
+            options. e.g. variable_options_dict={'sst': {'complevel': 2, 'zlib': True}} would apply
+            compression to variable 'sst'
+        @param dim_range_dict: dict of (start, end+1) tuples keyed by dimension name
+        @param dim_mask_dict: dict of boolean arrays keyed by dimension name
+        @param nc_format: output netCDF format - 'NETCDF3_CLASSIC', 'NETCDF3_64BIT_OFFSET',
+            'NETCDF3_64BIT_DATA', 'NETCDF4_CLASSIC', or 'NETCDF4'. Defaults to same as input format.
+        @param limit_dim_size: Boolean flag indicating whether unlimited dimensions should be fixed
+        @param empty_var_list: List of strings denoting variable names for variables which should be created but not copied
+        @param invert_y: Boolean parameter indicating whether copied Y axis should be Southwards positive (None means same as source)
         """
-
         assert (
             not dim_mask_dict
         ), "Dimension masking not supported for grids (would create irregular grid)."
@@ -1223,7 +1209,6 @@ class NetCDFGridUtils(NetCDFUtils):
         Function to set ACDD actual_range attribute in all non-index point-dimensioned variables
         N.B: This will fail if dataset is not writable
         """
-
         for variable_name, variable in self.netcdf_dataset.variables.items():
             # Skip all variables which can't be grids
             if len(variable.dimensions) < 2:
@@ -1356,8 +1341,7 @@ def _get_query_params(index_array, start_index, data_variable, max_bytes):
 
 
 def main():
-    """
-    Main function for quick and dirty testing
+    """Main function for quick and dirty testing
     """
     # Define command line arguments
     parser = argparse.ArgumentParser()

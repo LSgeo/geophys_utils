@@ -15,8 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""
-Main unit for test module
+"""Main unit for test module
 Unit tests for ncskosdump and ld_functions against a modified NetCDF file
 
 Created on 15/11/2016

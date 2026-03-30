@@ -15,8 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""
-CSV2NetCDFConverter concrete class for converting data to netCDF
+"""CSV2NetCDFConverter concrete class for converting data to netCDF
 
 Created on 28Mar.2018
 
@@ -58,8 +57,7 @@ logger.addHandler(console_handler)
 
 
 class Grav2NetCDFConverter(ToNetCDFConverterNational):
-    """
-    CSV2NetCDFConverter concrete class for converting CSV data to netCDF
+    """CSV2NetCDFConverter concrete class for converting CSV data to netCDF
     """
 
     gravity_metadata_list = [
@@ -135,16 +133,14 @@ class Grav2NetCDFConverter(ToNetCDFConverterNational):
         settings = {}
 
     def get_all_ellipsoiddatum_values_table_from_point_data(self):
-        """
-        Search each survey and retrieve the dinstict results for ellidpoisddatum. Use these to make a lookup table,
+        """Search each survey and retrieve the dinstict results for ellidpoisddatum. Use these to make a lookup table,
         following the existing pattern. Currently all values will be GRS80. However, better not to hardcode it,
         just in case.
         :return: dict "{"GRS80": "GRS80"}"
         """
 
     def get_keys_and_values_table(self, table_name: str):
-        """
-        Retrieves all data from a specified table, converts into a dictionary, and returns as a string. Used for tables
+        """Retrieves all data from a specified table, converts into a dictionary, and returns as a string. Used for tables
         with the key and value information such as accuracy or methodology.
         e.g. 'SUR': 'Positions determined by optical surveying methods or measured on surveyed points.'
         """
@@ -179,12 +175,10 @@ class Grav2NetCDFConverter(ToNetCDFConverterNational):
     def get_value_for_key(
         self, value_column: str, table_name: str, key_column: str, key: str
     ):
-        """
-        Retrieves all data from a specified table, converts into a dictionary, and returns as a string. Used for tables
+        """Retrieves all data from a specified table, converts into a dictionary, and returns as a string. Used for tables
         with the key and value information such as accuracy or methodology.
         e.g. 'SUR': 'Positions determined by optical surveying methods or measured on surveyed points.'
         """
-
         cleaned_key = str(key)
         list_of_characters_to_remove = ["\(", "\)", "'", "\,"]
         for character in list_of_characters_to_remove:
@@ -211,11 +205,9 @@ class Grav2NetCDFConverter(ToNetCDFConverterNational):
         netcdf_format="NETCDF4",
         national=True,
     ):
-        """
-        Concrete constructor for subclass Grav2NetCDFConverter
+        """Concrete constructor for subclass Grav2NetCDFConverter
         Needs to initialise object with everything that is required for the other Concrete methods
         """
-
         ToNetCDFConverterNational.__init__(self, nc_out_path, national, netcdf_format)
 
         self.survey_id = survey_id
@@ -234,8 +226,7 @@ class Grav2NetCDFConverter(ToNetCDFConverterNational):
         self.point_count = int(next(self.cursor)[0])
 
     def get_survey_metadata(self):
-        """
-        Retrieve all data from the gravsurveys and joined a.surveys tables for the current surveyid in the loop.
+        """Retrieve all data from the gravsurveys and joined a.surveys tables for the current surveyid in the loop.
         Uses same filters as other sql queries.
 
         :return:
@@ -252,8 +243,7 @@ class Grav2NetCDFConverter(ToNetCDFConverterNational):
         return dict(zip(field_names, survey_row))
 
     def get_national_survey_metadata(self):
-        """
-        Retrieve all survey metadata for gravity points from the db and return as a list of strings.
+        """Retrieve all survey metadata for gravity points from the db and return as a list of strings.
 
         :return:
         """
@@ -442,8 +432,7 @@ class Grav2NetCDFConverter(ToNetCDFConverterNational):
         # return (self.elipsoid_height_datums)
 
     def get_survey_wide_value_from_obs_table(self, field):
-        """
-        Helper function to retrieve a survey wide value from the observations table. The returning value is tested
+        """Helper function to retrieve a survey wide value from the observations table. The returning value is tested
         to be the only possible value (or null) within that survey.
         :param field: The target column in the observations table.
         :return: The first value of the specified field of the observations table.
@@ -472,8 +461,7 @@ class Grav2NetCDFConverter(ToNetCDFConverterNational):
         return value
 
     def get_global_attributes(self):
-        """
-        Concrete method to return dict of global attribute <key>:<value> pairs
+        """Concrete method to return dict of global attribute <key>:<value> pairs
         """
         start_date_sql = self.sql_strings_dict_from_yaml[
             "get_national_survey_metadata_order_by_startdate"
@@ -596,8 +584,7 @@ class Grav2NetCDFConverter(ToNetCDFConverterNational):
         return metadata_dict
 
     def set_global_attributes(self):
-        """
-        Set global attributes in netCDF output file
+        """Set global attributes in netCDF output file
         """
         for attribute_name, attribute_value in iter(
             self.get_global_attributes().items()
@@ -605,10 +592,8 @@ class Grav2NetCDFConverter(ToNetCDFConverterNational):
             setattr(self.nc_output_dataset, attribute_name, attribute_value or "")
 
     def get_dimensions(self):
+        """Concrete method to return OrderedDict of <dimension_name>:<dimension_size> pairs
         """
-        Concrete method to return OrderedDict of <dimension_name>:<dimension_size> pairs
-        """
-
         # formatted_sql = self.sql_strings_dict_from_yaml['get_dimensions'].format(self.survey_id)
         # self.cursor.execute(formatted_sql)
         # point_count = int(next(self.cursor)[0])
@@ -640,19 +625,16 @@ class Grav2NetCDFConverter(ToNetCDFConverterNational):
         return dimensions
 
     def variable_generator(self):
-        """
-        Concrete generator to yield NetCDFVariableNational objects
+        """Concrete generator to yield NetCDFVariableNational objects
 
         """
 
         def get_data(field_yml_settings_dict):
-            """
-            Call an sql query to retrieve a data list of the specified field. A different query is called for freeair
+            """Call an sql query to retrieve a data list of the specified field. A different query is called for freeair
             and bouguer.
             :param field_yml_settings_dict:
             :return: data list
             """
-
             if field_name in ["Freeair", "Bouguer"]:
                 formatted_sql = self.sql_strings_dict_from_yaml["get_data"].format(
                     field_yml_settings_dict["database_field_name"],
@@ -701,16 +683,13 @@ class Grav2NetCDFConverter(ToNetCDFConverterNational):
             return gravity_metadata
 
         def handle_key_value_cases(field_yml_settings_dict, lookup_table_dict):
-            """
-
-            :param field_yml_settings_dict: field settings as written in the yml file e.g. {'short_name': 'Ellipsoidhgt', 'dtype':
+            """:param field_yml_settings_dict: field settings as written in the yml file e.g. {'short_name': 'Ellipsoidhgt', 'dtype':
             'float32', 'database_field_name': 'ELLIPSOIDHGT', 'long_name': 'Ellipsoid Height', 'units': 'm',
             'fill_value': -99999.9, 'datum': 'ELLIPSOIDHGTDATUM'}
             :param lookup_table_dict: Dict of key and values pulled from oracle for tables such as accuracy and
             methodology.
             :return:
             """
-
             logger.debug("- - - - - - - - - - - - - - - -")
             logger.debug(
                 "handle_key_value_cases() with field value: "
@@ -754,16 +733,13 @@ class Grav2NetCDFConverter(ToNetCDFConverterNational):
             return transformed_data_list, converted_attributes_dict
 
         def handle_key_value_for_ellipsoid_datum(field_yml_settings_dict):
-            """
-
-            :param field_yml_settings_dict: field settings as written in the yml file e.g. {'short_name': 'Ellipsoidhgt', 'dtype':
+            """:param field_yml_settings_dict: field settings as written in the yml file e.g. {'short_name': 'Ellipsoidhgt', 'dtype':
             'float32', 'database_field_name': 'ELLIPSOIDHGT', 'long_name': 'Ellipsoid Height', 'units': 'm',
             'fill_value': -99999.9, 'datum': 'ELLIPSOIDHGTDATUM'}
             :param lookup_table_dict: Dict of key and values pulled from oracle for tables such as accuracy and
             methodology.
             :return:
             """
-
             logger.debug("- - - - - - - - - - - - - - - -")
 
             lookup_table_dict = {0: "GRS80"}
@@ -812,8 +788,7 @@ class Grav2NetCDFConverter(ToNetCDFConverterNational):
             return field_data_array, converted_attributes_dict
 
         def get_field_description(target_field):
-            """
-            Helper function to retrieve the field description from a connected oracle database
+            """Helper function to retrieve the field description from a connected oracle database
             :param target_field:
             :return field_description:
             """
@@ -826,8 +801,7 @@ class Grav2NetCDFConverter(ToNetCDFConverterNational):
             return field_description
 
         def build_attribute_dict_and_data_list_of_variables(field_yml_settings_dict):
-            """
-            For each field, the correct attributes are added. This is based on the grav2netcd_converter settings.
+            """For each field, the correct attributes are added. This is based on the grav2netcd_converter settings.
             The data is converted for values that have function as a lookup table. For each field, the relevant
             attribute dictionary, and np data array is returned.
             :param field_name: field name as written in yml file e.g. Ellipsoidhgt
@@ -836,7 +810,6 @@ class Grav2NetCDFConverter(ToNetCDFConverterNational):
             'fill_value': -99999.9, 'datum': 'ELLIPSOIDHGTDATUM'}
             :return: for each field value, return its attribute dictionary, and data array or converted data array.
             """
-
             # values to parse into NetCDFVariableNational attributes list. Once passed they become a netcdf variable attribute.
             # lookup_table is later converted to comments.
             list_of_possible_value = [

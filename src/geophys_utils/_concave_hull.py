@@ -1,6 +1,5 @@
 #!/bin/env python
-"""
-Calculate the concave hull of a set of points.
+"""Calculate the concave hull of a set of points.
 
 Adapted from Adriano Moreira and Maribel Yasmina Santos 2007.
 """
@@ -25,8 +24,7 @@ def bbox(a, b):
 
 
 def doBoundingBoxesIntersect(b1, b2):
-    """
-    Check if bounding boxes do intersect. If one bounding box touches
+    """Check if bounding boxes do intersect. If one bounding box touches
     the other, they do intersect.
     """
     if b1["ll_x"] > b2["ur_x"]:
@@ -54,8 +52,7 @@ def isPointOnLine(a, b, c):
 
 
 def isPointRightOfLine(a, b, c):
-    """
-    Check if a point (c) is right of a line (a-b).
+    """Check if a point (c) is right of a line (a-b).
     If (c) is on the line, it is not right it.
     """
     # move to origin
@@ -65,8 +62,7 @@ def isPointRightOfLine(a, b, c):
 
 
 def lineSegmentTouchesOrCrossesLine(a, b, c, d):
-    """
-    Check if line segment (a-b) touches or crosses
+    """Check if line segment (a-b) touches or crosses
     line segment (c-d).
     """
     return (
@@ -134,8 +130,7 @@ class PointSet:
         self.npoints = self.npoints + 1
 
     def nearest_neighbors(self, current_point, k):
-        """
-        Return the indices of the k nearest neighbors (or fewer if not enough points left).
+        """Return the indices of the k nearest neighbors (or fewer if not enough points left).
         """
         kk = k
 

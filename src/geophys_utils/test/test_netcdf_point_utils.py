@@ -15,8 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""
-Unit tests for geophys_utils._netcdf_point_utils against a NetCDF line data file
+"""Unit tests for geophys_utils._netcdf_point_utils against a NetCDF line data file
 
 Created on 15/11/2016
 
@@ -70,7 +69,8 @@ EXPECTED_GML = "POLYGON((138.3498 -30.2894, 138.3093 -30.1768, 138.2940 -30.1189
 
 class TestNetCDFPointUtilsConstructor(unittest.TestCase):
     """Unit tests for TestNetCDFPointUtils Constructor.
-    N.B: This should be run first"""
+    N.B: This should be run first
+    """
 
     def test_netcdf_point_utils_constructor(self):
         print("Testing NetCDFPointUtils constructor")
@@ -144,7 +144,6 @@ class TestNetCDFPointUtilsGridFunctions(unittest.TestCase):
 # Define test suites
 def test_suite():
     """Returns a test suite of all the tests in this module."""
-
     test_classes = [
         TestNetCDFPointUtilsConstructor,
         TestNetCDFPointUtilsFunctions1,

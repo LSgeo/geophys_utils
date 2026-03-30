@@ -1,5 +1,4 @@
-"""
-Created on 20 Jul. 2018
+"""Created on 20 Jul. 2018
 
 @author: Alex
 """

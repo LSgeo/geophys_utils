@@ -15,8 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""
-Created on 23Nov.,2016
+"""Created on 23Nov.,2016
 
 @author: Alex Ip
 """
@@ -29,8 +28,7 @@ from ._crs_utils import get_utm_wkt, transform_coords
 
 
 def line_length(line):
-    """
-    Function to return length of line
+    """Function to return length of line
     @param line: iterable containing two two-ordinate iterables, e.g. 2 x 2 array or 2-tuple of 2-tuples
 
     @return length: Distance between start & end points in native units
@@ -41,8 +39,7 @@ def line_length(line):
 
 
 def point_along_line(line, distance):
-    """
-    Function to return a point the specified distance along the line
+    """Function to return a point the specified distance along the line
     @param line: iterable containing two two-ordinate iterables, e.g. 2 x 2 array or 2-tuple of 2-tuples
     @param distance: Distance along line new point should be
 
@@ -63,8 +60,7 @@ def point_along_line(line, distance):
 
 
 def utm_coords(coordinate_array, wkt):
-    """
-    Function to convert coordinates to the appropriate UTM CRS
+    """Function to convert coordinates to the appropriate UTM CRS
     @param coordinate_array: Array of shape (n, 2) or iterable containing coordinate pairs
 
     @return wkt: WKT for UTM CRS
@@ -79,8 +75,7 @@ def utm_coords(coordinate_array, wkt):
 
 
 def coords2distance(coordinate_array):
-    """
-    Function to calculate cumulative distance in metres from native (lon/lat) coordinates
+    """Function to calculate cumulative distance in metres from native (lon/lat) coordinates
     @param coordinate_array: Array of shape (n, 2) or iterable containing coordinate pairs
 
     @return distance_array: Array of shape (n) containing cumulative distances from first coord
@@ -106,8 +101,7 @@ def coords2distance(coordinate_array):
 
 
 def sample_transect(transect_vertices, wkt, sample_metres):
-    """
-    Function to return a list of sample points sample_metres apart along lines between transect vertices
+    """Function to return a list of sample points sample_metres apart along lines between transect vertices
     @param transect_vertices: list or array of transect vertex coordinates
     @param wkt: coordinate reference system for transect_vertices
     @param sample_metres: distance between sample points in metres

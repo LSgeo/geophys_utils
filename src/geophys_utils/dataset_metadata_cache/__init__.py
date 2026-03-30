@@ -1,5 +1,4 @@
-"""
-Created on 20 Jul. 2018
+"""Created on 20 Jul. 2018
 
 @author: Alex
 """
@@ -15,8 +14,7 @@ from ._sqlite_dataset_metadata_cache import SQLiteDatasetMetadataCache
 
 
 def get_dataset_metadata_cache(db_engine="SQLite", *args, **kwargs):
-    """
-    Class factory function to return subclass of DatasetMetadataCache for specified db_engine
+    """Class factory function to return subclass of DatasetMetadataCache for specified db_engine
     """
     if db_engine == "SQLite":
         return SQLiteDatasetMetadataCache(*args, **kwargs)

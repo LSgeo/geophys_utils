@@ -15,8 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""
-Created on 18Jun.,2018
+"""Created on 18Jun.,2018
 
 @author: Andrew Turner & Alex Ip
 """
@@ -43,8 +42,7 @@ def plot_point_dataset(
     point_size=10,
     point_step=1,
 ):
-    """
-    Function to plot data points on a map
+    """Function to plot data points on a map
     @param netcdf_point_utils: NetCDFPointUtils object wrapping a netCDF dataset
     @param variable_to_map: String specifying variable name for colour map
     @param utm_bbox: UTM Bounding box of form [xmin, ymin, xmax, ymax] or None for all points. Default=None
@@ -170,8 +168,7 @@ def plot_point_dataset(
 
 
 def main():
-    """
-    main function for quick and dirty testing
+    """Main function for quick and dirty testing
     """
     nc_path = sys.argv[1]
     variable_to_plot = sys.argv[2]

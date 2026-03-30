@@ -15,8 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""
-Created on 16/11/2016
+"""Created on 16/11/2016
 
 @author: Alex Ip
 """
@@ -60,8 +59,7 @@ DEFAULT_VAR_OPTIONS = {
 
 
 class NetCDFLineUtils(NetCDFPointUtils):
-    """
-    NetCDFLineUtils class to do various fiddly things with NetCDF geophysics line data files.
+    """NetCDFLineUtils class to do various fiddly things with NetCDF geophysics line data files.
     """
 
     def __init__(
@@ -73,8 +71,7 @@ class NetCDFLineUtils(NetCDFPointUtils):
         cache_path=None,
         debug=False,
     ):
-        """
-        NetCDFLineUtils Constructor
+        """NetCDFLineUtils Constructor
         @parameter netcdf_dataset: netCDF4.Dataset object containing a line dataset
         @parameter enable_disk_cache: Boolean parameter indicating whether local cache file should be used, or None for default
         @parameter enable_memory_cache: Boolean parameter indicating whether values should be cached in memory or not.
@@ -101,8 +98,7 @@ class NetCDFLineUtils(NetCDFPointUtils):
     def get_line_masks(
         self, line_numbers=None, subset_mask=None, get_contiguous_lines=False
     ):
-        """
-        Generator to return boolean masks of dimension 'point' for specified lines
+        """Generator to return boolean masks of dimension 'point' for specified lines
         @param line_numbers: list of integer line number or single integer line number, or None for all lines
         @param subset_mask: optional Boolean mask for subset (e.g. spatial mask)
         @param get_contiguous_lines: Boolean flag indicating whether masked gaps in lines should be included
@@ -167,8 +163,7 @@ class NetCDFLineUtils(NetCDFPointUtils):
         subsampling_distance=None,
         get_contiguous_lines=False,
     ):
-        """
-        Generator to return coordinates and specified variable values for specified lines
+        """Generator to return coordinates and specified variable values for specified lines
         @param line_numbers: list of integer line number or single integer line number
         @param variables: list of variable name strings or single variable name string. None returns all variables
         @param bounds: Spatial bounds for point selection
@@ -248,8 +243,7 @@ class NetCDFLineUtils(NetCDFPointUtils):
                 yield line_number, line_dict
 
     def get_line_values(self):
-        """
-        Function to retrieve array of line number values from self.netcdf_dataset
+        """Function to retrieve array of line number values from self.netcdf_dataset
         """
         line_variable = self.netcdf_dataset.variables.get("line")
         assert line_variable, 'Variable "line" does not exist in netCDF file'
@@ -267,8 +261,7 @@ class NetCDFLineUtils(NetCDFPointUtils):
         return line_values
 
     def get_line_index_values(self):
-        """
-        Function to retrieve array of line_index indices from self.netcdf_dataset
+        """Function to retrieve array of line_index indices from self.netcdf_dataset
         """
         if len(self.netcdf_dataset.variables["line"]):  # Multiple lines
             line_index_variable = self.netcdf_dataset.variables.get("line_index")
@@ -285,8 +278,7 @@ class NetCDFLineUtils(NetCDFPointUtils):
         return line_indices
 
     def get_cached_line_arrays(self):
-        """
-        Helper function to cache both line & line_index
+        """Helper function to cache both line & line_index
         """
         line = None
         line_index = None
@@ -388,8 +380,7 @@ class NetCDFLineUtils(NetCDFPointUtils):
 
     @property
     def line(self):
-        """
-        Property getter function to return array of all line numbers
+        """Property getter function to return array of all line numbers
         Always cache this in memory - should only be small
         The order of priority for retrieval is memory, memcached, disk cache then dataset.
         """
@@ -436,8 +427,7 @@ class NetCDFLineUtils(NetCDFPointUtils):
 
     @property
     def line_index(self):
-        """
-        Property getter function to return line_indices for all points
+        """Property getter function to return line_indices for all points
         The order of priority for retrieval is memory, memcached, disk cache then dataset.
         """
         line = None

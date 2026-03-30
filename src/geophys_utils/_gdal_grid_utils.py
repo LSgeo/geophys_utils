@@ -15,8 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""
-Created on 8Dec.,2016
+"""Created on 8Dec.,2016
 
 @author: Alex Ip
 """
@@ -57,8 +56,7 @@ def get_gdal_wcs_dataset(wcs_url):
 
 
 def get_gdal_grid_values(gdal_dataset, sample_points, from_crs, band_no=1):
-    """
-    Function to return values at a series of points from a GDAL dataset
+    """Function to return values at a series of points from a GDAL dataset
     """
     geotransform = gdal_dataset.GetGeoTransform()
     to_crs = gdal_dataset.GetProjection()

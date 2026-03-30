@@ -15,8 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""
-Author: Roger Edberg (roger.edberg@ga.gov.au)
+"""Author: Roger Edberg (roger.edberg@ga.gov.au)
 Functions for BiLinear Recursive Bisection (BLRB).
 
 All shape references here follow the numpy convention (nrows, ncols), which
@@ -33,8 +32,7 @@ DEFAULT_SHAPE = (8, 8)
 
 
 def bilinear(shape, fUL, fUR, fLR, fLL, dtype=numpy.float64):
-    """
-    Bilinear interpolation of four scalar values.
+    """Bilinear interpolation of four scalar values.
 
     :param shape:
         Shape of interpolated grid (nrows, ncols).
@@ -57,7 +55,6 @@ def bilinear(shape, fUL, fUR, fLR, fLL, dtype=numpy.float64):
     :return:
         Array of data values interpolated between corners.
     """
-
     s, t = [a.astype(dtype) for a in numpy.ogrid[0 : shape[0], 0 : shape[1]]]
 
     s /= shape[0] - 1.0
@@ -67,8 +64,7 @@ def bilinear(shape, fUL, fUR, fLR, fLL, dtype=numpy.float64):
 
 
 def indices(origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE):
-    """
-    Generate corner indices for a grid block.
+    """Generate corner indices for a grid block.
 
     :param origin:
         Block origin (2-tuple).
@@ -83,8 +79,7 @@ def indices(origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE):
 
 
 def subdivide(origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE):
-    """
-    Generate indices for grid sub-blocks.
+    """Generate indices for grid sub-blocks.
 
     :param origin:
         Block origin (2-tuple).
@@ -114,8 +109,7 @@ def subdivide(origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE):
 def interpolate_block(
     origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE, eval_func=None, grid=None
 ):
-    """
-    Interpolate a grid block.
+    """Interpolate a grid block.
 
     :param origin:
         Block origin (2-tuple).
@@ -154,8 +148,7 @@ def interpolate_block(
 def interpolate_grid(
     depth=0, origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE, eval_func=None, grid=None
 ):
-    """
-    Interpolate a data grid.
+    """Interpolate a data grid.
 
     :param depth:
         Recursive bisection depth.
