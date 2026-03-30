@@ -14,7 +14,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""Created on 16/11/2016
+"""Created on 16/11/2016.
 
 @author: Alex Ip
 """
@@ -81,8 +81,7 @@ SHAPE_ORDINATE_DECIMAL_PLACES = 6  # Number of decimal places for shape vertex o
 
 
 class NetCDFPointUtils(NetCDFUtils):
-    """NetCDFPointUtils class to do various fiddly things with NetCDF geophysics point data files.
-    """
+    """NetCDFPointUtils class to do various fiddly things with NetCDF geophysics point data files."""
 
     CACHE_VARIABLE_PARAMETERS = {
         "complevel": 4,
@@ -103,11 +102,12 @@ class NetCDFPointUtils(NetCDFUtils):
         s3_bucket=None,
         debug=False,
     ):
-        """NetCDFPointUtils Constructor
+        """NetCDFPointUtils Constructor.
+
         @parameter netcdf_dataset: netCDF4.Dataset object containing a point dataset
         @parameter enable_disk_cache: Boolean parameter indicating whether local cache file should be used, or None for default
         @parameter enable_memory_cache: Boolean parameter indicating whether values should be cached in memory or not.
-        @parameter debug: Boolean parameter indicating whether debug output should be turned on or not
+        @parameter debug: Boolean parameter indicating whether debug output should be turned on or not.
         """
         # Start of init function - Call inherited constructor first
         super().__init__(netcdf_dataset=netcdf_dataset, debug=debug)
@@ -183,7 +183,7 @@ class NetCDFPointUtils(NetCDFUtils):
 
     def fetch_array(self, source_variable, dest_array=None):
         """Helper function to retrieve entire 1D array in pieces < self.max_bytes in size
-        @param source_variable: netCDF variable from which to retrieve data
+        @param source_variable: netCDF variable from which to retrieve data.
         """
         source_len = source_variable.shape[0]
         pieces_required = int(
@@ -227,8 +227,7 @@ class NetCDFPointUtils(NetCDFUtils):
         return dest_array
 
     def get_polygon(self):
-        """Returns GML representation of convex hull polygon for dataset
-        """
+        """Returns GML representation of convex hull polygon for dataset."""
         return (
             "POLYGON(("
             + ", ".join(
@@ -241,20 +240,22 @@ class NetCDFPointUtils(NetCDFUtils):
         )
 
     def get_spatial_mask(self, bounds, bounds_wkt=None):
-        """Return boolean mask of dimension 'point' for all coordinates within specified bounds and CRS
+        """Return boolean mask of dimension 'point' for all coordinates within specified bounds and CRS.
+        
         @parameter bounds: Either an iterable containing [<xmin>, <ymin>, <xmax>, <ymax>] or a shapely (multi)polygon
         @parameter bounds_wkt: WKT for bounds CRS. Defaults to dataset native CRS
-        :return mask: Boolean array of size n
+        :return mask: Boolean array of size n.
         """
         # TODO: Deal with this in a more high-level way
         POINT_CHUNK_SIZE = 1048576  # Number of points to check at any one time to keep memory usage down
 
         def get_intersection_mask(points, geometry):
-            """Determine if points lie inside (multi)polygon
+            """Determine if points lie inside (multi)polygon.
+        
             N.B: points and geometry must be in the same CRS
             :param points: 2 x n array of input coordinates
             :param geometry: (multi)polygon
-            :return mask: Boolean array of size n
+            :return mask: Boolean array of size n.
             """
             mask = np.zeros(shape=(points.shape[0]), dtype=bool)
 
@@ -435,7 +436,8 @@ class NetCDFPointUtils(NetCDFUtils):
         grid_wkt=None,
         point_step=1,
     ):
-        """Function to grid points in a specified bounding rectangle to a regular grid of the specified resolution and crs
+        """Function to grid points in a specified bounding rectangle to a regular grid of the specified resolution and crs.
+        
         @parameter grid_resolution: cell size of regular grid in grid CRS units
         @parameter variables: Single variable name string or list of multiple variable name strings. Defaults to all point variables
         @parameter native_grid_bounds: Spatial bounding box of area to grid in native coordinates
@@ -575,7 +577,8 @@ class NetCDFPointUtils(NetCDFUtils):
         resampling_method="linear",
         point_step=1,
     ):
-        """Function to grid points in a specified native bounding rectangle to a regular grid of the specified resolution in its local UTM CRS
+        """Function to grid points in a specified native bounding rectangle to a regular grid of the specified resolution in its local UTM CRS.
+        
         @parameter grid_resolution: cell size of regular grid in metres (UTM units)
         @parameter variables: Single variable name string or list of multiple variable name strings. Defaults to all point variables
         @parameter native_grid_bounds: Spatial bounding box of area to grid in native coordinates
@@ -607,9 +610,10 @@ class NetCDFPointUtils(NetCDFUtils):
         )
 
     def utm_coords(self, coordinate_array, wkt=None):
-        """Function to convert coordinates to the appropriate UTM CRS
+        """Function to convert coordinates to the appropriate UTM CRS.
+
         @param coordinate_array: Array of shape (n, 2) or iterable containing coordinate pairs
-        @param wkt: WKT for source CRS - default to native
+        @param wkt: WKT for source CRS - default to native.
 
         @return wkt: WKT for UTM CRS - default to native
         @return coordinate_array: Array of shape (n, 2) containing UTM coordinate pairs
@@ -618,9 +622,10 @@ class NetCDFPointUtils(NetCDFUtils):
         return utm_coords(coordinate_array, wkt)
 
     def coords2metres(self, coordinate_array, wkt=None):
-        """Function to calculate cumulative distance in metres from coordinates in specified CRS
+        """Function to calculate cumulative distance in metres from coordinates in specified CRS.
+
         @param coordinate_array: Array of shape (n, 2) or iterable containing coordinate pairs
-        @param wkt: WKT for coordinate CRS - default to native
+        @param wkt: WKT for coordinate CRS - default to native.
 
         @return distance_array: Array of shape (n) containing cumulative distances from first coord
         """
@@ -630,20 +635,21 @@ class NetCDFPointUtils(NetCDFUtils):
         return coords2distance(utm_coord_array)
 
     def get_convex_hull(self, to_wkt=None):
-        """Function to return vertex coordinates of a convex hull polygon around all points
+        """Function to return vertex coordinates of a convex hull polygon around all points.
+
         Implements abstract base function in NetCDFUtils
-        @param to_wkt: CRS WKT for shape
+        @param to_wkt: CRS WKT for shape.
         """
         return points2convex_hull(transform_coords(self.xycoords, self.wkt, to_wkt))
 
     def get_concave_hull(
         self, to_wkt=None, smoothness=None, clockwise_polygon_orient=False
     ):
-        """\
-        Returns the concave hull (as a shapely polygon) of all points.
+        """Returns the concave hull (as a shapely polygon) of all points.
+
         Implements abstract base function in NetCDFUtils
         @param to_wkt: CRS WKT for shape
-        @param smoothness: distance to buffer (kerf) initial shape outwards then inwards to simplify it
+        @param smoothness: distance to buffer (kerf) initial shape outwards then inwards to simplify it.
         """
         hull = concaveHull(transform_coords(self.xycoords, self.wkt, to_wkt))
         shapely_polygon = shape({"type": "Polygon", "coordinates": [hull.tolist()]})
@@ -672,8 +678,9 @@ class NetCDFPointUtils(NetCDFUtils):
         max_distance=None,
         secondary_mask=None,
     ):
-        """Function to determine nearest neighbours using cKDTree
-        N.B: All distances are expressed in the native dataset CRS
+        """Function to determine nearest neighbours using cKDTree.
+        
+        N.B: All distances are expressed in the native dataset CRS.
 
         @param coordinates: two-element XY coordinate tuple, list or array
         @param wkt: Well-known text of coordinate CRS - defaults to native dataset CRS
@@ -746,8 +753,7 @@ class NetCDFPointUtils(NetCDFUtils):
         indexing_variable_name=None,
         indexing_dimension="point",
     ):
-        """Function to return mask array based on lookup variable
-        """
+        """Function to return mask array based on lookup variable."""
         if lookup_variable_name:
             lookup_variable = self.netcdf_dataset.variables[lookup_variable_name]
 
@@ -880,8 +886,7 @@ class NetCDFPointUtils(NetCDFUtils):
         count_variable_name=None,
         point_count=None,
     ):
-        """Function to return mask array based on index variable
-        """
+        """Function to return mask array based on index variable."""
         try:
             lookup_variable = self.netcdf_dataset.variables[lookup_variable_name]
         except:
@@ -937,8 +942,7 @@ class NetCDFPointUtils(NetCDFUtils):
         mask=None,
         indexing_dimension="point",
     ):
-        """Function to expand lookup variables and return an array of the required size
-        """
+        """Function to expand lookup variables and return an array of the required size."""
         if lookup_variable_name:
             lookup_variable = self.netcdf_dataset.variables[lookup_variable_name]
 
@@ -1019,13 +1023,14 @@ class NetCDFPointUtils(NetCDFUtils):
         mask=None,
         yield_variable_attributes_first=False,
     ):
-        """Generator to optionally yield variable attributes followed by all point data for the specified point index range
+        """Generator to optionally yield variable attributes followed by all point data for the specified point index range.
+        
         Used to retrieve data as chunks for outputting as point-wise lists of lists
         @param start_index: start point index of range to read
         @param end_index: end point index of range to read. Defaults to number of points
         @param field_list: Optional list of field names to read. Default is None for all variables
         @param mask: Optional Boolean mask array to subset points
-        @param yield_variable_attributes_first: Boolean flag to determine whether variable attribute dict is yielded first. Defaults to False
+        @param yield_variable_attributes_first: Boolean flag to determine whether variable attribute dict is yielded first. Defaults to False.
 
         @yield variable_attributes: dict of netCDF variable attributes. Optionally the first item yielded if yield_variable_attributes_first is True
         @yield point_value_list: List of single values for 1D variables or sub-lists for 2D variables for a single point
@@ -1159,11 +1164,12 @@ class NetCDFPointUtils(NetCDFUtils):
         read_chunk_size=None,
         yield_variable_attributes_first=True,
     ):
-        """Generator to yield variable attributes followed by lists of values for all points
+        """Generator to yield variable attributes followed by lists of values for all points.
+        
         @param field_list: Optional list of field names to read. Default is None for all variables
         @param mask: Optional Boolean mask array to subset points
         @param read_chunk_size: Number of points to read from the netCDF per chunk (for greater efficiency than single point reads)
-        @param yield_variable_attributes_first: Boolean flag to determine whether variable attribute dict is yielded first. Defaults to True
+        @param yield_variable_attributes_first: Boolean flag to determine whether variable attribute dict is yielded first. Defaults to True.
 
         @yield variable_attributes: dict of netCDF variable attributes. Optionally the first item yielded if yield_variable_attributes_first is True
         @yield point_value_list: List of single values for 1D variables or sub-lists for 2D variables for a single point
@@ -1201,8 +1207,7 @@ class NetCDFPointUtils(NetCDFUtils):
         )
 
     def get_xy_coord_values(self):
-        """Function to return a full in-memory coordinate array from source dataset
-        """
+        """Function to return a full in-memory coordinate array from source dataset."""
         logger.debug("Reading xy coordinates from source dataset")
 
         xycoord_values = np.zeros(
@@ -1225,7 +1230,8 @@ class NetCDFPointUtils(NetCDFUtils):
 
     @property
     def xycoords(self):
-        """Property getter function to return pointwise array of XY coordinates
+        """Property getter function to return pointwise array of XY coordinates.
+        
         The order of priority for retrieval is memory, memcached, disk cache then dataset.
         """
         xycoords = None
@@ -1328,8 +1334,7 @@ class NetCDFPointUtils(NetCDFUtils):
 
     @property
     def point_variables(self):
-        """Property getter function to return point_variables as required
-        """
+        """Property getter function to return point_variables as required."""
         if not self._point_variables:
             logger.debug("Setting point_variables property")
             self._point_variables = list(
@@ -1353,8 +1358,7 @@ class NetCDFPointUtils(NetCDFUtils):
 
     @property
     def data_variable_list(self):
-        """Property getter function to return data_variable_list as required
-        """
+        """Property getter function to return data_variable_list as required."""
         if not self._data_variable_list:
             logger.debug("Setting data_variable_list property")
             self._data_variable_list = [
@@ -1366,8 +1370,7 @@ class NetCDFPointUtils(NetCDFUtils):
 
     @property
     def kdtree(self):
-        """Property getter function to return data_variable_list as required
-        """
+        """Property getter function to return data_variable_list as required."""
         if not self._kdtree:
             logger.debug(
                 "Indexing full dataset with {} points into KDTree...".format(
@@ -1391,12 +1394,10 @@ class NetCDFPointUtils(NetCDFUtils):
         empty_var_list=[],
         to_crs=None,
     ):
-        """Function to copy a netCDF dataset to another one with potential changes to size, format,
-        variable creation options and datatypes.
+        """Function to copy a netCDF dataset to another one with potential changes to size, format, variable creation options and datatypes.
 
         @param nc_out_path: path to netCDF output file
         @param to_crs: WKT of destination CRS
-
         """
         if var_list:
             expanded_var_list = list(
@@ -1508,9 +1509,9 @@ class NetCDFPointUtils(NetCDFUtils):
     def set_global_attributes(
         self, compute_shape=False, clockwise_polygon_orient=False
     ):
-        """\
-        Function to set  global geometric metadata attributes in netCDF file
-        N.B: This will fail if dataset is not writable
+        """Function to set  global geometric metadata attributes in netCDF file.
+
+        N.B: This will fail if dataset is not writable.
         """
         try:
             metadata_srs = get_spatial_ref_from_wkt(METADATA_CRS)
@@ -1610,9 +1611,9 @@ class NetCDFPointUtils(NetCDFUtils):
             raise
 
     def set_variable_actual_range_attribute(self):
-        """\
-        Function to set ACDD actual_range attribute in all non-index point-dimensioned variables
-        N.B: Will fail if dataset is not writable
+        """Function to set ACDD actual_range attribute in all non-index point-dimensioned variables.
+        
+        N.B: Will fail if dataset is not writable.
         """
         self.netcdf_dataset.set_auto_mask(True)
 
@@ -1650,8 +1651,7 @@ class NetCDFPointUtils(NetCDFUtils):
 
 
 def main(debug=True):
-    """Main function for quick and dirty testing
-    """
+    """Main function for quick and dirty testing."""
     netcdf_path = sys.argv[1]
 
     netcdf_dataset = netCDF4.Dataset(netcdf_path, "r")

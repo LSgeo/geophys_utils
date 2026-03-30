@@ -15,7 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""ToNetCDFConverter abstract base class for converting data to netCDF
+"""ToNetCDFConverter abstract base class for converting data to netCDF.
 
 Created on 28Mar.2018
 
@@ -48,8 +48,7 @@ from geophys_utils import get_spatial_ref_from_wkt
 
 
 class NetCDFVariable(object):
-    """Class to manage netCDF variable contents
-    """
+    """Class to manage netCDF variable contents."""
 
     # Define single default chunk size for all dimensions
     DEFAULT_CHUNK_SIZE = 1024
@@ -74,11 +73,12 @@ class NetCDFVariable(object):
         chunk_size=None,  # None means take default, zero means not chunked
         variable_parameters=None,
     ):
-        """Constructor for class NetCDFVariable to manage netCDF variable contents
+        """Constructor for class NetCDFVariable to manage netCDF variable contents.
+
         @param variable_parameters: dict containing parameters for netCDF variable creation
         @param dtype: Optional datatype to override data
         @param chunk_size: single default chunk size for all dimensions. None means take default, zero means not chunked.
-            Note that custom chunk sizes per dimension can be specified using chunksizes value in variable_parameters
+            Note that custom chunk sizes per dimension can be specified using chunksizes value in variable_parameters.
         """
         self.short_name = short_name  # String used for variable name
         self.data = data  # Numpy array or None for not set
@@ -110,8 +110,7 @@ class NetCDFVariable(object):
                 ]
 
     def create_var_in_dataset(self, nc_output_dataset):
-        """Function to create netCDF variable in specified dataset
-        """
+        """Function to create netCDF variable in specified dataset."""
         variable_parameters = dict(
             self.variable_parameters
         )  # Copy this to avoid modifying original
@@ -170,8 +169,7 @@ class NetCDFVariable(object):
 
 
 class ToNetCDFConverter(object):
-    """ToNetCDFConverter abstract base class for converting data to netCDF
-    """
+    """ToNetCDFConverter abstract base class for converting data to netCDF."""
 
     @abc.abstractmethod
     def __init__(
@@ -181,13 +179,14 @@ class ToNetCDFConverter(object):
         default_chunk_size=None,  # None means take default, zero means not chunked.
         default_variable_parameters=None,
     ):
-        """Abstract base constructor for abstract base class ToNetCDFConverter
+        """Abstract base constructor for abstract base class ToNetCDFConverter.
+
         Needs to initialise object with everything that is required for the other abstract base methods
         N.B: Make sure this base class constructor is called from the subclass constructor
         @param nc_out_path: Path to output netCDF file on filesystem
         @param netcdf_format: Format for netCDF file. Defaults to 'NETCDF4_CLASSIC'
         @param default_chunk_size: single default chunk size for all dimensions. None means take default, zero means not chunked.
-        @param default_variable_parameters: dict containing default parameters for netCDF variable creation
+        @param default_variable_parameters: dict containing default parameters for netCDF variable creation.
         """
         self.nc_out_path = nc_out_path
 
@@ -200,8 +199,7 @@ class ToNetCDFConverter(object):
         )
 
     def __del__(self):
-        """Concrete destructor for abstract base class ToNetCDFConverter
-        """
+        """Concrete destructor for abstract base class ToNetCDFConverter."""
         try:
             self.nc_output_dataset.close()
             logger.debug("Closed netCDF output dataset")
@@ -210,14 +208,12 @@ class ToNetCDFConverter(object):
 
     @abc.abstractmethod
     def get_global_attributes(self):
-        """Abstract base method to return dict of global attribute <key>:<value> pairs
-        """
+        """Abstract base method to return dict of global attribute <key>:<value> pairs."""
         return {}
 
     @abc.abstractmethod
     def get_dimensions(self):
-        """Abstract base method to return OrderedDict of <dimension_name>:<dimension_size> pairs
-        """
+        """Abstract base method to return OrderedDict of <dimension_name>:<dimension_size> pairs."""
         dimensions = OrderedDict()
 
         # =======================================================================
@@ -230,8 +226,7 @@ class ToNetCDFConverter(object):
 
     @abc.abstractmethod
     def variable_generator(self):
-        """Abstract base generator to yield NetCDFVariable objects
-        """
+        """Abstract base generator to yield NetCDFVariable objects."""
         # =======================================================================
         # # Example of latitude dimension variable creation
         # yield self.build_dim_index_variable(dimension_name='lat',
@@ -274,15 +269,11 @@ class ToNetCDFConverter(object):
         return
 
     def preprocess_netcdf(self):
-        """Function to perform any pre-processing on netCDF file before dimensions and variables
-        have been created. May be overridden in subclass.
-        """
+        """Function to perform any pre-processing on netCDF file before dimensions and variables have been created. May be overridden in subclass."""
         return
 
     def postprocess_netcdf(self):
-        """Function to perform any post-processing on netCDF file after dimensions and variables
-        have been created. May be overridden in subclass.
-        """
+        """Function to perform any post-processing on netCDF file after dimensions and variables have been created. May be overridden in subclass."""
         return
 
     def build_dim_index_variable(
@@ -295,8 +286,9 @@ class ToNetCDFConverter(object):
         standard_name=None,
         descending=False,
     ):
-        """Concrete method to build dimension index variable
-        N.B: Need to have dimension defined prior to calling this
+        """Concrete method to build dimension index variable.
+
+        N.B: Need to have dimension defined prior to calling this.
 
         @param dimension_name: Name of dimension
         @param min_value: Minimum value in dimension variable array
@@ -344,17 +336,19 @@ class ToNetCDFConverter(object):
         )
 
     def build_crs_variable(self, crs, grid_dimensions=None):
-        """Concrete method to build "crs" or "transverse_mercator" NetCDFVariable instance from well known text
+        """Concrete method to build "crs" or "transverse_mercator" NetCDFVariable instance from well known text.
+
         N.B: Need to create dimensions and dimension variables first if grid_dimensions is specified
         @param crs: Either osgeo.osr.SpatialReference or WKT string defining Coordinate Reference System
         @grid_dimensions: list of two dimension names for spatial grid, or None for ungridded data
-        @grid_resolutions: list of two floats defining resolutions for spatial grid, or None for ungridded data
+        @grid_resolutions: list of two floats defining resolutions for spatial grid, or None for ungridded data.
         """
 
         def get_geotransform(grid_dimensions):
             """Helper function to return geotransform for gridded data.
+            
             Assumes yx array ordering for grid
-            N.B: This will fail if dimensions and dimension variables don't exist
+            N.B: This will fail if dimensions and dimension variables don't exist.
             """
             assert len(grid_dimensions) == 2, "grid_dimensions must be of length 2"
             assert set(grid_dimensions) <= set(
@@ -450,8 +444,7 @@ class ToNetCDFConverter(object):
         )
 
     def convert2netcdf(self):
-        """Concrete method to output netCDF
-        """
+        """Concrete method to output netCDF."""
         self.preprocess_netcdf()
 
         # Create dimensions in netCDF output file

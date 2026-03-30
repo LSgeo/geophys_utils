@@ -1,4 +1,4 @@
-"""Created on 13 Dec 2019
+"""Created on 13 Dec 2019.
 
 @author: Alex Ip
 """
@@ -13,8 +13,10 @@ logger = logging.getLogger(__name__)
 
 
 def main():
-    """Quick and dirty test routine. Takes the name of a file containing a list of NCI OPeNDAP endpoints
-    and prints each endpoint address along with the class name of the NetCDFUtils subclass
+    """Quick and dirty test routine.
+     
+    Takes the name of a file containing a list of NCI OPeNDAP endpoints
+    and prints each endpoint address along with the class name of the NetCDFUtils subclass.
     """
     assert sys.argv, "Please supply filename containing a list of NCI OPeNDAP endpoints"
     nc_list_file_path = sys.argv[1]

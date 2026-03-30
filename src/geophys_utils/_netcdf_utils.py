@@ -15,7 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""NetCDFUtils class implementing useful functionality against netCDF files
+"""NetCDFUtils class implementing useful functionality against netCDF files.
 
 Created on 2Mar.,2017
 
@@ -46,8 +46,7 @@ METADATA_CRS = "EPSG:4283"  # Standard CRS for metadata (GDA94)
 
 
 class NetCDFUtils(object):
-    """NetCDFUtils class implementing useful functionality against netCDF files
-    """
+    """NetCDFUtils class implementing useful functionality against netCDF files."""
 
     # Point, line  and grid subclasses will need this, even though this class is non-spatial
     X_DIM_VARIABLE_NAMES = ["longitude", "lon", "x", "Easting"]
@@ -69,8 +68,7 @@ class NetCDFUtils(object):
     }
 
     def __init__(self, netcdf_dataset, debug=False):
-        """Constructor for NetCDFUtils
-        """
+        """Constructor for NetCDFUtils."""
         self._debug = None  # Initialise private variable
         self.debug = debug  # Set debug property
 
@@ -124,8 +122,7 @@ class NetCDFUtils(object):
         var_list=[],
         empty_var_list=[],
     ):
-        """Function to copy a netCDF dataset to another one with potential changes to size, format,
-        variable creation options and datatypes.
+        """Function to copy a netCDF dataset to another one with potential changes to size, format, variable creation options and datatypes.
 
         @param nc_out_path: path to netCDF output file
         @param datatype_map_dict: dict containing any maps from source datatype to new datatype.
@@ -711,9 +708,7 @@ class NetCDFUtils(object):
             nc_output_dataset.close()
 
     def get_crs_attributes(self, crs):
-        """\
-        Function to return name and attributes of crs or transverse_mercator variable
-        """
+        """Function to return name and attributes of crs or transverse_mercator variable."""
         # Determine wkt and spatial_ref from crs as required
         if type(crs) == osgeo.osr.SpatialReference:
             spatial_ref = crs
@@ -802,43 +797,42 @@ class NetCDFUtils(object):
 
     @abc.abstractmethod
     def set_global_attributes(self, compute_shape=False):
-        """\
-        Abstract base function to set ACDD global geometric metadata attributes in netCDF file
-        N.B: This will fail if dataset is not writable
+        """Abstract base function to set ACDD global geometric metadata attributes in netCDF file.
+
+        N.B: This will fail if dataset is not writable.
         """
         pass
 
     @abc.abstractmethod
     def set_variable_actual_range_attribute(self):
-        """\
-        Function to set ACDD actual_range attribute in all data variables
-        N.B: This will fail if dataset is not writable
+        """Function to set ACDD actual_range attribute in all data variables.
+
+        N.B: This will fail if dataset is not writable.
         """
         pass
 
     @abc.abstractmethod
     def get_convex_hull(self, to_wkt=None):
-        """\
-        Abstract base function to return n x 2 array of coordinates for convex hull of all points
+        """Abstract base function to return n x 2 array of coordinates for convex hull of all points.
+        
         Needs to be implemented in subclass (e.g. NetCDFPointUtils, NetCDFLineUtils, or NetCDFGridUtils)
-        @param to_wkt: CRS WKT for shape
+        @param to_wkt: CRS WKT for shape.
         """
         pass
 
     @abc.abstractmethod
     def get_concave_hull(self, to_wkt=None, buffer_distance=None, tolerance=None):
-        """\
-        Abstract base function to return a shapely polygon for concave hull of all points
+        """Abstract base function to return a shapely polygon for concave hull of all points.
+        
         Needs to be implemented in subclass (e.g. NetCDFPointUtils, NetCDFLineUtils, or NetCDFGridUtils)
         @param to_wkt: CRS WKT for shape
         @param buffer_distance: distance to buffer (kerf) initial shape outwards then inwards to simplify it
-        @param tolerance: tolerance for simplification
+        @param tolerance: tolerance for simplification.
         """
         pass
 
     def close(self):
-        """Function to close netCDF dataset if opened
-        """
+        """Function to close netCDF dataset if opened."""
         if self._netcdf_dataset:
             try:
                 self._netcdf_dataset.close()
@@ -849,8 +843,7 @@ class NetCDFUtils(object):
 
     @property
     def netcdf_dataset(self):
-        """Property getter function to open netCDF dataset only when required
-        """
+        """Property getter function to open netCDF dataset only when required."""
         if not self._netcdf_dataset:
             logger.debug("Opening netCDF dataset {}".format(self.nc_path))
             if self.opendap:
@@ -867,14 +860,12 @@ class NetCDFUtils(object):
 
     @property
     def data_variable_list(self):
-        """Property getter function to return data_variable_list as required
-        """
+        """Property getter function to return data_variable_list as required."""
         return self._data_variable_list
 
     @property
     def crs_variable(self):
-        """Property getter function to return crs_variable as required
-        """
+        """Property getter function to return crs_variable as required."""
         if self._crs_variable is None:
             logger.debug("Getting crs_variable property value")
             for crs_variable_name in NetCDFUtils.CRS_VARIABLE_NAMES:
@@ -891,8 +882,7 @@ class NetCDFUtils(object):
 
     @property
     def wkt(self):
-        """Property getter function to return wkt as required
-        """
+        """Property getter function to return wkt as required."""
         if not self._wkt:
             logger.debug("Getting wkt property value")
             self._wkt = self.crs_variable.spatial_ref
@@ -950,8 +940,7 @@ class NetCDFUtils(object):
 
 
 def main():
-    """Main function for calling NetCDFUtils.copy function
-    """
+    """Main function for calling NetCDFUtils.copy function."""
     # Define command line arguments
     parser = argparse.ArgumentParser()
 

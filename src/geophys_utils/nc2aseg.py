@@ -15,7 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""Created on 8 Mar 2020
+"""Created on 8 Mar 2020.
 
 @author: Alex Ip <Alex.Ip@ga.gov.au>
 """
@@ -161,13 +161,10 @@ assert not MAX_FIELD_WIDTH or all(
 
 
 class RowValueCache(object):
-    """\
-    Class to manage cache of row data from netCDF file
-    """
+    """Class to manage cache of row data from netCDF file."""
 
     def __init__(self, nc2aseggdf):
-        """Constructor
-        """
+        """Constructor."""
         self.nc2aseggdf = nc2aseggdf
         self.total_points = nc2aseggdf.total_points
         self.field_definitions = nc2aseggdf.field_definitions
@@ -176,14 +173,12 @@ class RowValueCache(object):
         self.clear_cache()
 
     def clear_cache(self):
-        """Clear cache
-        """
+        """Clear cache."""
         self.index_range = 0
         self.cache = {}
 
     def read_points(self, start_index, end_index, point_mask=None):
-        """Function to read points from start_index to end_index
-        """
+        """Function to read points from start_index to end_index."""
         self.index_range = end_index - start_index
 
         if point_mask is None:  # No point_mask defined - take all points in range
@@ -215,8 +210,7 @@ class RowValueCache(object):
         # logger.debug('self.cache: {}'.format(pformat(self.cache)))
 
     def chunk_row_data_generator(self, clear_cache=True):
-        """Generator yielding chunks of all values from cache, expanding 2D variables to multiple columns
-        """
+        """Generator yielding chunks of all values from cache, expanding 2D variables to multiple columns."""
         if not self.index_range:
             logger.debug("Cache is empty - nothing to yield")
             return
@@ -243,21 +237,21 @@ class RowValueCache(object):
 
 
 class NC2ASEGGDF2(object):
-
+    """NC2ASEGGDF2."""
     def __init__(
         self,
         netcdf_dataset,
         debug=False,
         verbose=False,
     ):
-        """ """
+        """Initialise."""
 
         def get_preferred_aseggdf2_integer_width_and_null(data_vals):
-            """\
-            Helper function to get the preferred ASEG-GDF2 integer field width and nullvalue for given integer array
+            """Helper function to get the preferred ASEG-GDF2 integer field width and nullvalue for given integer array.
+
             @param data_vals: Integer array with ny _FillValues already removed
             @return width: Preferred aseggdf2 column width
-            @return nullvalue: Preferred aseggdf2 null value -9 -99 -999 etc
+            @return nullvalue: Preferred aseggdf2 null value -9 -99 -999 etc.
             """
             min_value = np.nanmin(data_vals)
             max_value = np.nanmax(data_vals)
@@ -280,9 +274,7 @@ class NC2ASEGGDF2(object):
             return width, nullvalue
 
         def build_field_definitions():
-            """\
-            Helper function to build self.field_definitions as an OrderedDict of field definitions keyed by ASEG-GDF2 field name
-            """
+            """Helper function to build self.field_definitions as an OrderedDict of field definitions keyed by ASEG-GDF2 field name."""
             self.field_definitions = OrderedDict()
             for variable_name, variable in self.netcdf_dataset.variables.items():
 
@@ -510,10 +502,10 @@ class NC2ASEGGDF2(object):
         ) / 2.0
 
     def get_netcdf_fill_value(self, field_name):
-        """\
-        Function to return the netcdf _FillValue attribute of a field
+        """Function to return the netcdf _FillValue attribute of a field.
+
         @param field_name: Variable name to query (key in self.field_definitions)
-        @return fv: _FillValue if any, otherwise None
+        @return fv: _FillValue if any, otherwise None.
         """
         fv = None
         variables = self.field_definitions[field_name]["variables"]
@@ -523,11 +515,11 @@ class NC2ASEGGDF2(object):
         return fv
 
     def get_data_values(self, field_name, point_slice=slice(None, None, None)):
-        """\
-        Function to return data values as an array, expanding lookups and broadcasting scalars if necessary
+        """Function to return data values as an array, expanding lookups and broadcasting scalars if necessary.
+
         @param field_name: Variable name to query (key in self.field_definitions)
         @param point_slice: slice to apply to point (i.e. first) dimension
-        @return data_array: Array of data values
+        @return data_array: Array of data values.
         """
         variables = self.field_definitions[field_name]["variables"]
         # logger.debug('Field {} represents variable {}({})'.format(field_name, variables[-1].name, ','.join(variables[0].dimensions)))
@@ -595,13 +587,14 @@ class NC2ASEGGDF2(object):
         self, rt, name, aseg_gdf_format, definition=None, defn=None, st="RECD"
     ):
         """Helper function to write line to .dfn file.
+
         self.defn is used to track the DEFN number, which can be reset using the optional defn parameter
         @param rt: value for "RT=<rt>" portion of DEFN line, e.g. '' or 'PROJ'
         @param name: Name of DEFN
         @param format_specifier_dict: format specifier dict, e.g. {'width': 5, 'null': 256, 'aseg_gdf_format': 'I5', 'python_format': '{:>5d}'}
         @param definition=None: Definition string
         @param defn=None: New value of DEFN number. Defaults to self.defn+1
-        @param st: value for "RT=<rt>" portion of DEFN line. Default = 'RECD'
+        @param st: value for "RT=<rt>" portion of DEFN line. Default = 'RECD'.
 
         @return line: output line
         """
@@ -629,8 +622,7 @@ class NC2ASEGGDF2(object):
         return line
 
     def create_dfn_file(self, dfn_out_path, zipstream_zipfile=None):
-        """Helper function to output .dfn file
-        """
+        """Helper function to output .dfn file."""
         if zipstream_zipfile:
             dfn_basename = os.path.basename(dfn_out_path)
 
@@ -648,18 +640,15 @@ class NC2ASEGGDF2(object):
             self.info_output("Finished writing .dfn file {}".format(self.dfn_out_path))
 
     def encoded_dfn_line_generator(self, encoding=CHARACTER_ENCODING):
-        """Helper generator to yield encoded bytestrings of all lines in .dfn file
-        """
+        """Helper generator to yield encoded bytestrings of all lines in .dfn file."""
         for line_string in self.dfn_line_generator():
             yield line_string.encode(encoding)
 
     def dfn_line_generator(self):
-        """Helper generator to yield all lines in .dfn file
-        """
+        """Helper generator to yield all lines in .dfn file."""
 
         def variable_defns_generator():
-            """Helper function to write a DEFN line for each variable
-            """
+            """Helper function to write a DEFN line for each variable."""
             self.defn = 0  # reset DEFN number
             # for variable_name, variable_attributes in self.field_definitions.items():
 
@@ -752,7 +741,8 @@ class NC2ASEGGDF2(object):
             yield self.create_dfn_line(rt="", name="END DEFN", aseg_gdf_format=None)
 
         def proj_defns_generator():
-            """Helper function to write PROJ lines
+            """Helper function to write PROJ lines.
+            
             From standard:
             DEFN 1 ST=RECD,RT=PROJ; RT: A4
             DEFN 2 ST=RECD,RT=PROJ; COORDSYS: A40: NAME=projection name, POSC projection name
@@ -771,7 +761,7 @@ class NC2ASEGGDF2(object):
             DEFN 12 ST=RECD,RT=PROJ; PARAM5: D14.0: NAME=Proj_par5, 5th projection parameter
             DEFN 13 ST=RECD,RT=PROJ; PARAM6: D14.0: NAME=Proj_par6, 6th projection parameter
             DEFN 14 ST=RECD,RT=PROJ; PARAM7: D14.0: NAME=Proj_par7, 7th projection parameter
-            DEFN 15 ST=RECD,RT=PROJ; END DEFN
+            DEFN 15 ST=RECD,RT=PROJ; END DEFN.
 
             From sample file:
             DEFN 1 ST=RECD,RT=PROJ; RT:A4
@@ -941,8 +931,7 @@ class NC2ASEGGDF2(object):
         point_mask=None,
         zipstream_zipfile=None,
     ):
-        """Helper function to output .dat file
-        """
+        """Helper function to output .dat file."""
 
         def chunk_buffer_generator(
             row_value_cache,
@@ -951,8 +940,7 @@ class NC2ASEGGDF2(object):
             point_mask=None,
             encoding=None,
         ):
-            """Generator to yield all line strings across all point variables for specified row range
-            """
+            """Generator to yield all line strings across all point variables for specified row range."""
 
             def chunk_line_generator(
                 row_value_cache,
@@ -961,8 +949,7 @@ class NC2ASEGGDF2(object):
                 end_index,
                 point_mask=None,
             ):
-                """Helper Generator to yield line strings for specified rows across all point variables
-                """
+                """Helper Generator to yield line strings for specified rows across all point variables."""
                 logger.debug(
                     "Reading rows {:n} - {:n}".format(start_index + 1, end_index)
                 )
@@ -1101,12 +1088,10 @@ class NC2ASEGGDF2(object):
             self.info_output("Finished writing .dat file {}".format(dat_out_path))
 
     def create_des_file(self, des_out_path, zipstream_zipfile=None):
-        """Helper function to output .des file
-        """
+        """Helper function to output .des file."""
 
         def des_line_generator(encoding=None):
-            """Helper Generator to yield line strings for .des file
-            """
+            """Helper Generator to yield line strings for .des file."""
             # Ignore netCDF system attributes
             global_attributes_dict = {
                 key: str(value).strip()
@@ -1173,8 +1158,7 @@ class NC2ASEGGDF2(object):
     def convert2aseg_gdf(
         self, dat_out_path=None, zip_out_path=None, stride=1, point_mask=None
     ):
-        """Function to convert netCDF file to ASEG-GDF
-        """
+        """Function to convert netCDF file to ASEG-GDF."""
         start_time = datetime.now()
 
         self.dat_out_path = (
@@ -1243,11 +1227,10 @@ class NC2ASEGGDF2(object):
 
 
 def main():
-    """Main function
-    """
+    """Main function."""
 
     def get_args():
-        """Handles all the arguments that are passed into the script
+        """Handles all the arguments that are passed into the script.
 
         :return: Returns a parsed version of the arguments.
         """

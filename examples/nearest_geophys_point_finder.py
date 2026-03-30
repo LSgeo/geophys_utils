@@ -1,4 +1,4 @@
-"""Created on 11 Jan. 2018
+"""Created on 11 Jan. 2018.
 
 @author: Alex Ip
 
@@ -33,8 +33,7 @@ if not logger.handlers:
 
 
 class NearestGeophysPointFinder(object):
-    """NearestGeophysPointFinder class definition
-    """
+    """NearestGeophysPointFinder class definition."""
 
     DEFAULT_METADATA_CSV_PATH = os.path.join(
         os.path.dirname(__file__), "geophysics_line_nc_metadata.csv"
@@ -42,8 +41,7 @@ class NearestGeophysPointFinder(object):
     OPENDAP_PATH_MAP = ("/g/data2/uc0", "http://dapds00.nci.org.au/thredds/dodsC/uc0")
 
     def __init__(self, metadata_csv_path=None):
-        """Constructor
-        """
+        """Constructor."""
         metadata_csv_path = (
             metadata_csv_path or NearestGeophysPointFinder.DEFAULT_METADATA_CSV_PATH
         )
@@ -76,8 +74,7 @@ class NearestGeophysPointFinder(object):
         keywords=[],
         metadata_filter_function=None,
     ):
-        """Generator returning all metadata dicts near given coordinate
-        """
+        """Generator returning all metadata dicts near given coordinate."""
         keyword_set = set(keywords)
 
         # TODO: Replace this bodgy CSV-based code with a CSW catalogue based solution
@@ -125,8 +122,7 @@ class NearestGeophysPointFinder(object):
         variable_names=None,
         flight_lines_only=True,
     ):
-        """Function returning list of nearest points closest to coordinate with attributes
-        """
+        """Function returning list of nearest points closest to coordinate with attributes."""
         t0 = datetime.now()
         point_result_dict = {coordinate: [] for coordinate in coordinate_list}
         for metadata_dict in self.dataset_metadata_generator(
@@ -239,9 +235,10 @@ class NearestGeophysPointFinder(object):
 
 
 def JW_metadata_filter(metadata_dict):
-    """Example function to filter datasets based on metadata values in metadata_dict
+    """Example function to filter datasets based on metadata values in metadata_dict.
+    
     This version applies John Wilford's filter conditions
-    Returns True for match, False otherwise
+    Returns True for match, False otherwise.
     """
     try:
         # Reject any datasets earlier than 1981
@@ -274,11 +271,10 @@ def JW_metadata_filter(metadata_dict):
 
 
 def main():
-    """Main routine for quick and dirty testing
-    """
+    """Main routine for quick and dirty testing."""
 
     def get_args():
-        """Handles all the arguments that are passed into the script
+        """Handles all the arguments that are passed into the script.
 
         :return: Returns a parsed version of the arguments.
         """
@@ -346,8 +342,7 @@ def main():
         return parser.parse_args()
 
     def parse_coordinate_list_string(coordinate_list_string):
-        """Helper function to parse coordinate list from string of form "(<xord>,<yord>)[,(<xord>,<yord>)...]"
-        """
+        """Helper function to parse coordinate list from string of form "(<xord>,<yord>)[,(<xord>,<yord>)...]"."""
         coordinate_list = []
         try:
             processing_string = coordinate_list_string.strip()

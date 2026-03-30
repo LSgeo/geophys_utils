@@ -15,7 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""Created on 16/11/2016
+"""Created on 16/11/2016.
 
 @author: Alex Ip
 """
@@ -59,8 +59,7 @@ DEFAULT_VAR_OPTIONS = {
 
 
 class NetCDFLineUtils(NetCDFPointUtils):
-    """NetCDFLineUtils class to do various fiddly things with NetCDF geophysics line data files.
-    """
+    """NetCDFLineUtils class to do various fiddly things with NetCDF geophysics line data files."""
 
     def __init__(
         self,
@@ -71,11 +70,12 @@ class NetCDFLineUtils(NetCDFPointUtils):
         cache_path=None,
         debug=False,
     ):
-        """NetCDFLineUtils Constructor
+        """NetCDFLineUtils Constructor.
+
         @parameter netcdf_dataset: netCDF4.Dataset object containing a line dataset
         @parameter enable_disk_cache: Boolean parameter indicating whether local cache file should be used, or None for default
         @parameter enable_memory_cache: Boolean parameter indicating whether values should be cached in memory or not.
-        @parameter debug: Boolean parameter indicating whether debug output should be turned on or not
+        @parameter debug: Boolean parameter indicating whether debug output should be turned on or not.
         """
         # Start of init function - Call inherited constructor first
         super().__init__(
@@ -98,10 +98,11 @@ class NetCDFLineUtils(NetCDFPointUtils):
     def get_line_masks(
         self, line_numbers=None, subset_mask=None, get_contiguous_lines=False
     ):
-        """Generator to return boolean masks of dimension 'point' for specified lines
+        """Generator to return boolean masks of dimension 'point' for specified lines.
+
         @param line_numbers: list of integer line number or single integer line number, or None for all lines
         @param subset_mask: optional Boolean mask for subset (e.g. spatial mask)
-        @param get_contiguous_lines: Boolean flag indicating whether masked gaps in lines should be included
+        @param get_contiguous_lines: Boolean flag indicating whether masked gaps in lines should be included.
 
         @return line_number: line number for single line
         @return line_mask: Boolean mask for single line
@@ -163,13 +164,14 @@ class NetCDFLineUtils(NetCDFPointUtils):
         subsampling_distance=None,
         get_contiguous_lines=False,
     ):
-        """Generator to return coordinates and specified variable values for specified lines
+        """Generator to return coordinates and specified variable values for specified lines.
+
         @param line_numbers: list of integer line number or single integer line number
         @param variables: list of variable name strings or single variable name string. None returns all variables
         @param bounds: Spatial bounds for point selection
         @param bounds_wkt: WKT for bounds Coordinate Reference System
         @param subsampling_distance: Minimum subsampling_distance expressed in native coordinate units (e.g. degrees)
-        @param get_contiguous_lines: Boolean flag indicating whether masked gaps in lines should be included
+        @param get_contiguous_lines: Boolean flag indicating whether masked gaps in lines should be included.
 
         @return line_number: line number for single line
         @return: dict containing coords and values for required variables keyed by variable name
@@ -243,8 +245,7 @@ class NetCDFLineUtils(NetCDFPointUtils):
                 yield line_number, line_dict
 
     def get_line_values(self):
-        """Function to retrieve array of line number values from self.netcdf_dataset
-        """
+        """Function to retrieve array of line number values from self.netcdf_dataset."""
         line_variable = self.netcdf_dataset.variables.get("line")
         assert line_variable, 'Variable "line" does not exist in netCDF file'
         if line_variable.shape:  # Multiple lines
@@ -261,8 +262,7 @@ class NetCDFLineUtils(NetCDFPointUtils):
         return line_values
 
     def get_line_index_values(self):
-        """Function to retrieve array of line_index indices from self.netcdf_dataset
-        """
+        """Function to retrieve array of line_index indices from self.netcdf_dataset."""
         if len(self.netcdf_dataset.variables["line"]):  # Multiple lines
             line_index_variable = self.netcdf_dataset.variables.get("line_index")
             if line_index_variable:  # Lookup format lines - Current format
@@ -278,8 +278,7 @@ class NetCDFLineUtils(NetCDFPointUtils):
         return line_indices
 
     def get_cached_line_arrays(self):
-        """Helper function to cache both line & line_index
-        """
+        """Helper function to cache both line & line_index."""
         line = None
         line_index = None
 
@@ -380,7 +379,8 @@ class NetCDFLineUtils(NetCDFPointUtils):
 
     @property
     def line(self):
-        """Property getter function to return array of all line numbers
+        """Property getter function to return array of all line numbers.
+
         Always cache this in memory - should only be small
         The order of priority for retrieval is memory, memcached, disk cache then dataset.
         """
@@ -427,7 +427,8 @@ class NetCDFLineUtils(NetCDFPointUtils):
 
     @property
     def line_index(self):
-        """Property getter function to return line_indices for all points
+        """Property getter function to return line_indices for all points.
+
         The order of priority for retrieval is memory, memcached, disk cache then dataset.
         """
         line = None
@@ -474,15 +475,13 @@ class NetCDFLineUtils(NetCDFPointUtils):
         return line_index
 
     def get_line_start_end_points(self):
-        """\
-        Function to return n x 2 array of coordinates for line start & end points
-        """
+        """Function to return n x 2 array of coordinates for line start & end points."""
         return self.get_line_sample_points(line_divisions=1)
 
     def get_line_sample_points(self, line_divisions=10):
-        """\
-        Function to return n x 2 array of coordinates for line start, division points & end points
-        @param line_divisions: Number of sampling subdivisions for each line (1 = start/end points only)
+        """Function to return n x 2 array of coordinates for line start, division points & end points.
+
+        @param line_divisions: Number of sampling subdivisions for each line (1 = start/end points only).
         """
         line_sample_indices_set = set()
         for line_index in range(self.netcdf_dataset.dimensions["line"].size):
@@ -520,10 +519,10 @@ class NetCDFLineUtils(NetCDFPointUtils):
         return self.xycoords[line_sample_indices]
 
     def get_convex_hull(self, to_wkt=None):
-        """\
-        Function to return n x 2 array of coordinates for convex hull based on line start/end points
+        """Function to return n x 2 array of coordinates for convex hull based on line start/end points.
+
         Implements abstract base function in NetCDFUtils
-        @param to_wkt: CRS WKT for shape
+        @param to_wkt: CRS WKT for shape.
         """
         points = transform_coords(self.get_line_sample_points(), self.wkt, to_wkt)
 
@@ -536,9 +535,7 @@ class NetCDFLineUtils(NetCDFPointUtils):
         return convex_hull
 
     def get_multi_line_string(self, to_wkt=None, tolerance=0):
-        """\
-        Function to return a shapely MultiLineString object representing the line dataset
-        """
+        """Function to return a shapely MultiLineString object representing the line dataset."""
         _line_indices, line_start_indices = np.sort(
             np.unique(self.line_index, return_index=True)
         )
@@ -579,8 +576,8 @@ class NetCDFLineUtils(NetCDFPointUtils):
         max_polygons=5,
         max_vertices=1000,
     ):
-        """\
-        Returns the concave hull (as a shapely polygon) of points with data.
+        """Returns the concave hull (as a shapely polygon) of points with data.
+
         Implements abstract base function in NetCDFUtils
         @param to_wkt: CRS WKT for shape
         @param buffer_distance: distance to buffer (kerf) initial shape outwards then inwards to simplify it
@@ -590,7 +587,7 @@ class NetCDFLineUtils(NetCDFPointUtils):
         @param join_style: join_style for buffering. Defaults to round
         @param max_polygons: Maximum number of polygons to accept. Will keep doubling buffer_distance until under this limit. 0=unlimited.
         @param max_vertices: Maximum number of vertices to accept. Will keep doubling buffer_distance until under this limit. 0=unlimited.
-        @return shapely.geometry.shape: Geometry of concave hull
+        @return shapely.geometry.shape: Geometry of concave hull.
         """
         assert (
             not max_polygons or buffer_distance > 0
@@ -606,9 +603,7 @@ class NetCDFLineUtils(NetCDFPointUtils):
             max_polygons,
             max_vertices,
         ):
-            """\
-            Helper function to return offset geometry. Will keep trying larger buffer_distance values until there is a manageable number of polygons
-            """
+            """Helper function to return offset geometry. Will keep trying larger buffer_distance values until there is a manageable number of polygons."""
             logger.debug(
                 "Computing offset geometry with buffer_distance = {}".format(
                     buffer_distance
@@ -719,9 +714,9 @@ class NetCDFLineUtils(NetCDFPointUtils):
         clockwise_polygon_orient=False,
         shape_ordinate_decimal_place=6,
     ):
-        """\
-        Function to set  global geometric metadata attributes in netCDF file
-        N.B: This will fail if dataset is not writable
+        """Function to set  global geometric metadata attributes in netCDF file.
+
+        N.B: This will fail if dataset is not writable.
         """
         try:
             super().set_global_attributes(
@@ -803,9 +798,7 @@ class NetCDFLineUtils(NetCDFPointUtils):
             raise
 
     def fix_missing_coordinates(self):
-        """\
-        Function to interpolate or extrapolate missing coordinates in netCDF file
-        """
+        """Function to interpolate or extrapolate missing coordinates in netCDF file."""
         INVALID_COORDINATE_FLAG = 0
         OBSERVED_COORDINATE_FLAG = 1
         INTERPOLATED_COORDINATE_FLAG = 2
@@ -815,16 +808,12 @@ class NetCDFLineUtils(NetCDFPointUtils):
 
         # TODO: Fix up questionable scoping of variables by passing them explicitly
         def interpolate(last_good_coord_index, next_good_coord_index, bad_point_count):
-            """\
-            Function to interpolate or extrapolate missing points
-            """
+            """Function to interpolate or extrapolate missing points."""
 
             def set_missing_ordinates(
                 interpolated_point_array, start_index, flag_index_value
             ):
-                """\
-                Helper function to set ordinates
-                """
+                """Helper function to set ordinates."""
                 update_slice = slice(
                     start_index, start_index + len(interpolated_point_array)
                 )

@@ -15,7 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""Created on 8Dec.,2016
+"""Created on 8Dec.,2016.
 
 @author: Alex Ip
 """
@@ -32,9 +32,7 @@ from geophys_utils._crs_utils import transform_coords
 
 
 def get_gdal_wcs_dataset(wcs_url):
-    """\
-    Helper function to return a GDAL dataset for a WCS endpoint
-    """
+    """Helper function to return a GDAL dataset for a WCS endpoint."""
     clean_url = re.match("http[^?]+", wcs_url).group(0)
     temp_xml_path = os.path.join(
         tempfile.gettempdir(), re.sub("\W", "_", clean_url) + ".xml"
@@ -56,8 +54,7 @@ def get_gdal_wcs_dataset(wcs_url):
 
 
 def get_gdal_grid_values(gdal_dataset, sample_points, from_crs, band_no=1):
-    """Function to return values at a series of points from a GDAL dataset
-    """
+    """Function to return values at a series of points from a GDAL dataset."""
     geotransform = gdal_dataset.GetGeoTransform()
     to_crs = gdal_dataset.GetProjection()
     gdal_band = gdal_dataset.GetRasterBand(band_no)

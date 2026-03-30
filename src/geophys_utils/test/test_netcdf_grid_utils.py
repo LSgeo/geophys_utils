@@ -15,7 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""Unit tests for geophys_utils._netcdf_grid_utils against a NetCDF file
+"""Unit tests for geophys_utils._netcdf_grid_utils against a NetCDF file.
 
 Created on 15/11/2016
 
@@ -53,7 +53,7 @@ TEST_INTERPOLATED_VALUE = -99997.6171875
 
 class TestNetCDFGridUtilsConstructor(unittest.TestCase):
     """Unit tests for TestNetCDFGridUtils Constructor.
-    N.B: This should be run first
+    N.B: This should be run first.
     """
 
     def test_netcdf_grid_utils_constructor(self):
@@ -66,7 +66,7 @@ class TestNetCDFGridUtilsConstructor(unittest.TestCase):
 
 
 class TestNetCDFGridUtilsFunctions1(unittest.TestCase):
-    """Unit tests for geophys_utils._netcdf_grid_utils functions"""
+    """Unit tests for geophys_utils._netcdf_grid_utils functions."""
 
     def test_get_indices_from_coords(self):
         print(

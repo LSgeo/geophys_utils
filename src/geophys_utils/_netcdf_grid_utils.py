@@ -15,7 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""Created on 14Sep.,2016
+"""Created on 14Sep.,2016.
 
 @author: Alex Ip <Alex.Ip@ga.gov.au>
 """
@@ -76,8 +76,7 @@ def strtobool(val):
 
 
 class NetCDFGridUtils(NetCDFUtils):
-    """NetCDFGridUtils class to do various fiddly things with gridded NetCDF geophysics files.
-    """
+    """NetCDFGridUtils class to do various fiddly things with gridded NetCDF geophysics files."""
 
     # Assume WGS84 lat/lon if no CRS is provided
     DEFAULT_CRS = 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]'
@@ -85,12 +84,10 @@ class NetCDFGridUtils(NetCDFUtils):
     FLOAT_TOLERANCE = 0.000001
 
     def __init__(self, netcdf_dataset, debug=False):
-        """NetCDFGridUtils Constructor - wraps a NetCDF dataset
-        """
+        """NetCDFGridUtils Constructor - wraps a NetCDF dataset."""
 
         def set_nominal_pixel_sizes():
-            """Function to set tuples with the nominal vertical and horizontal sizes of the centre pixel in metres and degrees
-            """
+            """Function to set tuples with the nominal vertical and horizontal sizes of the centre pixel in metres and degrees."""
             centre_pixel_indices = [
                 len(self.dimension_arrays[dim_index]) // 2 for dim_index in range(2)
             ]
@@ -149,8 +146,9 @@ class NetCDFGridUtils(NetCDFUtils):
             ]
 
         def get_default_sample_metres():
-            """Function to return average nominal pixel size in metres rounded up to nearest 10^x or 5*10^x
-            This is to provide a sensible default resolution for the sampling points along a transect by keeping it around the nominal pixel size
+            """Function to return average nominal pixel size in metres rounded up to nearest 10^x or 5*10^x.
+
+            This is to provide a sensible default resolution for the sampling points along a transect by keeping it around the nominal pixel size.
             """
             log_10_avg_pixel_metres = math.log(
                 (self.nominal_pixel_metres[0] + self.nominal_pixel_metres[1]) / 2.0
@@ -258,9 +256,10 @@ class NetCDFGridUtils(NetCDFUtils):
         self.bounds = self.native_bbox[0] + self.native_bbox[2]
 
     def get_indices_from_coords(self, coordinates, wkt=None):
-        """Returns list of netCDF array indices corresponding to coordinates to support nearest neighbour queries
+        """Returns list of netCDF array indices corresponding to coordinates to support nearest neighbour queries.
+
         @parameter coordinates: iterable collection of coordinate pairs or single coordinate pair
-        @parameter wkt: Coordinate Reference System for coordinates. None == native NetCDF CRS
+        @parameter wkt: Coordinate Reference System for coordinates. None == native NetCDF CRS.
         """
         wkt = wkt or self.wkt
         native_coordinates = transform_coords(coordinates, self.wkt, wkt)
@@ -320,9 +319,10 @@ class NetCDFGridUtils(NetCDFUtils):
         return indices
 
     def get_fractional_indices_from_coords(self, coordinates, wkt=None):
-        """Returns list of fractional array indices corresponding to coordinates to support interpolation
+        """Returns list of fractional array indices corresponding to coordinates to support interpolation.
+
         @parameter coordinates: iterable collection of coordinate pairs or single coordinate pair
-        @parameter wkt: Coordinate Reference System for coordinates. None == native NetCDF CRS
+        @parameter wkt: Coordinate Reference System for coordinates. None == native NetCDF CRS.
         """
         wkt = wkt or self.wkt
         native_coordinates = transform_coords(coordinates, self.wkt, wkt)
@@ -384,11 +384,12 @@ class NetCDFGridUtils(NetCDFUtils):
     def get_value_at_coords(
         self, coordinates, wkt=None, max_bytes=None, variable_name=None
     ):
-        """Returns list of array values at specified coordinates
+        """Returns list of array values at specified coordinates.
+
         @parameter coordinates: iterable collection of coordinate pairs or single coordinate pair
         @parameter wkt: WKT for coordinate Coordinate Reference System. None == native NetCDF CRS
         @parameter max_bytes: Maximum number of bytes to read in a single query. Defaults to NetCDFGridUtils.DEFAULT_MAX_BYTES
-        @parameter variable_name: NetCDF variable_name if not default data variable
+        @parameter variable_name: NetCDF variable_name if not default data variable.
         """
         # Use small max request size by default
         max_bytes = max_bytes or 100
@@ -443,11 +444,12 @@ class NetCDFGridUtils(NetCDFUtils):
     def get_interpolated_value_at_coords(
         self, coordinates, wkt=None, max_bytes=None, variable_name=None
     ):
-        """Returns list of interpolated array values at specified coordinates
+        """Returns list of interpolated array values at specified coordinates.
+
         @parameter coordinates: iterable collection of coordinate pairs or single coordinate pair
         @parameter wkt: Coordinate Reference System for coordinates. None == native NetCDF CRS
         @parameter max_bytes: Maximum number of bytes to read in a single query. Defaults to NetCDFGridUtils.DEFAULT_MAX_BYTES
-        @parameter variable_name: NetCDF variable_name if not default data variable
+        @parameter variable_name: NetCDF variable_name if not default data variable.
         """
         # TODO: Check behaviour of scipy.ndimage.map_coordinates adjacent to no-data areas. Should not interpolate no-data value
         # TODO: Make this work for arrays > memory
@@ -516,20 +518,21 @@ class NetCDFGridUtils(NetCDFUtils):
             )
 
     def sample_transect(self, transect_vertices, wkt=None, sample_metres=None):
-        """Function to return a list of sample points sample_metres apart along lines between transect vertices
+        """Function to return a list of sample points sample_metres apart along lines between transect vertices.
+
         @param transect_vertices: list or array of transect vertex coordinates
         @param wkt: coordinate reference system for transect_vertices
-        @param sample_metres: distance between sample points in metres
+        @param sample_metres: distance between sample points in metres.
         """
         wkt = wkt or self.wkt
         sample_metres = sample_metres or self.default_sample_metres
         return sample_transect(transect_vertices, wkt, sample_metres)
 
     def get_convex_hull(self, to_wkt=None):
-        """\
-        Function to return n x 2 array of coordinates for convex hull based on line start/end points
+        """Function to return n x 2 array of coordinates for convex hull based on line start/end points.
+
         Implements abstract base function in NetCDFUtils
-        @param to_wkt: CRS WKT for shape
+        @param to_wkt: CRS WKT for shape.
         """
         try:
             convex_hull = netcdf2convex_hull(
@@ -554,10 +557,11 @@ class NetCDFGridUtils(NetCDFUtils):
         max_polygons=10,
         max_vertices=1000,
     ):
-        """\
-        Returns the concave hull (as a shapely polygon) of grid edge points with data.
+        """Returns the concave hull (as a shapely polygon) of grid edge points with data.
+
         Implements abstract base function in NetCDFUtils
         Note that all distance parameters are in pixel units, not in destination CRS units
+
         @param to_wkt: CRS WKT for shape
         @param buffer_distance: distance to buffer (kerf) initial shape outwards then inwards to simplify it
         @param offset: Final offset of final shape from original lines
@@ -566,7 +570,7 @@ class NetCDFGridUtils(NetCDFUtils):
         @param join_style: join_style for buffering. Defaults to round
         @param max_polygons: Maximum number of polygons to accept. Will keep doubling buffer_distance until under this limit. 0=unlimited.
         @param max_vertices: Maximum number of vertices to accept. Will keep doubling buffer_distance until under this limit. 0=unlimited.
-        @return shapely.geometry.shape: Geometry of concave hull
+        @return shapely.geometry.shape: Geometry of concave hull.
         """
         PAD_WIDTH = 1
         MAX_DATA_PROPORTION = 0.9  # Maximum proportion of data containing pixels vs all pixels to trigger full shape computation
@@ -584,9 +588,7 @@ class NetCDFGridUtils(NetCDFUtils):
         tolerance = tolerance or 0.5
 
         def discard_internal_polygons(geometry):
-            """\
-            Helper function to discard internal polygons
-            """
+            """Helper function to discard internal polygons."""
             if type(geometry) == MultiPolygon:
                 polygon_list = []
                 for polygon in geometry.geoms:
@@ -624,9 +626,9 @@ class NetCDFGridUtils(NetCDFUtils):
             return external_geometry
 
         def contour_to_polygon(polygon_vertices):
-            """\
-            Helper function to turn an individual contour into shapely Polygon in the correct xy axis order
-            @param polygon_vertices: n x 2 array of pixel coordinates forming a polygon
+            """Helper function to turn an individual contour into shapely Polygon in the correct xy axis order.
+
+            @param polygon_vertices: n x 2 array of pixel coordinates forming a polygon.
             """
             # Note that we need coordinates in xy order, but the polygon vertices are in array order (probably yx)
             if self.YX_order:  # yx array order - y-axis flip required
@@ -638,11 +640,11 @@ class NetCDFGridUtils(NetCDFUtils):
             return Polygon(polygon_vertices[reorder_slices])
 
         def transform_geometry_pixel_to_wkt(geometry, to_wkt):
-            """\
-            Helper function to transform geometry from pixel coordinates to specified WKT via (self.wkt)
+            """Helper function to transform geometry from pixel coordinates to specified WKT via (self.wkt).
+
             # N.B: Ignores polygon interiors
             @param geometry: Shapely MultiPolygon or Polygon to transform
-            @param to_wkt: WKT of destination CRS
+            @param to_wkt: WKT of destination CRS.
             """
             # Set affine transform from GeoTransform values for CRS given by self.wkt
             affine_transform = Affine.from_gdal(*self.GeoTransform)
@@ -694,9 +696,7 @@ class NetCDFGridUtils(NetCDFUtils):
             max_polygons,
             max_vertices,
         ):
-            """\
-            Helper function to return offset geometry. Will keep trying larger buffer_distance values until there is a manageable number of polygons
-            """
+            """Helper function to return offset geometry. Will keep trying larger buffer_distance values until there is a manageable number of polygons."""
             logger.debug(
                 "Computing offset geometry with buffer_distance = {}".format(
                     buffer_distance
@@ -874,10 +874,11 @@ class NetCDFGridUtils(NetCDFUtils):
         return transform_geometry_pixel_to_wkt(concave_hull, to_wkt)
 
     def get_dimension_ranges(self, bounds, bounds_wkt=None):
-        """Function to dict of (start, end+1) tuples keyed by dimension name from a bounds geometry or ordinates
+        """Function to dict of (start, end+1) tuples keyed by dimension name from a bounds geometry or ordinates.
+
         @parameter bounds: Either an iterable containing [<xmin>, <ymin>, <xmax>, <ymax>] or a shapely (multi)polygon
         @parameter bounds_wkt: WKT for bounds CRS. Defaults to dataset native CRS
-        @return dim_range_dict: dict of (start, end+1) tuples keyed by dimension name
+        @return dim_range_dict: dict of (start, end+1) tuples keyed by dimension name.
         """
         if isinstance(bounds, BaseGeometry):  # Process shapely (multi)polygon bounds
             bounds_ordinates = (
@@ -945,8 +946,7 @@ class NetCDFGridUtils(NetCDFUtils):
 
     @property
     def GeoTransform(self):
-        """Property getter function to return geotransform as required
-        """
+        """Property getter function to return geotransform as required."""
         if not self._GeoTransform:
             try:
                 # Assume string or array representation of GeoTransform exists
@@ -977,8 +977,7 @@ class NetCDFGridUtils(NetCDFUtils):
         empty_var_list=[],
         invert_y=None,
     ):
-        """Function to copy a netCDF dataset to another one with potential changes to size, format,
-        variable creation options and datatypes.
+        """Function to copy a netCDF dataset to another one with potential changes to size, format, variable creation options and datatypes.
 
         @param nc_out_path: path to netCDF output file
         @param datatype_map_dict: dict containing any maps from source datatype to new datatype.
@@ -1107,9 +1106,9 @@ class NetCDFGridUtils(NetCDFUtils):
         max_vertices=1000,
         shape_ordinate_decimal_place=6,
     ):
-        """\
-        Function to set  global geometric metadata attributes in netCDF file
-        N.B: This will fail if dataset is not writable
+        """Function to set  global geometric metadata attributes in netCDF file.
+
+        N.B: This will fail if dataset is not writable.
         """
         try:
 
@@ -1205,9 +1204,9 @@ class NetCDFGridUtils(NetCDFUtils):
         num_pixels_to_trigger_iterating=5000000,
         num_of_chunks=50,
     ):
-        """\
-        Function to set ACDD actual_range attribute in all non-index point-dimensioned variables
-        N.B: This will fail if dataset is not writable
+        """Function to set ACDD actual_range attribute in all non-index point-dimensioned variables.
+
+        N.B: This will fail if dataset is not writable.
         """
         for variable_name, variable in self.netcdf_dataset.variables.items():
             # Skip all variables which can't be grids
@@ -1341,8 +1340,7 @@ def _get_query_params(index_array, start_index, data_variable, max_bytes):
 
 
 def main():
-    """Main function for quick and dirty testing
-    """
+    """Main function for quick and dirty testing."""
     # Define command line arguments
     parser = argparse.ArgumentParser()
 

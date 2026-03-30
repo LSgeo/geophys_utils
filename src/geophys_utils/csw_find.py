@@ -15,7 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""Created on 19 Oct. 2018
+"""Created on 19 Oct. 2018.
 
 @author: Alex Ip - Geoscience Australia
 """
@@ -34,12 +34,10 @@ root_logger.setLevel(logging.INFO)  # Initial logging level for this module
 
 
 def main():
-    """Main function to take command line parameters, perform CSW query and print required output
-    """
+    """Main function to take command line parameters, perform CSW query and print required output."""
 
     def quote_delimitedtext(text, delimiter, quote_char='"'):
-        """Helper function to quote text containing delimiters or whitespace
-        """
+        """Helper function to quote text containing delimiters or whitespace."""
         try:
             if delimiter in text or quote_char in text or re.search("\s", text):
                 if (

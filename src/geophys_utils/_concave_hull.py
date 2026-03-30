@@ -85,7 +85,8 @@ class PointSet:
 
     def __init__(self, points):
         """Create a kD-tree from the points.
-        @param points: n x 2 array of point coordinates
+
+        @param points: n x 2 array of point coordinates.
         """
         npoints, ndim = points.shape
         assert ndim == 2, "Coordinates must be 2D, not {}D".format(ndim)
@@ -130,8 +131,7 @@ class PointSet:
         self.npoints = self.npoints + 1
 
     def nearest_neighbors(self, current_point, k):
-        """Return the indices of the k nearest neighbors (or fewer if not enough points left).
-        """
+        """Return the indices of the k nearest neighbors (or fewer if not enough points left)."""
         kk = k
 
         while True:
@@ -275,9 +275,7 @@ def concave_hull_indices(dataset, k):
 
 
 def concaveHull(dataset):
-    """\
-    Generate n x 2 array of coordinates for vertices of concave hull
-    """
+    """Generate n x 2 array of coordinates for vertices of concave hull."""
     logger.debug("dataset length in concaveHull(): {}".format(len(dataset)))
 
     points = np.unique(

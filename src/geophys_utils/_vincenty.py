@@ -15,7 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""Algorithms from Geocentric Datum of Australia Technical Manual
+"""Algorithms from Geocentric Datum of Australia Technical Manual.
 
 http://www.anzlic.org.au/icsm/gdatum/chapter4.html
 
@@ -56,8 +56,9 @@ __version__ = "1.0.1"
 
 
 class GreatCircle(object):
-    """formula for perfect sphere from Ed Williams' 'Aviation Formulary'
-    (http://williams.best.vwh.net/avform.htm)
+    """Formula for perfect sphere from Ed Williams' 'Aviation Formulary'.
+
+    (http://williams.best.vwh.net/avform.htm).
 
     code for ellipsoid posted to GMT mailing list by Jim Leven in Dec 1999
 
@@ -65,7 +66,9 @@ class GreatCircle(object):
     """
 
     def __init__(self, rmajor, rminor, lon1, lat1, lon2, lat2):
-        """Define a great circle by specifying:
+        """Define a great circle.
+        
+        By specifying:
         rmajor - radius of major axis of ellipsoid
         rminor - radius of minor axis of ellipsoid.
         lon1 - starting longitude of great circle
@@ -108,8 +111,7 @@ class GreatCircle(object):
             self.antipodal = False
 
     def points(self, npoints):
-        """Compute arrays of npoints equally spaced
-        intermediate points along the great circle.
+        """Compute arrays of npoints equally spaced intermediate points along the great circle.
 
         input parameter npoints is the number of points
         to compute.
@@ -224,9 +226,9 @@ class GreatCircle(object):
 
 
 def vinc_dist(f, a, phi1, lembda1, phi2, lembda2):
-    """Returns the distance between two geographic points on the ellipsoid
-    and the forward and reverse azimuths between these points.
-    lats, longs and azimuths are in radians, distance in metres
+    """Returns the distance between two geographic points on the ellipsoid and the forward and reverse azimuths between these points.
+
+    lats, longs and azimuths are in radians, distance in metres.
 
     Arguments:
         f: flattening
@@ -364,9 +366,9 @@ def vinc_dist(f, a, phi1, lembda1, phi2, lembda2):
 
 
 def vinc_pt(f, a, phi1, lembda1, alpha12, s):
-    """Returns the lat and long of projected point and reverse azimuth
-    given a reference point and a distance and azimuth to project.
-    lats, longs and azimuths are passed in decimal degrees
+    """Returns the lat and long of projected point and reverse azimuth given a reference point and a distance and azimuth to project.
+    
+    lats, longs and azimuths are passed in decimal degrees.
 
     Returns ( phi2,  lambda2,  alpha21 ) as a tuple
     """

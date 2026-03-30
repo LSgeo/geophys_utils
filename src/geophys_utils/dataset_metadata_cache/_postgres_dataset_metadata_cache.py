@@ -1,4 +1,4 @@
-"""Created on 19 Jul. 2018
+"""Created on 19 Jul. 2018.
 
 @author: Alex Ip
 """
@@ -16,8 +16,7 @@ logger.setLevel(logging.INFO)  # Initial logging level for this module
 
 
 class PostgresDatasetMetadataCache(DatasetMetadataCache):
-    """PostgresDatasetMetadataCache class definition
-    """
+    """PostgresDatasetMetadataCache class definition."""
 
     DEFAULT_POSTGRES_AUTOCOMMIT = True
 
@@ -33,8 +32,7 @@ class PostgresDatasetMetadataCache(DatasetMetadataCache):
         autocommit=None,
         debug=False,
     ):
-        """PostgresDatasetMetadataCache class Constructor
-        """
+        """PostgresDatasetMetadataCache class Constructor."""
         super(PostgresDatasetMetadataCache, self).__init__(debug)
 
         self.postgres_host = postgres_host or settings["POSTGRES_SERVER"]
@@ -77,8 +75,7 @@ class PostgresDatasetMetadataCache(DatasetMetadataCache):
         )
 
     def __del__(self):
-        """PostgresDatasetMetadataCache class Destructor
-        """
+        """PostgresDatasetMetadataCache class Destructor."""
         if self.db_connection:
             logger.debug(
                 "Disconnecting from database {}:{}/{}".format(
@@ -88,8 +85,7 @@ class PostgresDatasetMetadataCache(DatasetMetadataCache):
             self.db_connection.close()
 
     def add_dataset(self, dataset):
-        """Function to insert or update dataset record
-        """
+        """Function to insert or update dataset record."""
         # Assign a UUID if one doesn't exist
         if not dataset.metadata_uuid:
             dataset.metadata_uuid = str(uuid.uuid4())
@@ -147,8 +143,7 @@ where metadata_uuid = %(metadata_uuid)s;
     def add_survey(
         self, ga_survey_id, survey_name=None, start_date=None, end_date=None
     ):
-        """Function to insert survey
-        """
+        """Function to insert survey."""
         if not ga_survey_id:
             return None
 
@@ -173,8 +168,7 @@ where not exists (select survey_id from survey where ga_survey_id = %(ga_survey_
             logger.debug('Survey "{}" already exists in table'.format(ga_survey_id))
 
     def add_keywords(self, dataset_id, keyword_list):
-        """Function to return primary key of keyword, inserting if necessary
-        """
+        """Function to return primary key of keyword, inserting if necessary."""
         cursor = self.db_connection.cursor()
 
         # Try inserting keywords individually
@@ -249,8 +243,7 @@ select %(dataset_id)s,
     # ===============================================================================
 
     def add_distributions(self, dataset_id, distribution_list):
-        """Function to insert new distributions
-        """
+        """Function to insert new distributions."""
         cursor = self.db_connection.cursor()
 
         # Only add each protocol once
@@ -303,7 +296,8 @@ where not exists (select distribution_id from distribution where dataset_id = %(
                 )
 
     def search_dataset_distributions(self, keyword_list, protocol, ll_ur_coords=None):
-        """Function to return list of dicts containing metadata for all datasets with specified keywords and bounding box
+        """Function to return list of dicts containing metadata for all datasets with specified keywords and bounding box.
+        
         Note that keywords are searched exclusively, i.e. using "and", not "or"
         Keys in dicts returned are as follows:
             (ga_survey_id,
@@ -318,7 +312,7 @@ where not exists (select distribution_id from distribution where dataset_id = %(
             start_date,
             end_date,
             metadata_uuid
-            )
+            ).
         """
         cursor = self.db_connection.cursor()
 

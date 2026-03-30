@@ -1,4 +1,4 @@
-"""Created on 19 Jul. 2018
+"""Created on 19 Jul. 2018.
 
 @author: Alex Ip
 """
@@ -23,19 +23,16 @@ settings = yaml.safe_load(
 
 
 class Distribution(object):
-    """Distribution class definition
-    """
+    """Distribution class definition."""
 
     def __init__(self, url, protocol):
-        """Distribution class Constructor
-        """
+        """Distribution class Constructor."""
         self.url = url
         self.protocol = protocol
 
 
 class Dataset(object):
-    """Dataset class definition
-    """
+    """Dataset class definition."""
 
     def __init__(
         self,
@@ -53,8 +50,7 @@ class Dataset(object):
         start_date=None,
         end_date=None,
     ):
-        """Dataset class Constructor
-        """
+        """Dataset class Constructor."""
         self.dataset_title = dataset_title
         self.ga_survey_id = ga_survey_id
         self.longitude_min = longitude_min
@@ -71,8 +67,7 @@ class Dataset(object):
 
 
 class DatasetMetadataCache(object):
-    """DatasetMetadataCache class definition
-    """
+    """DatasetMetadataCache class definition."""
 
     # Tuple containing field names for results of search_dataset_distributions function
     dataset_distribution_search_fields = (
@@ -94,8 +89,9 @@ class DatasetMetadataCache(object):
 
     @abc.abstractmethod
     def __init__(self, debug):
-        """DatasetMetadataCache class Constructor
-        @parameter debug: Boolean flag indicating whether debug output is required
+        """DatasetMetadataCache class Constructor.
+
+        @parameter debug: Boolean flag indicating whether debug output is required.
         """
         # Initialise and set debug property
         self._debug = None
@@ -103,32 +99,29 @@ class DatasetMetadataCache(object):
 
     @abc.abstractmethod
     def add_dataset(self, dataset):
-        """Function to insert or update dataset record
-        """
+        """Function to insert or update dataset record."""
         return
 
     @abc.abstractmethod
     def add_survey(self, ga_survey_id, survey_name=None):
-        """Function to insert survey if necessary
-        """
+        """Function to insert survey if necessary."""
         return
 
     @abc.abstractmethod
     def add_keywords(self, dataset_id, keyword_list):
-        """Function to insert new keywords
-        """
+        """Function to insert new keywords."""
         return
 
     @abc.abstractmethod
     def add_distributions(self, dataset_id, distribution_list):
-        """Function to insert new distributions
-        """
+        """Function to insert new distributions."""
         return
 
     @abc.abstractmethod
     def search_dataset_distributions(self, keyword_list, protocol, ll_ur_coords=None):
-        """Function to return list of dicts containing metadata for all datasets with specified keywords and bounding box
-        Note that keywords are searched exclusively, i.e. using "and", not "or"
+        """Function to return list of dicts containing metadata for all datasets with specified keywords and bounding box.
+        
+        Note that keywords are searched exclusively, i.e. using "and", not "or".
         """
         return
 

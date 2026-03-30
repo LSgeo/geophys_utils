@@ -15,7 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""TestNetCDFConverter concrete class for converting data to netCDF
+"""TestNetCDFConverter concrete class for converting data to netCDF.
 
 Created on 28Mar.2018
 
@@ -30,24 +30,22 @@ from geophys_utils.netcdf_converter import ToNetCDFConverter, NetCDFVariable
 
 
 class TestNetCDFConverter(ToNetCDFConverter):
-    """TestNetCDFConverter concrete class for converting CSV data to netCDF
-    """
+    """TestNetCDFConverter concrete class for converting CSV data to netCDF."""
 
     def __init__(self, nc_out_path, netcdf_format="NETCDF4_CLASSIC"):
-        """Concrete constructor for subclass TestNetCDFConverter
+        """Concrete constructor for subclass TestNetCDFConverter.
+        
         Needs to initialise object with everything that is required for the other Concrete methods
-        N.B: Make sure the base class constructor is called from the subclass constructor
+        N.B: Make sure the base class constructor is called from the subclass constructor.
         """
         ToNetCDFConverter.__init__(self, nc_out_path, netcdf_format)
 
     def get_global_attributes(self):
-        """Concrete method to return dict of global attribute <key>:<value> pairs
-        """
+        """Concrete method to return dict of global attribute <key>:<value> pairs."""
         return {"title": "test dataset"}
 
     def get_dimensions(self):
-        """Concrete method to return OrderedDict of <dimension_name>:<dimension_size> pairs
-        """
+        """Concrete method to return OrderedDict of <dimension_name>:<dimension_size> pairs."""
         dimensions = OrderedDict()
 
         # Example lat/lon dimensions
@@ -57,8 +55,7 @@ class TestNetCDFConverter(ToNetCDFConverter):
         return dimensions
 
     def variable_generator(self):
-        """Concrete generator to yield NetCDFVariable objects
-        """
+        """Concrete generator to yield NetCDFVariable objects."""
         # Example of latitude dimension variable creation
         yield self.build_dim_index_variable(
             dimension_name="lat",

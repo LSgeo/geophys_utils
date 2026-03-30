@@ -1,5 +1,6 @@
-"""Functions to work with ASEG-GDF format string
-Refer to https://www.aseg.org.au/sites/default/files/pdf/ASEG-GDF2-REV4.pdf for further information
+"""Functions to work with ASEG-GDF format string.
+
+Refer to https://www.aseg.org.au/sites/default/files/pdf/ASEG-GDF2-REV4.pdf for further information.
 
 Created on 19 Jun. 2018
 
@@ -18,10 +19,11 @@ logger.setLevel(logging.INFO)  # Logging level for this module
 
 
 def dfrexp(f):
-    """Decimal version of frexp or np.frexp function to return mantissa & exponent
+    """Decimal version of frexp or np.frexp function to return mantissa & exponent.
+
     @param f: Floating point scalar or array
     @return fman: Scalar or array decimal mantissa between 0.0 and 1.0
-    @return fexp: Scalar or array decimal exponent
+    @return fexp: Scalar or array decimal exponent.
     """
     # Compute decimal exponent
     if type(f) == np.ndarray:
@@ -92,8 +94,9 @@ ASEG_DTYPE_CODE_MAPPING = {
 
 
 def decode_aseg_gdf_format(aseg_gdf_format):
-    """Function to decode ASEG-GDF format string
-    @param aseg_gdf_format: ASEG-GDF format string
+    """Function to decode ASEG-GDF format string.
+
+    @param aseg_gdf_format: ASEG-GDF format string.
 
     @return columns: Number of columns (i.e. 1 for 1D data, or read from format string for 2D data)
     @return aseg_dtype_code: ASEG-GDF data type character, e.g. "F" or "I"
@@ -122,8 +125,9 @@ def decode_aseg_gdf_format(aseg_gdf_format):
 
 
 def aseg_gdf_format2dtype(aseg_gdf_format):
-    """Function to return Python data type string and other precision information from ASEG-GDF format string
-    @param aseg_gdf_format: ASEG-GDF format string
+    """Function to return Python data type string and other precision information from ASEG-GDF format string.
+
+    @param aseg_gdf_format: ASEG-GDF format string.
 
     @return dtype: Data type string, e.g. int8 or float32
     @return columns: Number of columns (i.e. 1 for 1D data, or read from format string for 2D data)
@@ -178,9 +182,10 @@ def aseg_gdf_format2dtype(aseg_gdf_format):
 
 
 def variable2aseg_gdf_format(array_variable, decimal_places=None):
-    """Function to return ASEG-GDF format string and other info from data array or netCDF array variable
+    """Function to return ASEG-GDF format string and other info from data array or netCDF array variable.
+
     @param array_variable: data array or netCDF array variable
-    @param decimal_places: Number of decimal places to respect, or None for value derived from datatype and values
+    @param decimal_places: Number of decimal places to respect, or None for value derived from datatype and values.
 
     @return aseg_gdf_format: ASEG-GDF format string
     @return dtype: Data type string, e.g. int8 or float32
@@ -318,15 +323,15 @@ def variable2aseg_gdf_format(array_variable, decimal_places=None):
 def fix_field_precision(
     data_array, current_dtype, decimal_places, no_data_mask=[], fill_value=None
 ):
-    """Function to return revised ASEG-GDF format string and other info from data array or netCDF array variable
-    after correcting datatype for excessive precision specification, or None if there is no precision change.
+    """Function to return revised ASEG-GDF format string and other info from data array or netCDF array variable after correcting datatype for excessive precision specification, or None if there is no precision change.
+    
     Arrays are copied to smaller representations and then the difference with the original is checked to
     ensure that any difference is less than precision of the specified number of fractional digits.
     Note that fill_value is also considered but potentially modified only if data precision is changed
     @param data_array: data array - assumed to be of dtype float64 for raw data
     @param current_dtype: Current data type string, e.g. int8 or float32
     @param decimal_places: Number of fractional digits for precision checking
-    @param fill_value: fill value or None
+    @param fill_value: fill value or None.
 
     Returns None if no precision change required.
     @return aseg_gdf_format: ASEG-GDF format string
@@ -456,7 +461,7 @@ difference_array\n{}\ndecimal_places: {}\ndifference count: {}\ndifference value
 
 
 def truncate(fill_value, data_array, no_data_mask, width_specifier, decimal_places):
-    """Function to truncate fill_value to <width_specifier>.<decimal_places> rather than rounding for neater output later on
+    """Function to truncate fill_value to <width_specifier>.<decimal_places> rather than rounding for neater output later on.
 
     @param fill_value: Original fill value
     @param data_array: Array containing data

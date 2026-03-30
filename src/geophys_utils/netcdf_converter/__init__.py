@@ -1,4 +1,4 @@
-"""Created on 13 Jun. 2018
+"""Created on 13 Jun. 2018.
 
 @author: Alex Ip
 """

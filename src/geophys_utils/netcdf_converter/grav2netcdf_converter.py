@@ -15,7 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""CSV2NetCDFConverter concrete class for converting data to netCDF
+"""CSV2NetCDFConverter concrete class for converting data to netCDF.
 
 Created on 28Mar.2018
 
@@ -55,8 +55,7 @@ logger.addHandler(console_handler)
 
 
 class Grav2NetCDFConverter(ToNetCDFConverter):
-    """CSV2NetCDFConverter concrete class for converting CSV data to netCDF
-    """
+    """CSV2NetCDFConverter concrete class for converting CSV data to netCDF."""
 
     gravity_metadata_list = [
         # 'ENO', not needed
@@ -131,16 +130,19 @@ class Grav2NetCDFConverter(ToNetCDFConverter):
         settings = {}
 
     def get_all_ellipsoiddatum_values_table_from_point_data(self):
-        """Search each survey and retrieve the dinstict results for ellidpoisddatum. Use these to make a lookup table,
-        following the existing pattern. Currently all values will be GRS80. However, better not to hardcode it,
-        just in case.
-        :return: dict "{"GRS80": "GRS80"}"
+        """Search each survey and retrieve the dinstict results for ellidpoisddatum.
+        
+        Use these to make a lookup table, following the existing pattern.
+        Currently all values will be GRS80. However, better not to hardcode it, just in case.
+        :return: dict "{"GRS80": "GRS80"}".
         """
 
     def get_keys_and_values_table(self, table_name: str):
-        """Retrieves all data from a specified table, converts into a dictionary, and returns as a string. Used for tables
+        """Retrieves all data from a specified table, converts into a dictionary, and returns as a string.
+    
+        Used for tables
         with the key and value information such as accuracy or methodology.
-        e.g. 'SUR': 'Positions determined by optical surveying methods or measured on surveyed points.'
+        e.g. 'SUR': 'Positions determined by optical surveying methods or measured on surveyed points.'.
         """
         # TODO fix this
         if table_name == "ELLIPSOIDHGTDATUM":
@@ -173,9 +175,10 @@ class Grav2NetCDFConverter(ToNetCDFConverter):
     def get_value_for_key(
         self, value_column: str, table_name: str, key_column: str, key: str
     ):
-        """Retrieves all data from a specified table, converts into a dictionary, and returns as a string. Used for tables
-        with the key and value information such as accuracy or methodology.
-        e.g. 'SUR': 'Positions determined by optical surveying methods or measured on surveyed points.'
+        """Retrieves all data from a specified table, converts into a dictionary, and returns as a string.
+        
+        Used for tables with the key and value information such as accuracy or methodology.
+        e.g. 'SUR': 'Positions determined by optical surveying methods or measured on surveyed points.'.
         """
         cleaned_key = str(key)
         list_of_characters_to_remove = ["\(", "\)", "'", "\,"]
@@ -201,9 +204,10 @@ class Grav2NetCDFConverter(ToNetCDFConverter):
         sql_strings_dict_from_yaml,
         netcdf_format="NETCDF4",
     ):
-        """Concrete constructor for subclass CSV2NetCDFConverter
+        """Concrete constructor for subclass CSV2NetCDFConverter.
+
         Needs to initialise object with everything that is required for the other Concrete methods
-        N.B: Make sure this base class constructor is called from the subclass constructor
+        N.B: Make sure this base class constructor is called from the subclass constructor.
         """
         ToNetCDFConverter.__init__(self, nc_out_path, netcdf_format)
 
@@ -217,6 +221,7 @@ class Grav2NetCDFConverter(ToNetCDFConverter):
 
     def get_survey_metadata(self):
         """Retrieve all data from the gravsurveys and joined a.surveys tables for the current surveyid in the loop.
+
         Uses same filters as other sql queries.
 
         :return:
@@ -248,8 +253,9 @@ class Grav2NetCDFConverter(ToNetCDFConverter):
         # return (self.elipsoid_height_datums)
 
     def get_survey_wide_value_from_obs_table(self, field):
-        """Helper function to retrieve a survey wide value from the observations table. The returning value is tested
-        to be the only possible value (or null) within that survey.
+        """Helper function to retrieve a survey wide value from the observations table.
+        
+        The returning value is tested to be the only possible value (or null) within that survey.
         :param field: The target column in the observations table.
         :return: The first value of the specified field of the observations table.
         """
@@ -277,8 +283,7 @@ class Grav2NetCDFConverter(ToNetCDFConverter):
         return value
 
     def get_global_attributes(self):
-        """Concrete method to return dict of global attribute <key>:<value> pairs
-        """
+        """Concrete method to return dict of global attribute <key>:<value> pairs."""
         metadata_dict = {
             "title": self.survey_metadata["SURVEYNAME"],
             "survey_id": self.survey_id,
@@ -376,8 +381,7 @@ class Grav2NetCDFConverter(ToNetCDFConverter):
         return metadata_dict
 
     def get_dimensions(self):
-        """Concrete method to return OrderedDict of <dimension_name>:<dimension_size> pairs
-        """
+        """Concrete method to return OrderedDict of <dimension_name>:<dimension_size> pairs."""
         formatted_sql = self.sql_strings_dict_from_yaml["get_dimensions"].format(
             self.survey_id
         )
@@ -403,15 +407,14 @@ class Grav2NetCDFConverter(ToNetCDFConverter):
         return dimensions
 
     def variable_generator(self):
-        """Concrete generator to yield NetCDFVariable objects
-
-        """
+        """Concrete generator to yield NetCDFVariable objects."""
 
         def get_data(field_yml_settings_dict):
-            """Call an sql query to retrieve a data list of the specified field. A different query is called for freeair
-            and bouguer.
+            """Call an sql query to retrieve a data list of the specified field.
+            
+            A different query is called for freeair and bouguer.
             :param field_yml_settings_dict:
-            :return: data list
+            :return: data list.
             """
             if field_name in ["Freeair", "Bouguer"]:
                 formatted_sql = self.sql_strings_dict_from_yaml["get_data"].format(

@@ -15,7 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""Created on 18Jun.,2018
+"""Created on 18Jun.,2018.
 
 @author: Andrew Turner & Alex Ip
 """
@@ -42,14 +42,15 @@ def plot_point_dataset(
     point_size=10,
     point_step=1,
 ):
-    """Function to plot data points on a map
+    """Function to plot data points on a map.
+    
     @param netcdf_point_utils: NetCDFPointUtils object wrapping a netCDF dataset
     @param variable_to_map: String specifying variable name for colour map
     @param utm_bbox: UTM Bounding box of form [xmin, ymin, xmax, ymax] or None for all points. Default=None
     @param plot_title: String to prefix before dataset title. Default=None for dataset title or dataset basename
     @param colour_scheme: String specifying colour scheme for data points. Default='binary'
     @param point_size: Point size for data points. Default=10
-    @param point_step: Point step between plotted points - used to skip points in dense datasets. Default=1
+    @param point_step: Point step between plotted points - used to skip points in dense datasets. Default=1.
     """
 
     def rescale_array(input_np_array, new_range_min=0, new_range_max=1):
@@ -168,8 +169,7 @@ def plot_point_dataset(
 
 
 def main():
-    """Main function for quick and dirty testing
-    """
+    """Main function for quick and dirty testing."""
     nc_path = sys.argv[1]
     variable_to_plot = sys.argv[2]
 

@@ -15,7 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""Functions to obtain edge points and convex hull vertices from a gridded NetCDF dataset
+"""Functions to obtain edge points and convex hull vertices from a gridded NetCDF dataset.
 
 Created on 12Sep.,2016
 
@@ -40,14 +40,15 @@ logger.setLevel(logging.DEBUG)  # Initial logging level for this module
 
 
 def get_grid_edge_points(grid_array, dimension_ordinates, nodata_value, max_bytes=None):
-    """Function to return a list of coordinates corresponding to pixels on the edge of data-containing areas of the NetCDF dataset
+    """Function to return a list of coordinates corresponding to pixels on the edge of data-containing areas of the NetCDF dataset.
+
     Data is retrieved in pieces, and pieces around external edge of the full array are padded outwards with no-data to ensure
     that edges are detected when data runs all the way to the array edge.
     @param grid_array: 2D netCDF4 dataset variable
     @param dimension_ordinates: tuple of two arrays containing ordinates for grid_array (e.g. lat/lons)
     @param nodata_value: Value in grid array representing null value
     @param max_bytes: Maximum number of bytes to retrieve in each array piece
-    @return edge_points: n x 2 array of edge point coordinates
+    @return edge_points: n x 2 array of edge point coordinates.
     """
     assert len(grid_array.shape) == 2, "grid_array is not 2D"
 
@@ -163,9 +164,10 @@ def get_grid_edge_points(grid_array, dimension_ordinates, nodata_value, max_byte
 
 
 def get_netcdf_edge_points(netcdf_dataset, max_bytes=None):
-    """Function to return a list of coordinates corresponding to pixels on the edge of data-containing areas of the NetCDF dataset
+    """Function to return a list of coordinates corresponding to pixels on the edge of data-containing areas of the NetCDF dataset.
+
     @param netcdf_dataset: netCDF4.Dataset object
-    @param max_bytes: Maximum number of bytes to retrieve in each array piece
+    @param max_bytes: Maximum number of bytes to retrieve in each array piece.
     """
     # Find variable with "grid_mapping" attribute - assumed to be 2D data
     # variable
@@ -195,10 +197,11 @@ def get_netcdf_edge_points(netcdf_dataset, max_bytes=None):
 
 
 def points2convex_hull(point_list, dilation=0, tolerance=0):
-    """Function to return a list of vertex coordinates in the convex hull around data-containing areas of a point list
+    """Function to return a list of vertex coordinates in the convex hull around data-containing areas of a point list.
+
     @param point_list: Iterable containing coordinates from which to compute convex hull
     @param dilation: distance to dilate convex hull
-    @param tolerance: distance tolerance for the simplification of the convex hull
+    @param tolerance: distance tolerance for the simplification of the convex hull.
     """
     convex_hull = geometry.MultiPoint(point_list).convex_hull
 
@@ -220,9 +223,10 @@ def points2convex_hull(point_list, dilation=0, tolerance=0):
 
 
 def netcdf2convex_hull(netcdf_dataset, max_bytes=None):
-    """Function to return a list of vertex coordinates in the convex hull around data-containing areas of the NetCDF dataset
+    """Function to return a list of vertex coordinates in the convex hull around data-containing areas of the NetCDF dataset.
+
     @param netcdf_dataset: netCDF4.Dataset object
-    @param max_bytes: Maximum number of bytes to retrieve in each array piece
+    @param max_bytes: Maximum number of bytes to retrieve in each array piece.
     """
     # Find variable with "GeoTransform" attribute - assumed to be grid mapping
     # variable
@@ -275,11 +279,12 @@ def netcdf2convex_hull(netcdf_dataset, max_bytes=None):
 
 def points2alpha_shape(points, alpha, dilation=0, tolerance=0):
     """Compute the alpha shape (concave hull) of a set of points.
+
     source: http://blog.thehumangeo.com/2014/05/12/drawing-boundaries-in-python/
     @param points: Iterable container of points.
     @param alpha: alpha value to influence the gooeyness of the border. Smaller numbers don't fall inward as much as larger numbers. Too large, and you lose everything!
     @param dilation: distance to dilate convex hull
-    @param tolerance: distance tolerance for the simplification of the convex hull
+    @param tolerance: distance tolerance for the simplification of the convex hull.
     """
     if len(points) < 4:
         # When you have a triangle, there is no sense
@@ -287,9 +292,7 @@ def points2alpha_shape(points, alpha, dilation=0, tolerance=0):
         return geometry.MultiPoint(list(points)).convex_hull
 
     def add_edge(edges, edge_points, coords, i, j):
-        """Add a line between the i-th and j-th points,
-        if not in the list already
-        """
+        """Add a line between the i-th and j-th points, if not in the list already."""
         if (i, j) in edges or (j, i) in edges:
             # already added
             return

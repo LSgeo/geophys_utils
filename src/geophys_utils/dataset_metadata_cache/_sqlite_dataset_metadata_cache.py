@@ -1,4 +1,4 @@
-"""Created on 19 Jul. 2018
+"""Created on 19 Jul. 2018.
 
 @author: Alex Ip
 """
@@ -19,8 +19,7 @@ logger.setLevel(logging.INFO)  # Initial logging level for this module
 
 
 class SQLiteDatasetMetadataCache(DatasetMetadataCache):
-    """SQLiteDatasetMetadataCache class definition
-    """
+    """SQLiteDatasetMetadataCache class definition."""
 
     DEFAULT_SQLITE_DB_PATH = "data/dataset_metadata_cache.sqlite"
     DDL_SQL_FILE = os.path.join(
@@ -33,9 +32,10 @@ class SQLiteDatasetMetadataCache(DatasetMetadataCache):
     _db_engine = "SQLite"
 
     def __init__(self, sqlite_path=None, debug=False, force_recreate=False):
-        """SQLiteIGSNDB Constructor
+        """SQLiteIGSNDB Constructor.
+
         @parameter sqlite_path: Path to SQLite database file on disk
-        @parameter debug: Boolean flag indicating whether debug output is required
+        @parameter debug: Boolean flag indicating whether debug output is required.
         """
         super(SQLiteDatasetMetadataCache, self).__init__(debug)
 
@@ -139,15 +139,13 @@ class SQLiteDatasetMetadataCache(DatasetMetadataCache):
         logger.debug("Connected to SQLite database {}".format(self.sqlite_path))
 
     def __del__(self):
-        """SQLiteDatasetMetadataCache class Destructor
-        """
+        """SQLiteDatasetMetadataCache class Destructor."""
         if self.db_connection:
             logger.debug("Disconnecting from database {}".format(self.sqlite_path))
             self.db_connection.close()
 
     def add_dataset(self, dataset):
-        """Function to insert or update dataset record
-        """
+        """Function to insert or update dataset record."""
         # Assign a UUID if one doesn't exist
         if not dataset.metadata_uuid:
             dataset.metadata_uuid = str(uuid.uuid4())
@@ -217,8 +215,7 @@ where metadata_uuid = :metadata_uuid;
     def add_survey(
         self, ga_survey_id, survey_name=None, start_date=None, end_date=None
     ):
-        """Function to insert survey
-        """
+        """Function to insert survey."""
         if not ga_survey_id:
             return None
 
@@ -247,8 +244,7 @@ where not exists (select survey_id from survey where ga_survey_id = :ga_survey_i
             logger.debug('Survey "{}" already exists in table'.format(ga_survey_id))
 
     def add_keywords(self, dataset_id, keyword_list):
-        """Function to return primary key of keyword, inserting if necessary
-        """
+        """Function to return primary key of keyword, inserting if necessary."""
         cursor = self.db_connection.cursor()
 
         # Try inserting keywords individually
@@ -327,8 +323,7 @@ select :dataset_id,
     # ===============================================================================
 
     def add_distributions(self, dataset_id, distribution_list):
-        """Function to insert new distributions
-        """
+        """Function to insert new distributions."""
         cursor = self.db_connection.cursor()
 
         # Only add each protocol once
@@ -383,7 +378,8 @@ where not exists (select distribution_id from distribution where dataset_id = :d
                 )
 
     def search_dataset_distributions(self, keyword_list, protocol, ll_ur_coords=None):
-        """Function to return list of dicts containing metadata for all datasets with specified keywords and bounding box
+        """Function to return list of dicts containing metadata for all datasets with specified keywords and bounding box.
+        
         Note that keywords are searched exclusively, i.e. using "and", not "or"
         Keys in dicts returned are as follows:
             (ga_survey_id,
@@ -398,7 +394,7 @@ where not exists (select distribution_id from distribution where dataset_id = :d
             start_date,
             end_date,
             metadata_uuid
-            )
+            ).
         """
         cursor = self.db_connection.cursor()
 

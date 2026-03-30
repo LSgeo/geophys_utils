@@ -15,7 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""Unit tests for geophys_utils._array_pieces module
+"""Unit tests for geophys_utils._array_pieces module.
 
 Created on 15/11/2016
 

@@ -15,7 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""Created on 05/10/2012
+"""Created on 05/10/2012.
 
 @author: Alex Ip
 """
@@ -108,7 +108,8 @@ class DEMUtils(NetCDFGridUtils):
 
     def get_pixel_size(self, index_tuple):
         """Returns X & Y sizes in metres of specified pixel as a tuple.
-        N.B: Pixel ordinates are zero-based from top left
+
+        N.B: Pixel ordinates are zero-based from top left.
         """
         x, y = index_tuple
         logger.debug("(x, y) = (%f, %f)", x, y)
@@ -180,7 +181,7 @@ class DEMUtils(NetCDFGridUtils):
         return (x_size, y_size)
 
     def get_pixel_size_grid(self, source_array, offsets):
-        """Returns grid with interpolated X and Y pixel sizes for given arrays"""
+        """Returns grid with interpolated X and Y pixel sizes for given arrays."""
 
         def get_pixel_x_size(x, y):
             return self.get_pixel_size((offsets[0] + x, offsets[1] + y))[0]
@@ -205,20 +206,19 @@ class DEMUtils(NetCDFGridUtils):
         return pixel_size_grid
 
     def __init__(self, dem_dataset):
-        """Constructor
+        """Constructor.
+        
         Arguments:
-            source_dem_nc: NetCDF dataset containing DEM data
+            source_dem_nc: NetCDF dataset containing DEM data.
         """
         # Start of init function - Call inherited constructor first
         NetCDFGridUtils.__init__(self, dem_dataset)
 
     def create_dzdxy_arrays(self, elevation_array, offsets):
-        """Function to return two arrays containing dzdx and dzdy values
-        """
+        """Function to return two arrays containing dzdx and dzdy values."""
 
         def pixels_in_m():
-            """Function returning True if pixels are in metres
-            """
+            """Function returning True if pixels are in metres."""
             result = True
             for dimension_name in self.data_variable.dimensions:
                 try:
@@ -285,8 +285,7 @@ class DEMUtils(NetCDFGridUtils):
         return aspect_array
 
     def create_slope_and_aspect(self, slope_path=None, aspect_path=None, overlap=4):
-        """Create slope & aspect datasets from elevation
-        """
+        """Create slope & aspect datasets from elevation."""
         # Copy dataset structure but not data
         slope_path = slope_path or os.path.splitext(self.nc_path)[0] + "_slope.nc"
         self.copy(slope_path, empty_var_list=[self.data_variable.name])

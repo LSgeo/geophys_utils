@@ -15,8 +15,9 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""process_array.py
-Created on 1 Sep,2016
+"""process_array.py.
+
+Created on 1 Sep,2016.
 
 @author: Alex Ip
 """
@@ -30,11 +31,12 @@ import netCDF4
 
 
 def array_pieces(ndarray, max_bytes=None, overlap=0):
-    """Generator to return a series of numpy arrays less than max_bytes in size and the offset within the complete data from a NetCDF variable
+    """Generator to return a series of numpy arrays less than max_bytes in size and the offset within the complete data from a NetCDF variable.
+
     Parameters:
         ndarray: Numpy array or NetCDF array variable
         overlap: number of pixels to add to each edge
-        max_bytes: Maximum number of bytes to retrieve. Defaults to 500,000,000 for NCI's OPeNDAP
+        max_bytes: Maximum number of bytes to retrieve. Defaults to 500,000,000 for NCI's OPeNDAP.
 
     Yields:
         piece_array: array subset less than max_bytes in size
@@ -133,8 +135,7 @@ def array_pieces(ndarray, max_bytes=None, overlap=0):
 
 
 def main():
-    """Main function for testing
-    """
+    """Main function for testing."""
     netcdf_path = sys.argv[1]
     netcdf_dataset = netCDF4.Dataset(netcdf_path)
 

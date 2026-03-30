@@ -1,4 +1,4 @@
-"""Created on 23 Feb 2020
+"""Created on 23 Feb 2020.
 
 @author: alex
 """
@@ -14,8 +14,7 @@ logger.setLevel(logging.INFO)  # Initial logging level for this module
 
 
 def main():
-    """Main function for calling NetCDFUtils.copy function
-    """
+    """Main function for calling NetCDFUtils.copy function."""
     # Define command line arguments
     parser = argparse.ArgumentParser()
 

@@ -15,7 +15,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # ===============================================================================
-"""Created on 23Feb.,2017
+"""Created on 23Feb.,2017.
 
 @author: Alex Ip
 """
@@ -39,16 +39,16 @@ logger.setLevel(logging.INFO)  # Initial logging level for this module
 
 
 class CSWUtils(object):
-    """CSW query utilities
-    """
+    """CSW query utilities."""
 
     def __init__(
         self, csw_url_list=None, timeout=None, debug=False, settings_path=None
     ):
-        """Constructor for CSWUtils class
+        """Constructor for CSWUtils class.
+
         @param csw_url_list: List of URLs for CSW services. Defaults to value of self.settings['DEFAULT_CSW_URLS']
         @param timeout: Timeout in seconds. Defaults to value of self.settings['DEFAULT_TIMEOUT']
-        @param settings_path: Path to settings file defaults to csw_utils_settings.yml in package directory
+        @param settings_path: Path to settings file defaults to csw_utils_settings.yml in package directory.
         """
         self._debug = None  # Initialise private variable
         self.debug = debug  # Set debug property
@@ -81,9 +81,10 @@ class CSWUtils(object):
         assert self.csw_list, "No valid CSW URLs provided"
 
     def list_from_comma_separated_string(self, comma_separated_string):
-        """Helper function to return list of strings from a comma-separated string
+        """Helper function to return list of strings from a comma-separated string.
+
         @param comma_separated_string: comma-separated string
-        @return: list of strings
+        @return: list of strings.
         """
         return [keyword.strip() for keyword in comma_separated_string.split(",")]
 
@@ -94,7 +95,7 @@ class CSWUtils(object):
         """Helper function to return a list containing a pair of FES filters for a date range
         @param  start_datetime: datetime object for start of time period to search
         @param stop_datetime: datetime object for end of time period to search
-        @param constraint: string value of either 'overlaps' or 'within' to indicate type of temporal search
+        @param constraint: string value of either 'overlaps' or 'within' to indicate type of temporal search.
 
         @return: list containing a pair of FES filters for a date range
         """
@@ -129,7 +130,7 @@ class CSWUtils(object):
         """Helper function to return and/or filter from a word list for partial case insensitivity
         Work-around resolves issues where "matchCase=False" is ignored and keywords with whitespace characters are not found
         @param propertyname: String denoting CSW property to search
-        @param word_list: List of strings for (partially) case-insensitive "and" search
+        @param word_list: List of strings for (partially) case-insensitive "and" search.
 
         @return: List of FES filters expressing "and" query
         """
@@ -174,7 +175,7 @@ class CSWUtils(object):
         @param fes_filters: List of fes filters to apply to CSW query
         @param max_query_records: Maximum number of records to return per CSW query. Defaults to value of self.settings['DEFAULT_MAXRECORDS']
         @param max_total_records: Maximum total number of records to return. Defaults to value of self.settings['DEFAULT_MAXTOTALRECORDS']
-        @param get_layers: Boolean flag indicating whether to get WMS/WCS layer names. Defaults to False
+        @param get_layers: Boolean flag indicating whether to get WMS/WCS layer names. Defaults to False.
         """
         max_query_records = (
             max_query_records or self.settings["DEFAULT_MAXQUERYRECORDS"]
@@ -377,7 +378,8 @@ class CSWUtils(object):
         get_layers=None,
     ):
         """Function to query CSW using AND combination of provided search parameters and return generator object
-            yielding nested dicts containing information about each record including distributions
+            yielding nested dicts containing information about each record including distributions.
+
         @param identifier_list: List of strings or comma-separated string containing metadata identifiers (UUID)
         @param alt_identifier: List of strings or comma-separated string containing metadata alternate identifiers (eCat ID)
         @param keyword_list: List of strings or comma-separated string containing keyword search terms
@@ -389,7 +391,7 @@ class CSWUtils(object):
         @param stop_datetime: Datetime object defining end of temporal search period
         @param record_type_list: List of strings or comma-separated string containing record type(s) to return
         @param max_total_records: Maximum total number of records to return. Defaults to value of self.settings['DEFAULT_MAXTOTALRECORDS']
-        @param get_layers: Boolean flag indicating whether to get WMS/WCS layer names. Defaults to value of self.settings['DEFAULT_GET_LAYERS']
+        @param get_layers: Boolean flag indicating whether to get WMS/WCS layer names. Defaults to value of self.settings['DEFAULT_GET_LAYERS'].
 
         @return: generator object yielding nested dicts containing information about each record including distributions
         """
@@ -517,9 +519,10 @@ class CSWUtils(object):
         )
 
     def flatten_distribution_dict(self, record_dict, distribution_dict):
-        """Helper function to create a flattened dict from a record dict and a single distribution dict as returned by query_csw
+        """Helper function to create a flattened dict from a record dict and a single distribution dict as returned by query_csw.
+
         @param record_dict:
-        @param distribution_dict
+        @param distribution_dict.
 
         @return dict: flattened dict containing information about specified record and distribution
         """
@@ -563,9 +566,10 @@ class CSWUtils(object):
         return dataset_distribution_dict
 
     def partial_string_match(self, superstring, partial_string_list):
-        """Helper function to perform partial string match for strings in a list
+        """Helper function to perform partial string match for strings in a list.
+
         @param superstring: Whole string against which to search for partial matches
-        @param partial_string_list: List of partial strings for which to search superstring
+        @param partial_string_list: List of partial strings for which to search superstring.
 
         @return bool: True if any partial string found in superstring
         """
@@ -582,10 +586,11 @@ class CSWUtils(object):
 
     def get_distributions(self, distribution_protocols, dataset_dict_generator):
         """Generator to yield flattened dicts containing information for all distributions matching
-        specified distribution_protocols
+        specified distribution_protocols.
+
         @param distribution_protocols: comma-separated string or list containing distribution_protocols to
         match (case insensitive partial string match). None or empty list treated as wildcard.
-        @param dataset_dict_generator: Generator yeilding dict objects containing information about each record including distributions
+        @param dataset_dict_generator: Generator yeilding dict objects containing information about each record including distributions.
 
         """
         # Ensure protocol_list contains lower case strings for case insensitivity
@@ -623,8 +628,9 @@ class CSWUtils(object):
                 yield self.flatten_distribution_dict(record_dict, None)
 
     def get_netcdf_urls(self, dataset_dict_generator):
-        """Generator to yield flattened dicts containing information for any netCDF distributions (file or OPeNDAP URL, file by preference)
-        @param dataset_dict_generator: Generator yeilding dict objects containing information about each record including distributions
+        """Generator to yield flattened dicts containing information for any netCDF distributions (file or OPeNDAP URL, file by preference).
+        
+        @param dataset_dict_generator: Generator yeilding dict objects containing information about each record including distributions.
         """
         for record_dict in dataset_dict_generator:
             distribution_dict = None
