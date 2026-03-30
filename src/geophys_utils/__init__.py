@@ -70,3 +70,5 @@ from geophys_utils._dem_utils import DEMUtils
 from geophys_utils._array2file import array2file
 from geophys_utils._datetime_utils import date_string2datetime
 from geophys_utils._get_netcdf_util import get_netcdf_util
+
+from geophys_utils import netcdf_converter

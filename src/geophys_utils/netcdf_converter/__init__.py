@@ -11,3 +11,5 @@ from geophys_utils.netcdf_converter._to_netcdf_converter_national import (
     NetCDFVariableNational,
     ToNetCDFConverterNational,
 )
+
+from geophys_utils.netcdf_converter.aseg_gdf2netcdf_converter import ASEGGDF2NetCDFConverter
