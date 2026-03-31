@@ -96,7 +96,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
 
         def get_field_definitions():
             """Function to read raw field definitions from .dfn file.
-            
+
             Will set self.dimensions as an Ordereddict of dimension sizes keyed by dimension name.
             """
 
@@ -297,7 +297,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
                 """
                 self.nc_cache_path = os.path.join(
                     TEMP_DIR,
-                    re.sub("\W+", "_", os.path.splitext(self.dat_path)[0]) + ".nc",
+                    re.sub(r"\W+", "_", os.path.splitext(self.dat_path)[0]) + ".nc",
                 )
                 self._nc_cache_dataset = netCDF4.Dataset(
                     self.nc_cache_path, mode="w", clobber=True, format="NETCDF4"
@@ -354,7 +354,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
                         chunksizes = (CACHE_CHUNK_ROWS, columns)
 
                     logger.debug(
-                        "\tCreating cache variable {} with dtype {} and dimension(s) {}".format(
+                        r"\tCreating cache variable {} with dtype {} and dimension(s) {}".format(
                             short_name, field_definition["dtype"], field_dimensions
                         )
                     )
@@ -424,7 +424,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
                             not aseg_gdf_format.startswith("A")
                             and " " in value_string.strip()
                         ):  # Not a string field and has a space in the middle
-                            value_string = re.match("\s*\S*", value_string).group(
+                            value_string = re.match(r"\s*\S*", value_string).group(
                                 0
                             )  # Strip anything after non-leading whitespace character
                             end_char_index = start_char_index + len(
@@ -469,13 +469,13 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
                     return None
                 return row_list
 
-            def read_delimited_fields(line, delimiter_regex="\s+"):
+            def read_delimited_fields(line, delimiter_regex=r"\s+"):
                 """Helper function to read delimited fields into a list of lists.
 
                 N.B: This should not be required, but ASEG-supplied example file Example_Gravity_Springfield_1989.dat requires it.
                 """
                 row_list = []
-                value_list = re.sub(delimiter_regex, "\t", line.strip()).split("\t")
+                value_list = re.sub(delimiter_regex, r"\t", line.strip()).split(r"\t")
 
                 # logger.debug('value_list: {}'.format(value_list))
                 # logger.debug('row_list: {}'.format(row_list))
@@ -533,15 +533,15 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
             self.total_points = 0
             chunk_list = []
             for line in dat_in_file:
-                line = re.sub("\n$", "", line)  # Strip trailing EOL
+                line = re.sub(r"\n$", "", line)  # Strip trailing EOL
                 # logger.debug('line: "{}"'.format(line))
                 if not line.strip():  # Skip empty lines
                     continue
 
                 if self.space_delimited:
-                    row_list = read_delimited_fields(line, "\s+")
-                elif "\t" in line:  # Assume tab delimited line
-                    row_list = read_delimited_fields(line, "\t")
+                    row_list = read_delimited_fields(line, r"\s+")
+                elif r"\t" in line:  # Assume tab delimited line
+                    row_list = read_delimited_fields(line, r"\t")
                 else:
                     row_list = read_fixed_length_fields(line)
 
@@ -613,11 +613,11 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
                 field_definition["column_start_index"] = column_start_index
 
                 # Check for 2D column count in format and strip integers from start of format if found
-                match = re.match("^\d+", field_definition["format"])
+                match = re.match(r"^\d+", field_definition["format"])
                 if match:  # format string starts with integers - 2D variable
                     field_dimension_size = int(match.group(0))
                     field_definition["format"] = re.sub(
-                        "^\d+", "", field_definition["format"]
+                        r"^\d+", "", field_definition["format"]
                     )
                     default_dimension_names = field_definition.get(
                         "dimensions"
@@ -646,9 +646,9 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
                                 )
                                 # logger.debug('Set self.dimensions[{}] = {}'.format(default_dimension_names, field_dimension_size))
                             else:
-                                assert (
-                                    field_dimension_size == actual_dimension_size
-                                ), "Mismatched dimension sizes"
+                                assert field_dimension_size == actual_dimension_size, (
+                                    "Mismatched dimension sizes"
+                                )
 
                             logger.debug(
                                 "Variable {} has dimension {} of size {}".format(
@@ -675,10 +675,10 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
                                     for key in default_dimension_names
                                 ]
                             )
-                            assert (
-                                combined_dimension_size == field_dimension_size
-                            ), "Incorrect dimension sizes. Expected {}, found {}".format(
-                                combined_dimension_size, field_dimension_size
+                            assert combined_dimension_size == field_dimension_size, (
+                                "Incorrect dimension sizes. Expected {}, found {}".format(
+                                    combined_dimension_size, field_dimension_size
+                                )
                             )
                             logger.debug("Removing original composite field definition")
                             self.field_definitions.remove(field_definition)
@@ -699,9 +699,9 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
                                 new_field_definition["dimensions"] = part_dimension_name
                                 new_field_definition["column_offset"] = column_offset
                                 new_field_definition["columns"] = columns
-                                new_field_definition[
-                                    "column_start_index"
-                                ] += column_offset
+                                new_field_definition["column_start_index"] += (
+                                    column_offset
+                                )
                                 new_field_definition["dimension_size"] = (
                                     self.dimensions[part_dimension_name]
                                 )
@@ -735,10 +735,12 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
                         else:
                             assert (
                                 self.dimensions[dimension_name] == field_dimension_size
-                            ), "Invalid size for variable {}. Expected {}, got {}".format(
-                                field_name,
-                                self.dimensions[dimension_name],
-                                field_dimension_size,
+                            ), (
+                                "Invalid size for variable {}. Expected {}, got {}".format(
+                                    field_name,
+                                    self.dimensions[dimension_name],
+                                    field_dimension_size,
+                                )
                             )
 
                         logger.debug(
@@ -1093,18 +1095,20 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
 
                 # This is a slightly ugly side effect
             self.info_output(
-                "\tCreating dimension for {}".format(field_definition["short_name"])
+                r"\tCreating dimension for {}".format(field_definition["short_name"])
             )
             self.nc_output_dataset.createDimension(
                 dimname=field_definition["short_name"], size=len(lookup_array)
             )
 
             self.info_output(
-                "\tWriting {} indexing variables".format(field_definition["short_name"])
+                r"\tWriting {} indexing variables".format(
+                    field_definition["short_name"]
+                )
             )
 
             self.info_output(
-                "\t\tWriting {} values".format(field_definition["short_name"])
+                r"\t\tWriting {} values".format(field_definition["short_name"])
             )
 
             variable_attributes = field_definition.get("variable_attributes") or {}
@@ -1123,7 +1127,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
             )
 
             self.info_output(
-                "\t\tWriting index of first point in each {}".format(
+                r"\t\tWriting index of first point in each {}".format(
                     field_definition["short_name"]
                 )
             )
@@ -1143,7 +1147,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
             )
 
             self.info_output(
-                "\t\tWriting point count for each {}".format(
+                r"\t\tWriting point count for each {}".format(
                     field_definition["short_name"]
                 )
             )
@@ -1168,26 +1172,26 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
             N.B: Has side effect of creating one new dimension for each lookup field.
             This new dimension will NOT appear in self.dimensions.
             """
-            assert (
-                lookup_array.shape[0] > 1
-            ), "lookup_array must have more than one value"
+            assert lookup_array.shape[0] > 1, (
+                "lookup_array must have more than one value"
+            )
 
             short_name = field_definition["short_name"]
 
-            self.info_output("\tWriting {} lookup variables".format(short_name))
+            self.info_output(r"\tWriting {} lookup variables".format(short_name))
 
             variable_attributes = field_definition.get("variable_attributes") or {}
             if field_definition.get("long_name"):
                 variable_attributes["long_name"] = field_definition["long_name"]
 
                 # Creating a new dimension is a slightly ugly side effect
-            self.info_output("\tCreating dimension for {}".format(short_name))
+            self.info_output(r"\tCreating dimension for {}".format(short_name))
             self.nc_output_dataset.createDimension(
                 dimname=short_name, size=len(lookup_array)
             )
 
             self.info_output(
-                "\t\tWriting {} {} lookup values to array variable {}".format(
+                r"\t\tWriting {} {} lookup values to array variable {}".format(
                     len(lookup_array), short_name, short_name
                 )
             )
@@ -1204,7 +1208,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
 
             variable_name = "{}_index".format(short_name)
             self.info_output(
-                "\t\tWriting {} lookup indices to array variable {}".format(
+                r"\t\tWriting {} lookup indices to array variable {}".format(
                     short_name, variable_name
                 )
             )
@@ -1220,7 +1224,9 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
                 dtype=(
                     np.int8
                     if len(lookup_array) < 128
-                    else "int32" if len(lookup_array) < 32768 else index_array.dtype
+                    else "int32"
+                    if len(lookup_array) < 32768
+                    else index_array.dtype
                 ),
                 chunk_size=self.default_chunk_size,
                 variable_parameters=self.default_variable_parameters,
@@ -1230,13 +1236,13 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
 
         def get_scalar_variable():
             """Helper function to return scalar variable for single-value field."""
-            assert (
-                lookup_array.shape[0] == 1
-            ), "lookup_array must have exactly one (i.e. unique) value"
+            assert lookup_array.shape[0] == 1, (
+                "lookup_array must have exactly one (i.e. unique) value"
+            )
             short_name = field_definition["short_name"]
 
             self.info_output(
-                "\tWriting single {} value to scalar variable".format(short_name)
+                r"\tWriting single {} value to scalar variable".format(short_name)
             )
 
             variable_attributes = field_definition.get("variable_attributes") or {}
@@ -1269,7 +1275,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
                 field_definition["short_name"]
                 in self.settings["dimension_fields"] + self.settings["ignored_fields"]
             ):
-                logger.debug("\tIgnoring variable {}".format(short_name))
+                logger.debug(r"\tIgnoring variable {}".format(short_name))
                 continue
 
             field_attributes = OrderedDict()
@@ -1338,7 +1344,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
 
             if not field_definition["dimension_size"]:  # 1D Variable
                 self.info_output(
-                    "\tWriting 1D {} variable {}".format(dtype, short_name)
+                    r"\tWriting 1D {} variable {}".format(dtype, short_name)
                 )
 
                 yield NetCDFVariable(
@@ -1375,7 +1381,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
                     # ===========================================================
                     # data_array[bad_data_mask] = fill_value
                     # ===========================================================
-                    logger.debug("\nconductivity: {}".format(data_array))
+                    logger.debug(r"\nconductivity: {}".format(data_array))
                 elif short_name == "resistivity_uncertainty":
                     # Convert resistivity_uncertainty to absolute_conductivity_uncertainty
                     # TODO: Check whether resistivity_uncertainty is a proportion or a percentage - the former is assumed
@@ -1406,7 +1412,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
                     fill_value = None
 
                 self.info_output(
-                    "\tWriting 2D {} variable {}".format(dtype, short_name)
+                    r"\tWriting 2D {} variable {}".format(dtype, short_name)
                 )
 
                 yield NetCDFVariable(
@@ -1424,7 +1430,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
 
     def postprocess_netcdf(self):
         """Function to perform post-processing on netCDF file after dimensions and variables have been created.
-        
+
         Overrides base class.
 
         This will create crs, longitude and latitude variables for unprojected CRS,
@@ -1581,11 +1587,11 @@ def main():
     base_logger.setLevel(level=log_level)
     logger.setLevel(level=log_level)
 
-    assert (
-        1 <= len(args.positional_args) <= 2
-    ), "Invalid number of positional arguments.\n\
+    assert 1 <= len(args.positional_args) <= 2, (
+        "Invalid number of positional arguments.\n\
 Usage: python {} <options> <dat_in_path> [<nc_out_path>]".format(
-        os.path.basename(sys.argv[0])
+            os.path.basename(sys.argv[0])
+        )
     )
 
     dat_in_path = args.positional_args[
