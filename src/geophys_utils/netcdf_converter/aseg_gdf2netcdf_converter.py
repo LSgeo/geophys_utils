@@ -877,6 +877,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
         self._nc_cache_dataset = None
         self.column_count = None  # Number of columns in .dat file
         self.space_delimited = space_delimited
+        self.field_definitions: OrderedDict | list
 
         if verbose:
             logger.debug("Enabling info level output")
@@ -1095,20 +1096,20 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
 
                 # This is a slightly ugly side effect
             self.info_output(
-                r"\tCreating dimension for {}".format(field_definition["short_name"])
+                "\tCreating dimension for {}".format(field_definition["short_name"])
             )
             self.nc_output_dataset.createDimension(
                 dimname=field_definition["short_name"], size=len(lookup_array)
             )
 
             self.info_output(
-                r"\tWriting {} indexing variables".format(
+                "\tWriting {} indexing variables".format(
                     field_definition["short_name"]
                 )
             )
 
             self.info_output(
-                r"\t\tWriting {} values".format(field_definition["short_name"])
+                "\t\tWriting {} values".format(field_definition["short_name"])
             )
 
             variable_attributes = field_definition.get("variable_attributes") or {}
@@ -1127,7 +1128,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
             )
 
             self.info_output(
-                r"\t\tWriting index of first point in each {}".format(
+                "\t\tWriting index of first point in each {}".format(
                     field_definition["short_name"]
                 )
             )
@@ -1147,7 +1148,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
             )
 
             self.info_output(
-                r"\t\tWriting point count for each {}".format(
+                "\t\tWriting point count for each {}".format(
                     field_definition["short_name"]
                 )
             )
@@ -1191,7 +1192,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
             )
 
             self.info_output(
-                r"\t\tWriting {} {} lookup values to array variable {}".format(
+                "\t\tWriting {} {} lookup values to array variable {}".format(
                     len(lookup_array), short_name, short_name
                 )
             )
@@ -1208,7 +1209,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
 
             variable_name = "{}_index".format(short_name)
             self.info_output(
-                r"\t\tWriting {} lookup indices to array variable {}".format(
+                "\t\tWriting {} lookup indices to array variable {}".format(
                     short_name, variable_name
                 )
             )
@@ -1242,7 +1243,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
             short_name = field_definition["short_name"]
 
             self.info_output(
-                r"\tWriting single {} value to scalar variable".format(short_name)
+                "\tWriting single {} value to scalar variable".format(short_name)
             )
 
             variable_attributes = field_definition.get("variable_attributes") or {}
@@ -1344,7 +1345,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
 
             if not field_definition["dimension_size"]:  # 1D Variable
                 self.info_output(
-                    r"\tWriting 1D {} variable {}".format(dtype, short_name)
+                    "\tWriting 1D {} variable {}".format(dtype, short_name)
                 )
 
                 yield NetCDFVariable(
@@ -1412,7 +1413,7 @@ class ASEGGDF2NetCDFConverter(ToNetCDFConverter):
                     fill_value = None
 
                 self.info_output(
-                    r"\tWriting 2D {} variable {}".format(dtype, short_name)
+                    "\tWriting 2D {} variable {}".format(dtype, short_name)
                 )
 
                 yield NetCDFVariable(
